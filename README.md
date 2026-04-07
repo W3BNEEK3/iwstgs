@@ -1,58 +1,281 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# IWSTGS 🚀
+**Intelligent Web-Based Simulation & Training System**
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modular, domain-driven Laravel 13 application for simulation-based learning, competency evaluation, and AI-assisted feedback.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🧠 Architecture Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Domain-Driven Design modular monolith. Each module contains: Domain, Application, Infrastructure, and Presentation layers.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+src/
+├── Shared/
+├── Identity/
+├── Organizations/
+├── Content/
+├── Simulation/
+├── SimExecution/
+├── Competency/
+├── EvalEngine/
+├── Submission/
+├── AIMediation/
+└── Reporting/
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## ⚙️ Tech Stack
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Layer | Technology |
+|-------|-----------|
+| Backend | Laravel 13 (PHP 8.3+) |
+| Frontend | Blade + HTMX + _Hyperscript |
+| Database | MySQL (recommended) / SQLite (local) |
+| Build | Vite (optional for MVP) |
+| Architecture | Modular Monolith (DDD) |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📦 Installation
 
-## Security Vulnerabilities
+### 1. Clone the Repository
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+git clone https://github.com/W3BNEEK3/iwstgs.git
+cd iwstgs
+```
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🛠️ Setup
+
+### Termux (Android)
+
+```bash
+pkg update && pkg upgrade -y
+pkg install php composer git unzip curl nodejs -y
+```
+
+### Acode / Alpine Linux
+
+```bash
+apk update
+apk add php83 php83-phar php83-openssl php83-pdo php83-pdo_sqlite \
+  php83-mbstring php83-tokenizer php83-xml php83-session \
+  php83-fileinfo php83-dom php83-zip git curl unzip nodejs npm composer
+```
+
+### Verify versions
+
+```bash
+php -v && composer -V && node -v && npm -v
+```
+
+---
+
+## 🔑 Environment Setup
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+---
+
+## 🗄️ Database Setup
+
+### Option A — SQLite (Quick Start)
+
+```bash
+touch database/database.sqlite
+```
+
+In `.env`:
+
+```
+DB_CONNECTION=sqlite
+```
+
+### Option B — Remote MySQL (Recommended)
+
+In `.env`:
+
+```
+DB_CONNECTION=mysql
+DB_HOST=your-host
+DB_PORT=3306
+DB_DATABASE=your-db
+DB_USERNAME=your-user
+DB_PASSWORD=your-password
+```
+
+### Run Migrations
+
+```bash
+php artisan migrate
+```
+
+---
+
+## 🧱 Project Structure Setup
+
+```bash
+mkdir -p src/{Shared,Identity,Organizations,Content,Simulation,SimExecution,Competency,EvalEngine,Submission,AIMediation,Reporting}
+composer dump-autoload
+```
+
+---
+
+## 🚀 Running the App
+
+```bash
+# Backend
+php artisan serve
+
+# Frontend (optional — skip on Android)
+npm install && npm run dev
+```
+
+> ⚠️ **Note (Android/Termux):** Vite may fail due to file watcher limits. Use Blade + HTMX only if this happens.
+
+---
+
+## 🧪 Useful Artisan Commands
+
+### Cache
+
+```bash
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+### Migrations
+
+```bash
+php artisan migrate
+php artisan migrate:fresh
+php artisan migrate:rollback
+```
+
+### Generators
+
+```bash
+php artisan make:model User
+php artisan make:controller UserController
+php artisan make:migration create_users_table
+php artisan make:seeder UserSeeder
+php artisan make:middleware AuthMiddleware
+php artisan make:provider DomainServiceProvider
+```
+
+### Other
+
+```bash
+php artisan tinker       # REPL
+php artisan queue:work   # Queue worker
+php artisan test         # Run test suite
+```
+
+---
+
+## 🔀 Git Workflow
+
+### First-Time Setup
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/W3BNEEK3/iwstgs.git
+git push -u origin main
+```
+
+> When prompted: Username = your GitHub username, Password = your **Personal Access Token**
+
+### SSH Key (Optional)
+
+```bash
+ssh-keygen -t ed25519 -C "your-email"
+cat ~/.ssh/id_ed25519.pub   # paste into GitHub → SSH keys
+```
+
+---
+
+## ⚠️ Android / Termux Limitations
+
+| Issue | Status | Workaround |
+|-------|--------|-----------|
+| Symlinks in shared storage | ❌ Broken | Work in Termux home only |
+| Vite file watchers | ❌ May crash | Use Blade + HTMX, skip Vite |
+| npm outside Termux home | ⚠️ Unreliable | Keep project in ~/ |
+| Full Vite dev experience | ✅ On laptop | Clone repo, run npm normally |
+
+### Recommended Tool Split
+
+| Task | Tool |
+|------|------|
+| Editing code | Acode |
+| Running backend | Termux |
+| Frontend builds | Laptop |
+| Database | Remote MySQL |
+
+---
+
+## 📊 Core Domains
+
+| Domain | Responsibility |
+|--------|---------------|
+| Identity | Auth, RBAC |
+| Organizations | Multi-tenancy |
+| Simulation | Scenario definitions |
+| SimExecution | Live sessions |
+| Competency | Skill tracking |
+| EvalEngine | Scoring logic |
+| Submission | Code execution |
+| AIMediation | AI feedback |
+| Reporting | Analytics |
+
+---
+
+## 🧭 Roadmap
+
+- [ ] Domain base classes (AggregateRoot, ValueObject, etc.)
+- [ ] Module service providers
+- [ ] Feature toggle system per module
+- [ ] AI integration layer (Claude API)
+- [ ] Docker-based code execution sandbox
+- [ ] Reporting dashboards
+
+---
+
+## 🤖 AI Integration (Planned)
+
+- Claude API for prompt-based evaluation
+- Automated feedback generation
+- Submission interpretation & scoring
+
+---
+
+## 🔧 Feature Toggles (Planned)
+
+- Active / Inactive projects
+- Coming Soon pages
+- Maintenance mode per module
+- Disabled feature flags
+
+---
+
+## 👨‍💻 Author
+
+**W3BNEEK3**
+
+---
+
+## 📄 License
+
+Proprietary – Internal Project
