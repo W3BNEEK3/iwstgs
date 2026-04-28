@@ -45,7 +45,7 @@
 ### 0.2 — Module Directory Structure
 - [ ] Create all module directories:
 ```
-mkdir -p src/{Shared,Identity,Organizations,Content,Simulation,SimExecution,Competency,EvalEngine,Submission,AIMediation,Reporting}
+mkdir -p src/{Shared,Identity,Organizations,Content,Simulation,SimExecution,Competency,LearnerProfile,EvalEngine,Submission,AIMediation,Reporting}
 ```
 - [ ] Inside each module, create subdirectories:
 ```
