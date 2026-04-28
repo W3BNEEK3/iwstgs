@@ -19,6 +19,8 @@ class IdentityServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::middleware('web')
+            ->prefix('identity')
+            ->name('identity.')
             ->group(base_path('routes/identity.php'));
     }
 }

@@ -18,6 +18,8 @@ class ReportingServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::middleware('web')
+            ->prefix('reporting')
+            ->name('reporting.')
             ->group(base_path('routes/reporting.php'));
     }
 }

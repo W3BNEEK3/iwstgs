@@ -19,6 +19,8 @@ class OrganizationsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::middleware('web')
+            ->prefix('organization')
+            ->name('organization.')
             ->group(base_path('routes/organizations.php'));
     }
 }

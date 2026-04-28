@@ -18,6 +18,8 @@ class SimExecutionServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::middleware('web')
+            ->prefix('sim_execution')
+            ->name('sim_execution.')
             ->group(base_path('routes/sim_execution.php'));
     }
 }

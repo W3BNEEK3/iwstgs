@@ -21,6 +21,8 @@ class AIMediationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::middleware('web')
+            ->prefix('aimediation')
+            ->name('aimediation.')
             ->group(base_path('routes/ai_mediation.php'));
     }
 }

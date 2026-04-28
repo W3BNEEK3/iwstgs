@@ -18,6 +18,8 @@ class SubmissionServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::middleware('web')
+            ->prefix('submission')
+            ->name('submission.')
             ->group(base_path('routes/submission.php'));
     }
 }

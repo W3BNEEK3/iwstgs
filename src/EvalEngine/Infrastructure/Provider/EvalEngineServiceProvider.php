@@ -18,6 +18,8 @@ class EvalEngineServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::middleware('web')
+            ->prefix('eval_engine')
+            ->name('eval_engine.')
             ->group(base_path('routes/eval_engine.php'));
     }
 }
