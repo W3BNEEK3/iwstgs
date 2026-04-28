@@ -5,6 +5,16 @@ A modular, domain-driven Laravel 13 application for simulation-based learning, c
 
 ---
 
+<div align="center">
+
+**Because real skills are forged through experience, not instruction.**
+
+[![Status](https://img.shields.io/badge/status-in_development-blue)]()
+[![Type](https://img.shields.io/badge/type-final_year_project-green)]()
+[![License](https://img.shields.io/badge/license-academic-orange)]()
+
+</div>
+
 ## 🧠 Architecture Overview
 
 Domain-Driven Design modular monolith. Each module contains: Domain, Application, Infrastructure, and Presentation layers.
