@@ -5,15 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Seeds all 17 feature flags as disabled.
- *
- * Rule: every significant feature is gated behind a flag seeded as FALSE.
- * Enable flags only as phases are completed and verified — never before.
- * This lets us deploy dead code safely without affecting learners.
- *
- * See Implementation Plan Appendix A for the enable schedule per phase.
- */
+
 class FeatureFlagSeeder extends Seeder
 {
     public function run(): void

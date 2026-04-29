@@ -19,17 +19,10 @@
 
     {{-- HTMX CSRF: tells HTMX to include the Laravel CSRF token on every request.
          Without this, all hx-post / hx-patch / hx-delete requests return 419. --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.body.addEventListener('htmx:configRequest', function (event) {
-                event.detail.headers['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').content;
-            });
-        });
-    </script>
 
     @stack('styles')
 </head>
-<body>
+<body hx-headers='{"X-CSRF-TOKEN": "{{ csrf_token() }}"}'>
     @yield('content')
 
     @stack('scripts')

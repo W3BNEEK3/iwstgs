@@ -17,9 +17,11 @@ class SimulationServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+
+        $test = "test string";
         Route::middleware('web')
-            ->prefix('simulation')
-            ->name('simulation.')
+            ->prefix('admin/simulation')
+            ->name('admin.simulation.')
             ->group(base_path('routes/simulation.php'));
     }
 }
