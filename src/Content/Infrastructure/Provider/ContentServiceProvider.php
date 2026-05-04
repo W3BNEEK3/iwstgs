@@ -18,9 +18,9 @@ class ContentServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Route::middleware('web')
+        /*Route::middleware('web')
             ->prefix('admin/content')
             ->name('admin.content.')
-            ->group(base_path('routes/content.php'));
+            ->group(base_path('routes/content.php'));*/
     }
 }

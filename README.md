@@ -205,7 +205,7 @@ git remote add origin https://github.com/W3BNEEK3/iwstgs.git
 git push -u origin main
 ```
 
-> When prompted: Username = your GitHub username, Password = your **Personal Access Token**
+> When prompted: Username = your GitHub username, Password = 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
 
 ### SSH Key (Optional)
 

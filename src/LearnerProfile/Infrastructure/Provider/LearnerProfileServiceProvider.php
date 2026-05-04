@@ -17,9 +17,9 @@ class LearnerProfileServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Route::middleware('web')
+        /*Route::middleware('web')
             ->prefix('learner_profile')
             ->name('learner_profile.')
-            ->group(base_path('routes/learner_profile.php'));
+            ->group(base_path('routes/learner_profile.php'));*/
     }
 }

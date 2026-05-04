@@ -17,9 +17,9 @@ class CompetencyServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Route::middleware('web')
+        /*Route::middleware('web')
             ->prefix('competency')
             ->name('competency.')
-            ->group(base_path('routes/competency.php'));
+            ->group(base_path('routes/competency.php'));*/
     }
 }
