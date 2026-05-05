@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class RoleSeeder extends Seeder
 {
@@ -21,7 +22,7 @@ class RoleSeeder extends Seeder
               'description' => 'Organisation scoped admin'],
             [
               'name' => 'content_author',
-              'dwscription' => 'Can create and manage projects, scenarios, tasks, and rubric criteria.'],
+              'description' => 'Can create and manage projects, scenarios, tasks, and rubric criteria.'],
             [
               'name' => 'learner',
               'description' => 'Can enrole in projects and paeticipate in scenarios']
@@ -29,7 +30,7 @@ class RoleSeeder extends Seeder
         
         forEach ($roles as $role)
         {
-            DB::table('role')->insertOrIgnore($role);
+            DB::table('roles')->insertOrIgnore($role);
         }
     }
 }

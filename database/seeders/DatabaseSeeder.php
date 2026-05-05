@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             FeatureFlagSeeder::class,
+            RoleSeeder::class,
         ]);
     }
 }
