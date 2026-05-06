@@ -1,4 +1,5 @@
 # IWSTGS — Phase 1: Identity & Access
+
 **Laravel 13 · HTMX · _HyperScript · MySQL**
 
 > **Prerequisite:** Phase 0 must be fully complete. The app boots, all 11 module directories exist, the shared kernel compiles, all service providers are registered, and the feature flag table is seeded.
@@ -187,7 +188,7 @@ The domain layer defines what a `Learner` is, what it can do, and what business 
 
 A value object has no identity of its own — it is defined entirely by its value. `LearnerId` wraps a UUID string and gives it meaning in the domain.
 
-- [ ] Create `src/Identity/Domain/User/LearnerId.php`:
+- [X] Create `src/Identity/Domain/User/LearnerId.php`:
 
 ```php
 <?php
@@ -477,7 +478,6 @@ The Application layer orchestrates the domain. Handlers receive commands, call d
 ### RegisterLearner Command and Handler
 
 - [ ] Create directory: `src/Identity/Application/Command/RegisterLearner/`
-
 - [ ] Create `src/Identity/Application/Command/RegisterLearner/RegisterLearnerCommand.php`:
 
 ```php
@@ -549,7 +549,6 @@ final class RegisterLearnerHandler
 ### LoginLearner Command and Handler
 
 - [ ] Create directory: `src/Identity/Application/Command/LoginLearner/`
-
 - [ ] Create `src/Identity/Application/Command/LoginLearner/LoginLearnerCommand.php`:
 
 ```php
@@ -1325,7 +1324,6 @@ Route::middleware('auth')->group(function () {
 The Organisation context is needed by the learner FK in the database, and will be important later for multi-tenancy. For now, create the entity and model stubs so the FK constraint is satisfied and the binding can be added later.
 
 - [ ] Create directory: `src/Organizations/Domain/Organization/`
-
 - [ ] Create `src/Organizations/Domain/Organization/Organisation.php`:
 
 ```php

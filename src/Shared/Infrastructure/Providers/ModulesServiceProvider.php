@@ -3,7 +3,8 @@ namespace Src\Shared\Infrastructure\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
-use Src\Shared\infrastructure\Modules\AImediationModule;
+use Src\Shared\Infrastructure\Modules\AImediationModule;
+use Src\Shared\Infrastructure\Modules\IdentityModule;
 
 class ModulesServiceProvider extends ServiceProvider
 {
@@ -21,7 +22,7 @@ class ModulesServiceProvider extends ServiceProvider
     {
         return [
            new AImediationModule(),
-           //new CompetencyModule(),
+           new IdentityModule(),
         ];
     }
 }
