@@ -2,15 +2,6 @@
 
 namespace Src\Shared\Domain;
 
-/**
- * Base class for aggregate roots.
- *
- * An aggregate root is the single entry point to a cluster of related domain
- * objects. It is the only object external code may hold a reference to.
- * It collects domain events that occurred during its lifetime so those events
- * can be dispatched after the aggregate is persisted — keeping side-effects
- * outside the transaction boundary.
- */
 abstract class AggregateRoot extends Entity
 {
     private array $domainEvents = [];

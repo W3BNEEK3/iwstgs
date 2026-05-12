@@ -7,7 +7,7 @@ return [
     // IWSTGS — Shared kernel (must be first: other modules depend on its bindings)
     Src\Shared\Infrastructure\Providers\SharedServiceProvider::class,
 
-Src\Shared\Infrastructure\Providers\ModulesServiceProvider::class,
+    Src\Shared\Infrastructure\Providers\ModulesServiceProvider::class,
     // IWSTGS — Bounded context providers (alphabetical for readability)
     Src\AIMediation\Infrastructure\Provider\AIMediationServiceProvider::class,
     Src\Competency\Infrastructure\Provider\CompetencyServiceProvider::class,
