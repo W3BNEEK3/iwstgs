@@ -9,5 +9,7 @@ final class LearnerRegistered extends DomainEvent;
        public readonly string $learnerId,
        public readonly string $userId,    
        public readonly string $fullname,        
-    )
+    ){
+        parent::__construct();
+    }
 }
