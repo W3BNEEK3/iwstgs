@@ -12,17 +12,17 @@ final class User extends AggregateRoot
         private string             $passwordHash
     ){}
 
-    public function register(
-        UserId      $id,
+    public static function register(
+        UserId      $userId,
         string      $fullname,
         string      $email,
         string      $passwordHash
     ): self {
-        $user = new self($id, $fullname, $email, $passwordHash);
+        $user = new self($userId, $fullname, $email, $passwordHash);
 
         $user->recordEvent(
             new UserRegistered(
-                userId: (string) $id,
+                userId: (string) $userId,
                 fullname: $fullname,
                 email: $email
             )
@@ -32,12 +32,12 @@ final class User extends AggregateRoot
     }
     
     public static function reconstitute(
-        UserId      $id,
+        UserId      $userId,
         string      $fullname,
         string      $email,
         string      $passwordHash
     ): self {
-        return new self($id, $fullname, $email, $passwordHash);
+        return new self($userId, $fullname, $email, $passwordHash);
     }
 
     public function id(): string
@@ -45,8 +45,8 @@ final class User extends AggregateRoot
         return (string) $this->userId;
     }
 
-    public function userId(): UserId {return $this->userId};
-    public function fullname(): string {return $this->fullname};
-    public function email(): string {return $this->email};
-    public function passwordHash(): string {return $this->passwordHash};
+    public function userId(): UserId {return $this->userId;}
+    public function fullname(): string {return $this->fullname;}
+    public function email(): string {return $this->email;}
+    public function passwordHash(): string {return $this->passwordHash;}
 }

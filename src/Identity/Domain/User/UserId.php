@@ -28,7 +28,7 @@ final class UserId extends ValueObject
         return $other instanceof self && $other->uuid === $this->uuid;
     }
     
-    public function _toString(): string 
+    public function __toString(): string 
     {
         return $this->uuid;
     }

@@ -3,7 +3,7 @@ namespace Src\Identity\Domain\User;
 
 use Src\Shared\Domain\DomainEvent;
 
-final class LearnerRegistered extends DomainEvent;
+final class LearnerRegistered extends DomainEvent
 {
     public function __construct(
        public readonly string $learnerId,

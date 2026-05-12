@@ -1,5 +1,5 @@
 <?php
-namespace Src\Domain\Identity\User;
+namespace Src\Identity\Domain\User;
 
 use Src\Shared\Domain\DomainEvent;
 

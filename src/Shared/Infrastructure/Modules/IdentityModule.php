@@ -17,6 +17,6 @@ class IdentityModule implements Module
 
     public function routePath(): string
     {
-        return 'routes/indentity.php';
+        return 'routes/identity.php';
     }
 }

@@ -51,10 +51,10 @@ final class Learner extends AggregateRoot
         return (string) $this->learnerId;
     }
 
-    public function learnerId(): LearnerId {return $this->learnerId};
-    public function fullname(): string {return $this->fullname};
-    public function userId(): UserId {return $this->userId};
-    public function entryCategory(): EntryCategory {return $this->entryCategory};
-    public function yearsExperience(): ?int {return $this->yearsExperience};
-    public function organizationId(): ?string {return $this->organizationId};   
+    public function learnerId(): LearnerId {return $this->learnerId;}
+    public function fullname(): string {return $this->fullname;}
+    public function userId(): UserId {return $this->userId;}
+    public function entryCategory(): EntryCategory {return $this->entryCategory;}
+    public function yearsExperience(): ?int {return $this->yearsExperience;}
+    public function organizationId(): ?string {return $this->organizationId;}   
 }
