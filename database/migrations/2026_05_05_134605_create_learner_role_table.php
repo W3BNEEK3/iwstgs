@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('learner_role', function (Blueprint $table) {
-            $table->uuid('learner_id');
+        Schema::create('user_role', function (Blueprint $table) {
+            $table->uuid('user_id');
             $table->unsignedBigInteger('role_id');
-            $table->foreign('learner_id')
+            $table->foreign('user_id')
                 ->references('id')
-                ->on('learners')
+                ->on('users')
                 ->cascadeOnDelete();
             $table->foreign('role_id')
                 ->references('id')
                 ->on('roles')
                 ->cascadeOnDelete();
-            $table->primary(['learner_id', 'role_id']);
+            $table->primary(['user_id', 'role_id']);
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('learner_role');
+        Schema::dropIfExists('user_role');
     }
 };

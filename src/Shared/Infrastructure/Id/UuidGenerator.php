@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
  */
 class UuidGenerator
 {
-    public function generate(): string
+    public static function generate(): string
     {
         return (string) Str::uuid();
     }

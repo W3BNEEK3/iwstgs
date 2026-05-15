@@ -2,7 +2,8 @@
 namespace Src\Identity\Domain\User;
 
 use Src\Shared\Domain\ValueObject;
-use Illuminate\Support\Str;
+use Src\Shared\Infrastructure\Id\UuidGenerator;
+//use Illuminate\Support\Str;
 
 final class UserId extends ValueObject
 {
@@ -15,7 +16,8 @@ final class UserId extends ValueObject
     
     public static function generate(): self
     {
-        return new self((string) Str::uuid());
+        return new self((string) UuidGenerator::generate());
+       // return new self((string) Str::uuid());
     }
     
     public function value(): string

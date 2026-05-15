@@ -2,7 +2,8 @@
 namespace Src\Identity\Domain\User;
 
 use Src\Shared\Domain\ValueObject;
-use Illuminate\Support\Str;
+use Src\Shared\Infrastucture\Id\UuidGenerator;
+//use Illuminate\Support\Str;
 
 final class LearnerId extends ValueObject
 {
@@ -15,7 +16,8 @@ final class LearnerId extends ValueObject
     
     public static function generate(): self
     {
-        return new self((string) Str::uuid());
+        return new self((string) UuidGenerator::generate());
+        //return new self((string) Str::uuid());
     }
     
     public function value(): string
@@ -28,7 +30,7 @@ final class LearnerId extends ValueObject
         return $other instanceof self && $this->uuid === $other->uuid;
     }
     
-    public function _toString(): string
+    public function __toString(): string
     {
         return $this->uuid;
     }
