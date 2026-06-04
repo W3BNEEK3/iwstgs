@@ -12,27 +12,27 @@ final class EnrolAsLearnerHandler
 {
     public function __construct(
         private readonly LearnerRepository $repository,
-        private readonly UuidGenerator     $uuidGenerator    
-    ){}
-            
-            public function handle(EnrolAsLearnerCommand $command)
-        {
-            if ($repositoy->existsForUser($command->userId)){
-                throw new AlreadyEnrolledException();
-            }
-            
-            Learner::enrol(
-               id:              LearnerId::fromString($this->uuidGenerator),
-               userId:          $command->userId,
-               entryCategory:   Entrycategory::from($command->entryCategory),
-               yearsExperience: $command->yearsExperience,
-               organisationId:      $command->organisationId
-            );
+        private readonly UuidGenerator $uuidGenerator
+    ) {}
 
-            $this->repository->save($learner);
+    public function handle(EnrolAsLearnerCommand $command) 
+    {
+        if ($repositoy->existsForUser($command->userId)) {
+            throw new AlreadyEnrolledException();
+        }
 
-            foreach($learner->releaseEvents() as $event){
-                event($event);
-            }
-        }            
+        $learner = Learner::enrol(
+            id:              LearnerId::fromString($this->uuidGenerator),
+            userId:          $command->userId,
+            entrycategory:   EntryCategory::from($command->entryCategory),
+            yearsExperience: $command->yearsExperience,
+            organisationId:  $command->organisationId
+        );
+
+        $this->repository->save($learner);
+
+        foreach ($this->learner->releaseEvents() as $event) {
+            event($event);
+        }
+    }
 }
