@@ -114,4 +114,23 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+
+
+    /*      
+    this is my custom config
+    */
+    'guards' => [
+        'web' => [
+            'driver'   => 'session',
+            'provider' => 'users',
+        ],
+    ],
+
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model'  => Src\Identity\Infrastructure\Persistence\Eloquent\Model\UserModel::class,
+        ],
+    ],   
+
 ];

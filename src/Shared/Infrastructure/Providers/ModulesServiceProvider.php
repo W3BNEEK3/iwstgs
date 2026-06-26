@@ -3,8 +3,10 @@ namespace Src\Shared\Infrastructure\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
-use Src\Shared\Infrastructure\Modules\AImediationModule;
-use Src\Shared\Infrastructure\Modules\IdentityModule;
+use Src\Shared\Infrastructure\Modules\{
+    AImediationModule, 
+    IdentityModule,
+    };
 
 class ModulesServiceProvider extends ServiceProvider
 {

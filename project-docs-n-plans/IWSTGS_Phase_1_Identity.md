@@ -1,4 +1,5 @@
 # IWSTGS — Phase 1: Identity & Access
+
 **Laravel 13 · HTMX · _HyperScript · MySQL**
 
 > **Prerequisite:** Phase 0 must be fully complete. The app boots, all module directories exist, the shared kernel compiles, all providers are registered, and the feature flag table is seeded with 17 flags all disabled.
@@ -1220,7 +1221,7 @@ final class LaravelAuthService implements AuthenticationService
 
 ### Wire up Service Providers
 
-- [ ] Open `src/Identity/Infrastructure/Provider/IdentityServiceProvider.php` and replace the stub:
+- [X] Open `src/Identity/Infrastructure/Provider/IdentityServiceProvider.php` and replace the stub:
 
 ```php
 <?php

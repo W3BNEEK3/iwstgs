@@ -2,24 +2,19 @@
 
 namespace Src\Identity\Infrastructure\Provider;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Src\Identity\Domain\Auth\AuthenticationService;
+use Src\Identity\Domain\User\UserRepository;
+use Src\Identity\Infrastructure\Auth\LaravelAuthService;
+use Src\Identity\Infrastructure\Persistence\Eloquent\Repository\EloquentUserRepository;
 
-/**
- * Identity bounded context service provider.
- *
- * Phase 1 will add:
- *  - Binding of LearnerRepository interface to EloquentLearnerRepository
- *  - Registration of auth middleware and guards
- */
 class IdentityServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
-
-    public function boot(): void
+    public function register(): void
     {
-        /*Route::middleware('web')
-            ->name('identity.')
-            ->group(base_path('routes/identity.php'));*/
+        $this->app->bind(UserRepository::class, EloquentUserRepository::class);
+        $this->app->bind(AuthenticationService::class, LaravelAuthService::class);
     }
+
+    public function boot(): void {}
 }
