@@ -5,7 +5,7 @@ namespace Src\SimExecution\Presentation\Http\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Src\SimExecution\Application\Command\EnrolAsLearner\EnrolAsLearnerCommand;
-use Src\SimExecution\Domain\Enrollment\AlreadyEnrolledException;
+use Src\SimExecution\Domain\Exceptions\AlreadyEnrolledException;
 use Src\SimExecution\Presentation\Http\Request\EnrolAsLearnerRequest;
 use Src\Shared\Application\Bus\CommandBus;
 
@@ -23,7 +23,7 @@ class LearnerEnrolmentController
     {
         try {
             $this->commandBus->dispatch(new EnrolAsLearnerCommand(
-                userId:          auth()->id(),
+                userId:          \Illuminate\Support\Facades\Auth::id(),
                 entryCategory:   $request->input('entry_category'),
                 yearsExperience: $request->input('years_experience'),
             ));

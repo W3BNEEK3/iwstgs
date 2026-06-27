@@ -1,12 +1,12 @@
 <?php
-namespace Src\Application\Command\EnrolAsLearner;
+namespace Src\SimExecution\Application\Command\EnrolAsLearner;
 
 final class EnrolAsLearnerCommand
 {
     public function __construct(
-        private readonly string   $userId,
-        private readonly string   $entryCategory,
-        private readonly ?int     $yearsExperience = null,
-        private readonly ?string  $organisationId = null
+        public readonly string   $userId,
+        public readonly string   $entryCategory,
+        public readonly ?int     $yearsExperience = null,
+        public readonly ?string  $organisationId = null
     ){}
 }

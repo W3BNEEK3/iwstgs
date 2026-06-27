@@ -1,7 +1,7 @@
 <?php
 namespace Src\SimExecution\Domain\Exceptions;
  
-use Src\Shared\Domain\DomaimException;
+use Src\Shared\Domain\DomainException;
 
 final class AlreadyEnrolledException extends DomainException
 {

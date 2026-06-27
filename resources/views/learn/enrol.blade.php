@@ -28,7 +28,11 @@
             </select>
         </div>
 
-        <div id="years-field" style="{{ old('entry_category') === 'experienced' ? '' : 'display:none' }}">
+        @if (old('entry_category') === 'experienced')
+            <div id="years-field">
+        @else
+            <div id="years-field" style="display:none">
+        @endif
             <label for="years_experience">Years of Experience</label>
             <input type="number" id="years_experience" name="years_experience"
                    value="{{ old('years_experience') }}" min="1" max="50">

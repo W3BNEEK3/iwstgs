@@ -2,7 +2,7 @@
 namespace Src\SimExecution\Domain\Enrollment;
 
 use Src\Shared\Domain\ValueObject;
-use Src\Domain\Infrastructure\Id\UuidGenerator;
+use Src\Shared\Infrastructure\Id\UuidGenerator;
 
 final class LearnerId extends ValueObject
 {
@@ -16,6 +16,11 @@ final class LearnerId extends ValueObject
     public static function generate(): self
     {
         return new self((string) UuidGenerator::generate());
+    }
+
+    public function value(): string
+    {
+        return $this->uuid;
     }
 
     public function equals(ValueObject $other): bool

@@ -6,32 +6,31 @@ use Src\SimExecution\Domain\Enrollment\Entrycategory;
 use Src\SimExecution\Domain\Enrollment\Learner;
 use Src\SimExecution\Domain\Enrollment\LearnerId;
 use Src\SimExecution\Domain\Enrollment\LearnerRepository;
-use Src\Shared\Infrastructure\Id\UuidGenerator;
 
 final class EnrolAsLearnerHandler
 {
     public function __construct(
         private readonly LearnerRepository $repository,
-        private readonly UuidGenerator $uuidGenerator
+        
     ) {}
 
     public function handle(EnrolAsLearnerCommand $command) 
     {
-        if ($repositoy->existsForUser($command->userId)) {
+        if ($this->repository->existsForUser($command->userId)) {
             throw new AlreadyEnrolledException();
         }
 
         $learner = Learner::enrol(
-            id:              LearnerId::fromString($this->uuidGenerator),
+            id:              LearnerId::generate(),
             userId:          $command->userId,
-            entrycategory:   EntryCategory::from($command->entryCategory),
+            entryCategory:   EntryCategory::from($command->entryCategory),
             yearsExperience: $command->yearsExperience,
             organisationId:  $command->organisationId
         );
 
         $this->repository->save($learner);
 
-        foreach ($this->learner->releaseEvents() as $event) {
+        foreach ($learner->releaseEvents() as $event) {
             event($event);
         }
     }

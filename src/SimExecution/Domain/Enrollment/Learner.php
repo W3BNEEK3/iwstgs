@@ -22,7 +22,7 @@ final class Learner extends aggregateRoot
     ): self{
         $learner = new self($id, $userId, $entryCategory, $yearsExperience, $organisationId);
 
-        $this->recordEvent(new LearnerEnrolled(
+        $learner->recordEvent(new LearnerEnrolled(
             learnerId: (string) $id,
             userId: $userId,
             entryCategory: $entryCategory->value,
