@@ -3,10 +3,7 @@ namespace Src\Shared\Infrastructure\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
-use Src\Shared\Infrastructure\Modules\{
-    AImediationModule, 
-    IdentityModule,
-    };
+use Src\Shared\Infrastructure\Modules\AImediationModule;
 
 class ModulesServiceProvider extends ServiceProvider
 {
@@ -19,12 +16,11 @@ class ModulesServiceProvider extends ServiceProvider
                 ->group(base_path($module->routePath()) ?? 'routes/error/404.php');
         }
     }
-    
+
     public function modules()
     {
         return [
            new AImediationModule(),
-           new IdentityModule(),
         ];
     }
 }

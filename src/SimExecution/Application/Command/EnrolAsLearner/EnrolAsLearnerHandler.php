@@ -2,7 +2,7 @@
 namespace Src\SimExecution\Application\Command\EnrolAsLearner;
 
 use Src\SimExecution\Domain\Exceptions\AlreadyEnrolledException;
-use Src\SimExecution\Domain\Enrollment\Entrycategory;
+use Src\SimExecution\Domain\Enrollment\EntryCategory;
 use Src\SimExecution\Domain\Enrollment\Learner;
 use Src\SimExecution\Domain\Enrollment\LearnerId;
 use Src\SimExecution\Domain\Enrollment\LearnerRepository;

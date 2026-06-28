@@ -12,7 +12,7 @@ final class UserMapper
     {
         return User::reconstitute(
             id:           UserId::fromString($model->id),
-            name:         $model->name,
+            fullname:         $model->name,
             email:        $model->email,
             passwordHash: $model->password,
         );
@@ -22,7 +22,7 @@ final class UserMapper
     {
         return new UserModel([
             'id'       => (string) $entity->userId(),
-            'name'     => $entity->name(),
+            'name'     => $entity->fullname(),
             'email'    => $entity->email(),
             'password' => $entity->passwordHash(),
         ]);

@@ -5,7 +5,7 @@ namespace Src\Identity\Presentation\Http\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Src\Identity\Application\Command\RegisterUser\RegisterUserCommand;
-use Src\Identity\Domain\Exception\EmailAlreadyTakenException;
+use Src\Identity\Domain\Exceptions\EmailAlreadyTakenException;
 use Src\Identity\Presentation\Http\Request\RegisterRequest;
 use Src\Shared\Application\Bus\CommandBus;
 

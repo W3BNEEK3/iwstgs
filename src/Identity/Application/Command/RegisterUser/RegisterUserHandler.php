@@ -2,7 +2,7 @@
 namespace Src\Identity\Application\Command\RegisterUser;
 
 use Illuminate\Support\Facades\Hash;
-use Src\Identity\Domain\Exceptions\EmailAlreadyExistsException;
+use Src\Identity\Domain\Exceptions\EmailAlreadyTakenException;
 use Src\Identity\Domain\User\User;
 use Src\Identity\Domain\User\UserId;
 use Src\Identity\Domain\User\UserRepository;
@@ -18,17 +18,17 @@ final class RegisterUserHandler
     public function handle(RegisterUserCommand $command): void
     {
         if ($this->repository->findByEmail($command->email)!== null){
-            throw new EmailAlreadyExistsException($command->Email);
+            throw new EmailAlreadyTakenException($command->email);
         }
 
         $user = User::register(
-            id: UserId::fromString($uuidGenerator->generate),
+            id: UserId::fromString($this->uuidGenerator->generate()),
             fullname: $command->name,
             email: $command->email,
-            password: Hash::make(command->password),
+            passwordHash: Hash::make($command->password),
         );
 
-        $$this->repository->save($user);
+        $this->repository->save($user);
 
         foreach ($user->releaseEvents() as $event){
             event($event);

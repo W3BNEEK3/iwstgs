@@ -2,6 +2,7 @@
 
 namespace Src\Identity\Infrastructure\Provider;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Src\Identity\Domain\Auth\AuthenticationService;
 use Src\Identity\Domain\User\UserRepository;
@@ -16,5 +17,8 @@ class IdentityServiceProvider extends ServiceProvider
         $this->app->bind(AuthenticationService::class, LaravelAuthService::class);
     }
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+        Route::middleware('web')->group(base_path('routes/identity.php'));
+    }
 }
