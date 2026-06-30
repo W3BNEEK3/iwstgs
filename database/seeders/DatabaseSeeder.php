@@ -6,15 +6,16 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-   
-
-    /* call() is a laravel method in DatabaseSeeder class that takes an array of seeders, */
-    /* and runs them in the order they are listed. */
     public function run(): void
     {
-        $this->call([
-            FeatureFlagSeeder::class,
-            RoleSeeder::class,
-        ]);
+        // Phase 0
+        $this->call(FeatureFlagSeeder::class);
+
+        // Phase 1
+        $this->call(RoleSeeder::class);
+
+        // Phase 2
+        $this->call(CompetenceDimensionSeeder::class);
+        // role_definitions, concept_tags, project content: seeded via admin UI in Phase 4
     }
 }
