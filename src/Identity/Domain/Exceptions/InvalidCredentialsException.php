@@ -7,6 +7,6 @@ final class InvalidCredentialsException extends DomainException
 {
     public function __construct()
     {
-        parent::__constuct("The provided credentials are not correct");
+        parent::__construct("The provided credentials are not correct");
     }
 }
