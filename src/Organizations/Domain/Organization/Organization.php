@@ -4,7 +4,7 @@ namespace Src\Organizations\Domain\Organization;
 
 use Src\Shared\Domain\Entity;
 
-final class Organisation extends Entity
+final class Organization extends Entity
 {
     public function __construct(
         private readonly string $id,

@@ -5,7 +5,7 @@ namespace Src\SimExecution\Infrastructure\Persistence\Eloquent\Mapper;
 use Src\SimExecution\Domain\Enrollment\EntryCategory;
 use Src\SimExecution\Domain\Enrollment\Learner;
 use Src\SimExecution\Domain\Enrollment\LearnerId;
-use Src\Identity\Infrastructure\Persistence\Eloquent\Model\LearnerModel;
+use Src\SimExecution\Infrastructure\Persistence\Eloquent\Model\LearnerModel;
 
 final class LearnerMapper
 {

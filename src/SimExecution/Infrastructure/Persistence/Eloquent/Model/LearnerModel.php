@@ -1,10 +1,11 @@
 <?php
 
-namespace Src\Identity\Infrastructure\Persistence\Eloquent\Model;
+namespace Src\SimExecution\Infrastructure\Persistence\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Src\Identity\Infrastructure\Persistence\Eloquent\Model\UserModel;
 
 class LearnerModel extends Model
 {

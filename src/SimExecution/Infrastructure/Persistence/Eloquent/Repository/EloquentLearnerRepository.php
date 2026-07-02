@@ -2,7 +2,7 @@
 
 namespace Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository;
 
-use Src\Identity\Infrastructure\Persistence\Eloquent\Model\LearnerModel;
+use Src\SimExecution\Infrastructure\Persistence\Eloquent\Model\LearnerModel;
 use Src\SimExecution\Domain\Enrollment\Learner;
 use Src\SimExecution\Domain\Enrollment\LearnerId;
 use Src\SimExecution\Domain\Enrollment\LearnerRepository;

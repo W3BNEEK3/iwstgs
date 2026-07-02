@@ -1,5 +1,5 @@
 <?php
-namespace Src\Identity\Domain\Exception;
+namespace Src\Identity\Domain\Exceptions;
 
 use Src\Shared\Domain\DomainException;
 
