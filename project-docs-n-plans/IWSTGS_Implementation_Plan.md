@@ -90,11 +90,27 @@ mkdir -p src/[Module]/Presentation/{Controllers,Requests,Resources,Views}
 ### 0.5 — Route Structure
 - [ ] Create route files per module in `routes/`:
   - `routes/identity.php`
-  - `routes/simulation.php`
-  - `routes/sim_execution.php`
+  - `routes/learn.php` (SimExecution)
   - `routes/admin.php`
   - `routes/reporting.php`
-- [ ] Load all route files from `AppServiceProvider::boot()`
+  - `routes/ai_mediation.php`
+- [X] **Revised during Phase 1:** route files are NOT loaded from `AppServiceProvider::boot()`.
+  Each module loads its own route file from its own service provider's `boot()`:
+  ```php
+  public function boot(): void
+  {
+      Route::middleware('web')->group(base_path('routes/identity.php'));
+  }
+  ```
+  This was originally left as an empty `boot(): void {}` stub in both `IdentityServiceProvider`
+  and `SimExecutionServiceProvider`, which meant `routes/identity.php` and `routes/learn.php`
+  existed on disk but were never registered — every route in them 404'd. `bootstrap/app.php`
+  only ever loads `routes/web.php`. **Rule going forward: a module that owns routes is
+  responsible for loading them itself. No central route loader.**
+- [X] `ModulesServiceProvider` (in `Src\Shared\Infrastructure\Providers`) is a **legacy** central
+  loader kept only for modules that haven't migrated to self-loading routes yet (currently just
+  `aimediation`). Do not add a module to it once that module's own provider loads its routes —
+  doing so double-registers the routes under two different prefixes.
 
 ### 0.6 — Feature Flag Table
 > This is done in Phase 0 because every subsequent phase depends on it.
