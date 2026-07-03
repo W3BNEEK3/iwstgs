@@ -28,7 +28,7 @@ class SharedServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(FeatureFlagRepository::class, EloquentFeatureFlagRepository::class);
-        $this->app->bind(CommandBus::class, SynchronousCommandBus::class);
+        $this->app->singleton(CommandBus::class, SynchronousCommandBus::class);
         $this->app->bind(QueryBus::class, SynchronousQueryBus::class);
     }
 

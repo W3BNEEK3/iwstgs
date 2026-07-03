@@ -13,7 +13,13 @@ use Illuminate\Support\ServiceProvider;
  */
 class SimExecutionServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+        $this->app->bind(
+            \Src\SimExecution\Domain\Enrollment\LearnerRepository::class,
+            \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentLearnerRepository::class,
+        );
+    }
 
     public function boot(): void
     {
