@@ -1,27 +1,23 @@
 <?php
-
 namespace Src\Simulation\Infrastructure\Provider;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Src\Simulation\Domain\Project\ProjectTemplateRepository;
+use Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentProjectTemplateRepository;
 
-/**
- * Simulation bounded context service provider.
- *
- * Owns: ProjectTemplate, ScenarioTemplate, Task blueprints, RubricSets.
- * Phase 2–4 will add repository bindings.
- */
 class SimulationServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+        $this->app->bind(ProjectTemplateRepository::class, EloquentProjectTemplateRepository::class);
+    }
 
     public function boot(): void
     {
-
-        $test = "test string";
-        /*Route::middleware('web')
-            ->prefix('admin/simulation')
-            ->name('admin.simulation.')
-            ->group(base_path('routes/simulation.php'));*/
+        Route::middleware(['web', 'auth', 'role:content_author'])
+            ->prefix('admin')
+            ->name('admin.')
+            ->group(base_path('routes/simulation.php'));
     }
 }

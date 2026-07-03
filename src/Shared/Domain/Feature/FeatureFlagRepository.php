@@ -18,4 +18,7 @@ interface FeatureFlagRepository
 
     /** @return FeatureFlag[] */
     public function all(): array;
+
+    /** TODO */
+    public function toggle(string $key): FeatureFlag;
 }

@@ -3,6 +3,7 @@
 namespace Src\Shared\Infrastructure\Providers;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Src\Shared\Application\Bus\CommandBus;
 use Src\Shared\Application\Bus\QueryBus;
@@ -39,5 +40,10 @@ class SharedServiceProvider extends ServiceProvider
         Blade::if('feature', function (string $key) {
             return app(FeatureFlagService::class)->isEnabled($key);
         });
+
+         Route::middleware(['web', 'auth', 'role:content_author'])
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(base_path('routes/shared.php'));
     }
 }
