@@ -11,6 +11,11 @@ class SimulationServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(ProjectTemplateRepository::class, EloquentProjectTemplateRepository::class);
+        $this->app->bind(
+            \Src\Simulation\Domain\Scenario\ScenarioTemplateRepository::class,
+            \Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentScenarioTemplateRepository::class,
+        );
+
     }
 
     public function boot(): void

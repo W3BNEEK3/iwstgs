@@ -33,6 +33,9 @@ class ScenarioTemplateModel extends Model
         'is_diagnostic'  => 'boolean',
         'is_published'   => 'boolean',
         'is_active'      => 'boolean',
+        'situation_trigger_type' => \Src\Simulation\Domain\Scenario\SituationTriggerType::class,
+        'default_autonomy_level' => \Src\Simulation\Domain\Cac\CacLevel::class,
+
     ];
 
     public function project(): BelongsTo

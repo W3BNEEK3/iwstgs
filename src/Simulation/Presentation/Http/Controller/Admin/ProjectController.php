@@ -33,15 +33,21 @@ class ProjectController
 
     public function store(StoreProjectRequest $request): RedirectResponse
     {
-        $this->commandBus->dispatch(new CreateProjectCommand(
-            title:              $request->string('title')->toString(),
-            projectType:        $request->string('project_type')->toString(),
-            businessContext:    $request->string('business_context')->toString(),
-            specializationTags: $request->input('specialization_tags', []),
-            difficultyLevel:    $request->string('difficulty_level')->toString(),
-            tagline:            $request->input('tagline'),
-            businessDomain:     $request->input('business_domain'),
-        ));
+        try {
+                $this->commandBus->dispatch(new CreateProjectCommand(
+                title:              $request->string('title')->toString(),
+                projectType:        $request->string('project_type')->toString(),
+                businessContext:    $request->string('business_context')->toString(),
+                specializationTags: $request->input('specialization_tags', []),
+                difficultyLevel:    $request->string('difficulty_level')->toString(),
+                tagline:            $request->input('tagline'),
+                businessDomain:     $request->input('business_domain'),
+            )); 
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            return back()->withInput()->withErrors([
+                'sequence_order' => 'That position is already taken in this project. Try again.',
+            ]);
+        }
 
         return redirect()->route('admin.projects.index')
             ->with('success', 'Project created.');

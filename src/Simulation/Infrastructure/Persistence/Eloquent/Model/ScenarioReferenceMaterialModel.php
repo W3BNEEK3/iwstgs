@@ -25,6 +25,9 @@ class ScenarioReferenceMaterialModel extends Model
     protected $casts = [
         'embedded_signals' => 'array',
         'display_order'    => 'integer',
+        'material_type'    => \Src\Simulation\Domain\Scenario\MaterialType::class,
+        'embedded_signals' => 'array',   // (already present from Phase 3)
+
     ];
 
     public function scenario(): BelongsTo
