@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Src\Simulation\Domain\Cac\CacLevel;
 use Src\Simulation\Domain\Task\TaskType;
 
 class TaskModel extends Model
@@ -41,20 +42,24 @@ class TaskModel extends Model
     ];
 
     protected $casts = [
-        'task_type'             => TaskType::class,
-        'role_tags'             => 'array',
-        'tools'                 => 'array',
-        'prerequisite_concepts' => 'array',
-        'consequence_task_ids'  => 'array',
-        'suggestion_task_ids'   => 'array',
-        'code_execution_config' => 'array',
-        'sequence_order'        => 'integer',
-        'time_limit_minutes'    => 'integer',
-        'is_cac_runtime_set'    => 'boolean',
-        'is_architectural'      => 'boolean',
-        'planning_layer_active' => 'boolean',
-        'is_published'          => 'boolean',
-        'is_active'             => 'boolean',
+        'task_type'              => TaskType::class,
+        'role_tags'              => 'array',
+        'tools'                  => 'array',
+        'prerequisite_concepts'  => 'array',
+        'consequence_task_ids'   => 'array',
+        'suggestion_task_ids'    => 'array',
+        'code_execution_config'  => 'array',
+        'sequence_order'         => 'integer',
+        'time_limit_minutes'     => 'integer',
+        'is_cac_runtime_set'     => 'boolean',
+        'is_architectural'       => 'boolean',
+        'planning_layer_active'  => 'boolean',
+        'is_published'           => 'boolean',
+        'is_active'              => 'boolean',
+        // §1 Phase-3 deferrals — activated in 4c
+        'fixed_complexity'       => CacLevel::class,
+        'fixed_autonomy'         => CacLevel::class,
+        'fixed_context_fidelity' => CacLevel::class,
     ];
 
     public function scenario(): BelongsTo

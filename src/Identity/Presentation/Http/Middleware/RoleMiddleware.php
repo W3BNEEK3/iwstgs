@@ -14,7 +14,9 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
-        if (! $request->user()->hasRole($role)) {
+        $user = $request->user();
+        
+        if (! $user->hasRole('super_admin') && ! $user->hasRole($role)) {
             abort(403, 'You do not have permission to access this page.');
         }
 

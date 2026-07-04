@@ -17,8 +17,7 @@
          itself as an _ attribute. No separate JS files needed. --}}
     <script src="https://unpkg.com/hyperscript.org@0.9.12" defer></script>
 
-    {{-- HTMX CSRF: tells HTMX to include the Laravel CSRF token on every request.
-         Without this, all hx-post / hx-patch / hx-delete requests return 419. --}}
+    <link rel="stylesheet" href="{{ asset('css/ui.css') }}">
 
     @stack('styles')
 </head>

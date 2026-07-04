@@ -4,7 +4,7 @@ namespace Src\Identity\Infrastructure\Auth;
 
 use Illuminate\Support\Facades\Auth;
 use Src\Identity\Domain\Auth\AuthenticationService;
-use Src\Identity\Domain\Exception\InvalidCredentialsException;
+use Src\Identity\Domain\Exceptions\InvalidCredentialsException;
 use Src\Identity\Domain\User\User;
 use Src\Identity\Domain\User\UserRepository;
 

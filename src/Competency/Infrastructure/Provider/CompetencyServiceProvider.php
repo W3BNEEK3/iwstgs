@@ -13,7 +13,13 @@ use Illuminate\Support\ServiceProvider;
  */
 class CompetencyServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+        $this->app->bind(
+            \Src\Competency\Domain\Dimension\CompetenceDimensionRepository::class,
+            \Src\Competency\Infrastructure\Persistence\Eloquent\Repository\EloquentCompetenceDimensionRepository::class,
+        );
+    }
 
     public function boot(): void
     {

@@ -18,7 +18,7 @@ class SynchronousQueryBus implements QueryBus
 
     public function ask(object $query): mixed
     {
-        $handlerClass = str_replace('Query', 'Handler', get_class($query));
+        $handlerClass = preg_replace('/Query$/', 'Handler', get_class($query));
         $handler = $this->container->make($handlerClass);
         return $handler->handle($query);
     }

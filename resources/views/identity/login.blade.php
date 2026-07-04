@@ -1,39 +1,60 @@
 @extends('layouts.app')
-@section('title', 'Log In')
+@section('title', 'Log In - IWSTGS')
 @section('content')
-<div style="max-width:480px;margin:80px auto;padding:0 1rem;">
-    <h1>Log in</h1>
-
-    @if (session('success'))
-        <p style="color:green">{{ session('success') }}</p>
-    @endif
-
-    @if ($errors->any())
-        <ul style="color:red">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    @endif
-
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-        <div>
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus>
+<div class="auth-container">
+    <div class="auth-card">
+        
+        <div class="auth-header">
+            <h2 class="auth-title">Log In</h2>
+            <p class="auth-subtitle">Welcome back. Please enter your details.</p>
         </div>
-        <div>
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div>
-            <label>
-                <input type="checkbox" name="remember" value="1"> Remember me
-            </label>
-        </div>
-        <button type="submit">Log In</button>
-    </form>
 
-    <p>No account? <a href="{{ route('register') }}">Create one</a></p>
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-error">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+            
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input id="email" name="email" type="email" autocomplete="email" required autofocus value="{{ old('email') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" required>
+            </div>
+
+            <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                <div class="checkbox-group">
+                    <input id="remember" name="remember" type="checkbox" value="1">
+                    <label for="remember" style="margin-bottom: 0;">Remember me</label>
+                </div>
+                <a href="#" style="font-size: 0.875rem;">Forgot password?</a>
+            </div>
+
+            <div class="form-group" style="margin-top: 2rem;">
+                <button type="submit" class="btn">Sign in</button>
+            </div>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.875rem;">
+            Don't have an account? <a href="{{ route('register') }}">Sign up</a>
+        </div>
+
+    </div>
 </div>
 @endsection

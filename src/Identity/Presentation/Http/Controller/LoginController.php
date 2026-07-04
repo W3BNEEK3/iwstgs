@@ -6,7 +6,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Src\Identity\Application\Command\LoginUser\LoginUserCommand;
-use Src\Identity\Domain\Exception\InvalidCredentialsException;
+use Src\Identity\Domain\Exceptions\InvalidCredentialsException;
 use Src\Identity\Presentation\Http\Request\LoginRequest;
 use Src\Shared\Application\Bus\CommandBus;
 
@@ -31,6 +31,12 @@ class LoginController
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors(['email' => 'These credentials do not match our records.']);
+        }
+
+        /** @var \Src\Identity\Infrastructure\Persistence\Eloquent\Model\UserModel|null $user */
+        $user = Auth::user();
+        if ($user && ($user->hasRole('super_admin') || $user->hasRole('content_author'))) {
+            return redirect()->intended('/admin/projects');
         }
 
         return redirect()->intended('/learn');

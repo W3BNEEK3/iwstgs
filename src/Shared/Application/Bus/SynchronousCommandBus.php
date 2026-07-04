@@ -23,7 +23,7 @@ class SynchronousCommandBus implements CommandBus
 
     public function dispatch(object $command): void
     {
-        $handlerClass = str_replace('Command', 'Handler', get_class($command));
+        $handlerClass = preg_replace('/Command$/', 'Handler', get_class($command));
         $handler = $this->container->make($handlerClass);
         $handler->handle($command);
     }

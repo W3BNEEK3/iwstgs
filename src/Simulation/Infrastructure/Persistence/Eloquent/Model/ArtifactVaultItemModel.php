@@ -25,8 +25,10 @@ class ArtifactVaultItemModel extends Model
     ];
 
     protected $casts = [
+        'document_type' => \Src\Simulation\Domain\Vault\DocumentType::class,
+        'phase_gate' => \Src\Simulation\Domain\Vault\PhaseGate::class,
         'is_reference_doc' => 'boolean',
-        'display_order'    => 'integer',
+        'display_order' => 'integer',
     ];
 
     public function project(): BelongsTo

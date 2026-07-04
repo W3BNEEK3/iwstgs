@@ -15,7 +15,18 @@ class SimulationServiceProvider extends ServiceProvider
             \Src\Simulation\Domain\Scenario\ScenarioTemplateRepository::class,
             \Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentScenarioTemplateRepository::class,
         );
-
+        $this->app->bind(
+            \Src\Simulation\Domain\Task\TaskRepository::class,
+            \Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentTaskRepository::class,
+        );
+        $this->app->bind(
+            \Src\Simulation\Domain\Rubric\RubricCriterionRepository::class,
+            \Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentRubricCriterionRepository::class,
+        );
+        $this->app->bind(
+            \Src\Simulation\Domain\Vault\ArtifactVaultItemRepository::class,
+            \Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentArtifactVaultItemRepository::class,
+        );
     }
 
     public function boot(): void

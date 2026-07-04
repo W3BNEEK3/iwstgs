@@ -5,6 +5,7 @@ namespace Src\Simulation\Infrastructure\Persistence\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Src\Simulation\Domain\Task\DeliverableType;
 
 class TaskExpectedDeliverableModel extends Model
 {
@@ -18,6 +19,8 @@ class TaskExpectedDeliverableModel extends Model
     ];
 
     protected $casts = [
+        // §1 Phase-3 deferral — activated in 4c
+        'type'          => DeliverableType::class,
         'is_required'   => 'boolean',
         'display_order' => 'integer',
     ];

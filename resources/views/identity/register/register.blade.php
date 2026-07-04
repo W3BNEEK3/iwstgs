@@ -1,38 +1,56 @@
 @extends('layouts.app')
-@section('title', 'Create Account')
+@section('title', 'Sign Up - IWSTGS')
 @section('content')
-<div style="max-width:480px;margin:80px auto;padding:0 1rem;">
-    <h1>Create your account</h1>
+<div class="auth-container">
+    <div class="auth-card">
+        
+        <div class="auth-header">
+            <h2 class="auth-title">Create an account</h2>
+            <p class="auth-subtitle">Join us to start learning and managing your tasks.</p>
+        </div>
 
-    @if ($errors->any())
-        <ul style="color:red">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    @endif
+        @if ($errors->any())
+            <div class="alert alert-error">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
-        <div>
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" value="{{ old('name') }}" required>
-        </div>
-        <div>
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" value="{{ old('email') }}" required>
-        </div>
-        <div>
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div>
-            <label for="password_confirmation">Confirm Password</label>
-            <input type="password" id="password_confirmation" name="password_confirmation" required>
-        </div>
-        <button type="submit">Create Account</button>
-    </form>
+        <form method="POST" action="{{ route('register') }}">
+            @csrf
 
-    <p>Already have an account? <a href="{{ route('login') }}">Log in</a></p>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input id="name" name="name" type="text" required autofocus value="{{ old('name') }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input id="email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" autocomplete="new-password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password_confirmation">Confirm Password</label>
+                <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required>
+            </div>
+
+            <div class="form-group" style="margin-top: 2rem;">
+                <button type="submit" class="btn">Create account</button>
+            </div>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.875rem;">
+            Already have an account? <a href="{{ route('login') }}">Sign in</a>
+        </div>
+
+    </div>
 </div>
 @endsection

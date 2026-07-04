@@ -9,5 +9,5 @@ interface UserRepository
 
     public function findById(UserId $id): ?User;
 
-    public function existByEmail(string $email): bool;
+    public function existsByEmail(string $email): bool;
 }

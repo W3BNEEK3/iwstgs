@@ -1,5 +1,4 @@
 <?php
-
 namespace Src\SimExecution\Presentation\Http\Controller;
 
 use Illuminate\Http\RedirectResponse;
