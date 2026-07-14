@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect('/login');
-});
+    return view('home');
+})->name('home');
 
 Route::get('/dashboard', function () {
     /** @var \Src\Identity\Infrastructure\Persistence\Eloquent\Model\UserModel|null $user */

@@ -10,13 +10,21 @@ use Src\Identity\Domain\Exceptions\InvalidCredentialsException;
 use Src\Identity\Presentation\Http\Request\LoginRequest;
 use Src\Shared\Application\Bus\CommandBus;
 
-class LoginController
+/**
+ * SystemLoginController
+ *
+ * Handles authentication for the system-level super_admin portal (/sys/login).
+ * Only super_admin accounts may sign in here — all other roles are rejected.
+ * This route is intentionally separate from /login (used by org admins / content authors)
+ * so that the system administration surface is not publicly discoverable.
+ */
+class SystemLoginController
 {
     public function __construct(private readonly CommandBus $commandBus) {}
 
     public function show(): View
     {
-        return view('identity.login');
+        return view('identity.system-login');
     }
 
     public function store(LoginRequest $request): RedirectResponse
@@ -36,18 +44,15 @@ class LoginController
         /** @var \Src\Identity\Infrastructure\Persistence\Eloquent\Model\UserModel|null $user */
         $user = Auth::user();
 
-        // System-level admins must use the dedicated system login portal
-        if ($user && $user->hasRole('super_admin')) {
+        // Only super_admin accounts are permitted through this portal
+        if (!$user || !$user->hasRole('super_admin')) {
             Auth::logout();
-            return redirect()->route('login')
-                ->withErrors(['email' => 'Please use the system administration portal to sign in.']);
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Access denied. This portal is for system administrators only.']);
         }
 
-        if ($user && $user->hasRole('content_author')) {
-            return redirect()->intended('/admin/projects');
-        }
-
-        return redirect()->intended('/learn');
+        return redirect()->intended('/admin/projects');
     }
 
     public function destroy(): RedirectResponse
@@ -55,6 +60,6 @@ class LoginController
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
-        return redirect()->route('login');
+        return redirect()->route('sys.login');
     }
 }

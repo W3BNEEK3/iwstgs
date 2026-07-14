@@ -9,7 +9,7 @@ class OrganizationModel extends Model
 {
     use HasUuids;
 
-    protected $table = 'organizations';
+    protected $table = 'organisations';
     protected $fillable = ['id', 'name', 'slug', 'is_active'];
     protected $casts = ['is_active' => 'boolean'];
 }
