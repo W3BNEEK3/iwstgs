@@ -1,34 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>IWSTGS Admin — @yield('title', 'Dashboard')</title>
-    <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
-    <script src="https://unpkg.com/hyperscript.org@0.9.12" defer></script>
-    {{-- htmx needs the CSRF token on every non-GET request --}}
-    <script>
-      document.addEventListener('htmx:configRequest', (e) => {
-        e.detail.headers['X-CSRF-TOKEN'] =
-          document.querySelector('meta[name=csrf-token]').content;
-      });
-    </script>
-</head>
-<body>
-    <nav>
-        <strong>IWSTGS Admin</strong>
-        <a href="{{ route('admin.projects.index') }}">Projects</a>
-        <a href="{{ route('admin.feature-flags.index') }}">Feature Flags</a>
-        {{-- Scenarios | Tasks | Roles arrive in 4b/4c --}}
-    </nav>
+{{-- Bridges every existing admin/* page (which still does @extends('admin.layouts.admin')
+     and @section('content')) onto the new admin shell, without editing any of
+     those ~15 files. This is the "unify admin under one shell" step from the
+     design doc §8.4 — the content pages themselves (raw tables, inline styles)
+     are a separate follow-up migration, not done here.
 
-    @if (session('success'))
-        <p role="status">{{ session('success') }}</p>
-    @endif
+     'title' is deliberately untouched here — each admin page already sets its
+     own @section('title', 'Projects') etc., and that flows straight through
+     to layouts/app.blade.php's @yield('title', ...) unchanged. Redefining it
+     in this bridge would execute after the leaf page's own section and
+     silently overwrite it, since Blade sections aren't parent-yields-to-child
+     by default — last @section() to run wins. --}}
+@extends('layouts.shells.admin')
 
-    <main>
-        @yield('content')
-    </main>
-</body>
-</html>
+@section('body')
+    @yield('content')
+@endsection
