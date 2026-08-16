@@ -12,6 +12,7 @@ use Src\Simulation\Infrastructure\Persistence\Eloquent\Model\TaskCacVariantModel
 use Src\Simulation\Infrastructure\Persistence\Eloquent\Model\TaskGuidancePromptModel;
 use Src\Simulation\Infrastructure\Persistence\Eloquent\Model\RubricCriterionModel;
 use Src\Simulation\Infrastructure\Persistence\Eloquent\Model\ArtifactVaultItemModel;
+use Src\Simulation\Infrastructure\Persistence\Eloquent\Model\BacklogItemTemplateModel;
 
 class MedQueueSeeder extends Seeder
 {
@@ -114,6 +115,43 @@ class MedQueueSeeder extends Seeder
             'developing_description'    => 'Mentions one edge case.',
             'beginning_description'     => 'No edge-case awareness.',
             'is_architectural' => false, 'is_planning_layer' => false, 'reference_doc_anchor' => null,
+        ]);
+
+        // Sprint 1 product backlog — only the first item is linked to an authored Task
+        // (task_id), same as a real backlog where tickets get written up ahead of tasks.
+        BacklogItemTemplateModel::create([
+            'project_id' => $project->id, 'title' => 'Implement the enqueue endpoint',
+            'description' => 'POST /queue/enqueue — validate and store a patient in the queue (MQ-14).',
+            'default_priority' => 'must_have', 'role_tags' => ['backend'],
+            'task_id' => $task->id, 'dependency_item_ids' => null, 'display_order' => 1,
+        ]);
+
+        BacklogItemTemplateModel::create([
+            'project_id' => $project->id, 'title' => 'Add queue position lookup endpoint',
+            'description' => 'GET /queue/{id}/position — return a patient\'s current position and estimated wait.',
+            'default_priority' => 'must_have', 'role_tags' => ['backend'],
+            'task_id' => null, 'dependency_item_ids' => null, 'display_order' => 2,
+        ]);
+
+        BacklogItemTemplateModel::create([
+            'project_id' => $project->id, 'title' => 'Add priority triage flag to queue entries',
+            'description' => 'Let a nurse mark a patient as urgent so they move ahead of routine entries.',
+            'default_priority' => 'should_have', 'role_tags' => ['backend'],
+            'task_id' => null, 'dependency_item_ids' => null, 'display_order' => 3,
+        ]);
+
+        BacklogItemTemplateModel::create([
+            'project_id' => $project->id, 'title' => 'Write API documentation for queue endpoints',
+            'description' => 'Document request/response shapes for the enqueue and position-lookup endpoints.',
+            'default_priority' => 'could_have', 'role_tags' => ['backend'],
+            'task_id' => null, 'dependency_item_ids' => null, 'display_order' => 4,
+        ]);
+
+        BacklogItemTemplateModel::create([
+            'project_id' => $project->id, 'title' => 'Add rate limiting to queue submissions',
+            'description' => 'Prevent duplicate/rapid-fire enqueue requests from the same device.',
+            'default_priority' => 'wont_have', 'role_tags' => ['backend'],
+            'task_id' => null, 'dependency_item_ids' => null, 'display_order' => 5,
         ]);
     }
 }

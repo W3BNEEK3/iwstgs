@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             FeatureFlagSeeder::class,
             RoleSeeder::class,
             AdminUserSeeder::class,
+            TestLearnerUserSeeder::class,
             CompetenceDimensionSeeder::class,
             RoleDefinitionSeeder::class,
             MedQueueSeeder::class,
