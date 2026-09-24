@@ -34,4 +34,11 @@ final class EloquentLearnerRepository implements LearnerRepository
     {
         return LearnerModel::where('user_id', $userId)->exists();
     }
+
+    public function all(): array
+    {
+        return LearnerModel::all()
+            ->map(fn (LearnerModel $m) => $this->mapper->toEntity($m))
+            ->all();
+    }
 }

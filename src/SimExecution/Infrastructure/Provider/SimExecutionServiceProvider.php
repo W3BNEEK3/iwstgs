@@ -19,6 +19,41 @@ class SimExecutionServiceProvider extends ServiceProvider
             \Src\SimExecution\Domain\Enrollment\LearnerRepository::class,
             \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentLearnerRepository::class,
         );
+
+        $this->app->bind(
+            \Src\SimExecution\Domain\Session\LearnerSessionRepository::class,
+            \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentLearnerSessionRepository::class,
+        );
+
+        $this->app->bind(
+            \Src\SimExecution\Domain\RoleEnrolment\RoleEnrolmentRepository::class,
+            \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentRoleEnrolmentRepository::class,
+        );
+
+        $this->app->bind(
+            \Src\SimExecution\Domain\Sprint\LearnerSprintRepository::class,
+            \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentLearnerSprintRepository::class,
+        );
+
+        $this->app->bind(
+            \Src\SimExecution\Domain\Backlog\LearnerBacklogItemRepository::class,
+            \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentLearnerBacklogItemRepository::class,
+        );
+
+        $this->app->bind(
+            \Src\SimExecution\Domain\Board\SprintBoardEventRepository::class,
+            \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentSprintBoardEventRepository::class,
+        );
+
+        $this->app->bind(
+            \Src\SimExecution\Domain\Board\InjectedTaskCardRepository::class,
+            \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentInjectedTaskCardRepository::class,
+        );
+
+        $this->app->bind(
+            \Src\SimExecution\Domain\Diagnostic\DiagnosticSessionRepository::class,
+            \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentDiagnosticSessionRepository::class,
+        );
     }
 
     public function boot(): void

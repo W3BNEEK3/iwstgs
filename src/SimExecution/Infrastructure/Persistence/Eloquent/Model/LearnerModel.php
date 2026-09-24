@@ -16,6 +16,7 @@ class LearnerModel extends Model
     protected $fillable = [
         'id',
         'user_id',
+        'fullname',
         'organisation_id',
         'entry_category',
         'years_experience',

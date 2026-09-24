@@ -7,10 +7,14 @@ use Src\SimExecution\Application\Command\EnrolAsLearner\EnrolAsLearnerCommand;
 use Src\SimExecution\Domain\Exceptions\AlreadyEnrolledException;
 use Src\SimExecution\Presentation\Http\Request\EnrolAsLearnerRequest;
 use Src\Shared\Application\Bus\CommandBus;
+use Src\Shared\Infrastructure\Feature\FeatureFlagService;
 
 class LearnerEnrolmentController
 {
-    public function __construct(private readonly CommandBus $commandBus) {}
+    public function __construct(
+        private readonly CommandBus $commandBus,
+        private readonly FeatureFlagService $flags,
+    ) {}
 
     public function show(): View
     {
@@ -27,12 +31,15 @@ class LearnerEnrolmentController
                 yearsExperience: $request->input('years_experience'),
             ));
         } catch (AlreadyEnrolledException $e) {
-            return redirect()->route('learn.dashboard')
+            return redirect()->route('learn.catalogue')
                 ->with('info', 'You are already enrolled as a learner.');
         }
 
-        // After enrolment, redirect to diagnostic (Phase 5)
-        // For now redirect to a placeholder
-        return redirect()->route('learn.enrol.success');
+        if ($this->flags->isEnabled('simulation.diagnostic_assessment')) {
+            return redirect()->route('learn.diagnostic');
+        }
+
+        return redirect()->route('learn.catalogue')
+            ->with('success', 'Welcome! Browse projects to get started.');
     }
 }

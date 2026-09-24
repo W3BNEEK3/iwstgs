@@ -14,6 +14,7 @@ final class LearnerMapper
         return Learner::reconstitute(
             id:              LearnerId::fromString($model->id),
             userId:          $model->user_id,
+            fullname:        $model->fullname,
             entryCategory:   EntryCategory::from($model->entry_category),
             yearsExperience: $model->years_experience,
             organisationId:  $model->organisation_id,
@@ -25,6 +26,7 @@ final class LearnerMapper
         return new LearnerModel([
             'id'               => (string) $entity->learnerId(),
             'user_id'          => $entity->userId(),
+            'fullname'         => $entity->fullname(),
             'organisation_id'  => $entity->organisationId(),
             'entry_category'   => $entity->entryCategory()->value,
             'years_experience' => $entity->yearsExperience(),
