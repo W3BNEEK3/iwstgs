@@ -47,6 +47,12 @@ class LoginController
             return redirect()->intended('/admin/projects');
         }
 
+        // Not yet a learner (no LearnerEnrolled fact has fired for them) — /learn itself
+        // is gated behind the learner role, but /learn/enrol only requires being logged in.
+        if ($user && ! $user->hasRole('learner')) {
+            return redirect()->intended('/learn/enrol');
+        }
+
         return redirect()->intended('/learn');
     }
 

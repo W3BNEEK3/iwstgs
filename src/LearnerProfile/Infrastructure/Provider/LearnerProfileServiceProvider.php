@@ -2,24 +2,37 @@
 
 namespace Src\LearnerProfile\Infrastructure\Provider;
 
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Src\LearnerProfile\Domain\Profile\LearnerProfileRepository;
+use Src\LearnerProfile\Infrastructure\Listener\BootstrapLearnerProfileOnEnrolment;
+use Src\LearnerProfile\Infrastructure\Persistence\Eloquent\Repository\EloquentLearnerProfileRepository;
+use Src\SimExecution\Domain\Enrollment\LearnerEnrolled;
 
-/**
- * LearnerProfile bounded context service provider.
- *
- * Owns: LearnerProfile, DimensionScore, ConceptMasteryRecord, RankEvent.
- * Phase 5 will add LearnerObserver registration and profile service bindings.
- */
 class LearnerProfileServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+        $this->app->bind(LearnerProfileRepository::class, EloquentLearnerProfileRepository::class);
+
+        $this->app->bind(
+            \Src\LearnerProfile\Domain\Rank\RankEventRepository::class,
+            \Src\LearnerProfile\Infrastructure\Persistence\Eloquent\Repository\EloquentRankEventRepository::class,
+        );
+
+        $this->app->bind(
+            \Src\LearnerProfile\Domain\Profile\DimensionScoreRepository::class,
+            \Src\LearnerProfile\Infrastructure\Persistence\Eloquent\Repository\EloquentDimensionScoreRepository::class,
+        );
+
+        $this->app->bind(
+            \Src\LearnerProfile\Domain\ConceptMastery\ConceptMasteryRepository::class,
+            \Src\LearnerProfile\Infrastructure\Persistence\Eloquent\Repository\EloquentConceptMasteryRepository::class,
+        );
+    }
 
     public function boot(): void
     {
-        /*Route::middleware('web')
-            ->prefix('learner_profile')
-            ->name('learner_profile.')
-            ->group(base_path('routes/learner_profile.php'));*/
+        Event::listen(LearnerEnrolled::class, BootstrapLearnerProfileOnEnrolment::class);
     }
 }
