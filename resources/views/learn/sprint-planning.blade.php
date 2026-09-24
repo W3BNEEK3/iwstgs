@@ -1,5 +1,9 @@
 @extends('layouts.shells.dashboard')
 
+@php
+    $guideContext = ['newScenario' => $planning->scenarioSequence > 1];
+@endphp
+
 @section('title', 'Sprint ' . $planning->sprintNumber . ' Planning — ' . config('app.name', 'IWSTGS'))
 
 @section('body')

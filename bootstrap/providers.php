@@ -13,6 +13,7 @@ return [
     Src\Competency\Infrastructure\Provider\CompetencyServiceProvider::class,
     Src\Content\Infrastructure\Provider\ContentServiceProvider::class,
     Src\EvalEngine\Infrastructure\Provider\EvalEngineServiceProvider::class,
+    Src\Guidance\Infrastructure\Provider\GuidanceServiceProvider::class,
     Src\Identity\Infrastructure\Provider\IdentityServiceProvider::class,
     Src\LearnerProfile\Infrastructure\Provider\LearnerProfileServiceProvider::class,
     Src\Organizations\Infrastructure\Provider\OrganizationsServiceProvider::class,

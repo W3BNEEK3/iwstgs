@@ -1,6 +1,7 @@
 <?php
 namespace Src\SimExecution\Application\Query\GetSprintPlanning;
 
+use Src\Simulation\Application\Query\GetScenario\GetScenarioQuery;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\SimExecution\Domain\Backlog\BacklogItemStatus;
 use Src\SimExecution\Domain\Backlog\LearnerBacklogItem;
@@ -88,6 +89,9 @@ final class GetSprintPlanningHandler
             showsQualityHint: $showsQualityHint,
             backlogItems:     $backlogViews,
             sprintItems:      $sprintViews,
+            scenarioSequence: $session->currentScenarioId() !== null
+                ? ($this->queryBus->ask(new GetScenarioQuery($session->currentScenarioId()))?->sequenceOrder() ?? 1)
+                : 1,
         );
     }
 }

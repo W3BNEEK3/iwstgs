@@ -9,6 +9,7 @@
 @import './components/table.css';
 @import './components/narrative-panel.css';
 @import './components/landing.css';
+@import './components/guide.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

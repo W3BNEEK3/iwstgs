@@ -2,6 +2,7 @@ import './bootstrap';
 import Alpine from 'alpinejs';
 import nav from './alpine/nav';
 import { ajax } from './alpine/ajax';
+import guide from './alpine/guide';
 import { initNetworkStatus } from './behaviors/network-status';
 import { initToastAutodismiss } from './behaviors/toast-autodismiss';
 import { initModals } from './behaviors/modal';
@@ -12,6 +13,7 @@ import { initProfileChartRotate } from './behaviors/profile-chart-rotate';
 import { initBusyButtons } from './behaviors/busy-buttons';
 
 Alpine.store('nav', nav);
+Alpine.data('guide', guide);
 
 Alpine.magic('ajax', (el) => async (url, options = {}) => {
   const busy = options.form?.querySelector('[type=submit]') ?? el.closest('button');

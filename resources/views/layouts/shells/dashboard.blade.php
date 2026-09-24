@@ -31,4 +31,6 @@
 </div>
 
 @include('partials.navigation.mobile-drawer', ['items' => $navItems, 'homeRoute' => 'learn.catalogue'])
+
+<x-guide :context="$guideContext ?? []" />
 @endsection

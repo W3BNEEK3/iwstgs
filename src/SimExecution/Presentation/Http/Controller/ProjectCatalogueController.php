@@ -3,6 +3,7 @@ namespace Src\SimExecution\Presentation\Http\Controller;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Src\Guidance\Application\Query\GetProjectExplainer\GetProjectExplainerQuery;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\SimExecution\Application\Query\GetProjectDetail\GetProjectDetailQuery;
 use Src\Simulation\Application\Query\ListPublishedProjects\ListPublishedProjectsQuery;
@@ -26,6 +27,9 @@ class ProjectCatalogueController
 
         abort_if($detail === null, 404);
 
-        return view('learn.catalogue-show', ['project' => $detail]);
+        return view('learn.catalogue-show', [
+            'project'   => $detail,
+            'explainer' => $this->queryBus->ask(new GetProjectExplainerQuery($project)),
+        ]);
     }
 }

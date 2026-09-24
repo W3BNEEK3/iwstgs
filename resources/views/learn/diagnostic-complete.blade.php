@@ -1,5 +1,9 @@
 @extends('layouts.shells.dashboard')
 
+@php
+    $guideContext = ['diagnosticComplete' => true];
+@endphp
+
 @section('title', 'Diagnostic Complete — ' . config('app.name', 'IWSTGS'))
 
 @section('body')

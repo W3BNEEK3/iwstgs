@@ -13,8 +13,13 @@
 @if ($project->tagline)
     <p style="color:var(--text-muted);font-size:var(--text-base);margin:0 0 var(--sp-md);"><em>{{ $project->tagline }}</em></p>
 @endif
-<p style="margin-bottom:var(--sp-lg);">{{ $project->businessContext }}</p>
+<p style="margin-bottom:var(--sp-lg);white-space:pre-line;">{{ $project->businessContext }}</p>
 <x-ui.badge tone="neutral" style="margin-bottom:var(--sp-2xl);">{{ ucfirst($project->difficultyLevel) }}</x-ui.badge>
+
+@if ($explainer)
+    @include('guidance.project-explainer', ['explainer' => $explainer])
+    <div style="margin-top:var(--sp-xl);"></div>
+@endif
 
 @if ($project->isEnrolled)
     <x-forms.form-section title="You're enrolled">

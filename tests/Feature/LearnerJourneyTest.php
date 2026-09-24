@@ -164,7 +164,9 @@ class LearnerJourneyTest extends TestCase
             ->where('learner_session_id', $sessionId)->where('card_type', 'consequence')->value('injected_task_id');
         $this->assertNotNull($consequenceTaskId);
         $consequenceTitle = DB::table('tasks')->where('id', $consequenceTaskId)->value('title');
-        $this->get("/learn/{$project->id}/sprint-board")->assertOk()->assertSee($consequenceTitle, false);
+        $this->get("/learn/{$project->id}/sprint-board")->assertOk()
+            ->assertSee($consequenceTitle, false)
+            ->assertSee('data-auto-show="consequence-card,sprint-board"', false);
 
         $this->tier = 'proficient';
         $this->submit($sessionId, $second);

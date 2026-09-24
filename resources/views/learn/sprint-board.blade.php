@@ -1,5 +1,16 @@
 @extends('layouts.shells.dashboard')
 
+@php
+    $boardTreatments = array_map(
+        fn ($item) => $item->visualTreatment,
+        array_merge($board->toDo, $board->inProgress, $board->done, $board->blocked),
+    );
+    $guideContext = [
+        'hasConsequence' => in_array('consequence_amber', $boardTreatments, true),
+        'hasSuggestion'  => in_array('suggestion_teal', $boardTreatments, true),
+    ];
+@endphp
+
 @section('title', 'Sprint ' . $board->sprintNumber . ' Board — ' . config('app.name', 'IWSTGS'))
 
 @section('body')

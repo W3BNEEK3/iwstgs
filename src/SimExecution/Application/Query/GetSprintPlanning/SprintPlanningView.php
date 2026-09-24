@@ -15,5 +15,6 @@ final class SprintPlanningView
         public readonly bool $showsQualityHint,
         public readonly array $backlogItems,
         public readonly array $sprintItems,
+        public readonly int $scenarioSequence = 1,
     ) {}
 }

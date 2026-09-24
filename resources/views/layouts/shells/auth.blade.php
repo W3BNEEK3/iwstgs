@@ -28,4 +28,5 @@
         @yield('body')
     </div>
 </div>
+<x-guide :context="$guideContext ?? []" />
 @endsection
