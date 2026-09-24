@@ -2,9 +2,10 @@
 
 namespace Src\Simulation\Presentation\Http\Controller\Admin;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Src\Shared\Application\Bus\CommandBus;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\Simulation\Application\Command\AddVaultItem\AddVaultItemCommand;
@@ -20,15 +21,15 @@ class VaultItemController extends Controller
         private readonly QueryBus $queryBus
     ) {}
 
-    public function index(string $projectId)
+    public function index(string $projectId): View
     {
         $project = $this->queryBus->ask(new GetProjectQuery($projectId));
         $items = $this->queryBus->ask(new ListVaultItemsByProjectQuery($projectId));
 
-        return view('admin.vault.index', compact('project', 'items'));
+        return view('admin.vault.index', compact('project', 'items', 'projectId'));
     }
 
-    public function store(StoreVaultItemRequest $request, string $projectId)
+    public function store(StoreVaultItemRequest $request, string $projectId): RedirectResponse
     {
         $id = Str::uuid()->toString();
         $this->commandBus->dispatch(new AddVaultItemCommand(
@@ -43,15 +44,15 @@ class VaultItemController extends Controller
             (int) $request->validated('display_order')
         ));
 
-        $items = $this->queryBus->ask(new ListVaultItemsByProjectQuery($projectId));
-        return view('admin.vault._list', compact('items', 'projectId'));
+        return redirect()->route('admin.projects.vault.index', $projectId)
+            ->with('success', 'Vault item added.');
     }
 
-    public function destroy(string $projectId, string $itemId)
+    public function destroy(string $projectId, string $itemId): RedirectResponse
     {
         $this->commandBus->dispatch(new RemoveVaultItemCommand($itemId));
-        
-        $items = $this->queryBus->ask(new ListVaultItemsByProjectQuery($projectId));
-        return view('admin.vault._list', compact('items', 'projectId'));
+
+        return redirect()->route('admin.projects.vault.index', $projectId)
+            ->with('success', 'Vault item removed.');
     }
 }

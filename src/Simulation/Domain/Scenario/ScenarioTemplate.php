@@ -81,7 +81,17 @@ final class ScenarioTemplate extends AggregateRoot
 
     public function id(): string { return (string) $this->id; }
     public function scenarioTemplateId(): ScenarioTemplateId { return $this->id; }
+    public function projectId(): string { return $this->projectId; }
+    public function sequenceOrder(): int { return $this->sequenceOrder; }
+    public function title(): string { return $this->title; }
+    public function narrativeContext(): string { return $this->narrativeContext; }
+    public function situationTrigger(): string { return $this->situationTrigger; }
+    public function situationTriggerType(): SituationTriggerType { return $this->situationTriggerType; }
+    public function learnerRoleLabel(): ?string { return $this->learnerRoleLabel; }
+    public function defaultAutonomyLevel(): CacLevel { return $this->defaultAutonomyLevel; }
+    public function isDiagnostic(): bool { return $this->isDiagnostic; }
     public function isPublished(): bool { return $this->isPublished; }
+    public function isActive(): bool { return $this->isActive; }
     /** @return ReferenceMaterial[] */
     public function referenceMaterials(): array { return $this->referenceMaterials; }
 

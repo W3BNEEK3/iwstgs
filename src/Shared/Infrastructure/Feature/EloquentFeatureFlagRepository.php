@@ -2,6 +2,7 @@
 
 namespace Src\Shared\Infrastructure\Feature;
 
+use Illuminate\Support\Facades\Cache;
 use Src\Shared\Domain\Feature\FeatureFlag;
 use Src\Shared\Domain\Feature\FeatureFlagRepository;
 use Src\Shared\Infrastructure\Persistence\Eloquent\Model\FeatureFlagModel;
@@ -37,5 +38,24 @@ class EloquentFeatureFlagRepository implements FeatureFlagRepository
         return FeatureFlagModel::all()
             ->map(fn($m) => new FeatureFlag($m->flag_key, $m->is_enabled, $m->module))
             ->all();
+    }
+
+    public function toggle(string $key): FeatureFlag
+    {
+        $model = FeatureFlagModel::where('flag_key', $key)->firstOrFail();
+        $model->is_enabled = ! $model->is_enabled;
+        $model->save();
+
+        // Same cache key FeatureFlagService::isEnabled() reads — must be busted
+        // here too, or a toggle via this repository silently doesn't take
+        // effect for up to the 60s TTL, since FeatureMiddleware/@feature never
+        // hit the database directly.
+        Cache::forget("feature_flag:{$key}");
+
+        return new FeatureFlag(
+            flagKey:   $model->flag_key,
+            isEnabled: $model->is_enabled,
+            module:    $model->module,
+        );
     }
 }

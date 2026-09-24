@@ -27,6 +27,10 @@ class SimulationServiceProvider extends ServiceProvider
             \Src\Simulation\Domain\Vault\ArtifactVaultItemRepository::class,
             \Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentArtifactVaultItemRepository::class,
         );
+        $this->app->bind(
+            \Src\Simulation\Domain\Backlog\BacklogItemTemplateRepository::class,
+            \Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentBacklogItemTemplateRepository::class,
+        );
     }
 
     public function boot(): void

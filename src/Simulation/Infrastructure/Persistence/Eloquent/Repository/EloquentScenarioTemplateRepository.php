@@ -59,4 +59,14 @@ final class EloquentScenarioTemplateRepository implements ScenarioTemplateReposi
     {
         return (int) ScenarioTemplateModel::where('project_id', $projectId)->max('sequence_order') + 1;
     }
+
+    public function findDiagnosticScenario(): ?ScenarioTemplate
+    {
+        $m = ScenarioTemplateModel::with('referenceMaterials')
+            ->where('is_diagnostic', true)
+            ->orderBy('sequence_order')
+            ->first();
+
+        return $m ? $this->mapper->toEntity($m) : null;
+    }
 }

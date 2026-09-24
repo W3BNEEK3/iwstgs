@@ -34,6 +34,7 @@ class ProjectTemplateModel extends Model
         'difficulty_level',
         'is_published',
         'is_active',
+        'onboarding_briefing',
     ];
 
     protected $casts = [

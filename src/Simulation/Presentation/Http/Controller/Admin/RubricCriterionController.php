@@ -10,6 +10,7 @@ use Src\Simulation\Application\Command\CreateRubricCriterion\CreateRubricCriteri
 use Src\Simulation\Application\Command\RemoveRubricCriterion\RemoveRubricCriterionCommand;
 use Src\Simulation\Application\Command\UpdateRubricCriterion\UpdateRubricCriterionCommand;
 use Src\Simulation\Application\Query\GetCriterion\GetCriterionQuery;
+use Src\Simulation\Application\Query\GetTask\GetTaskQuery;
 use Src\Simulation\Application\Query\ListCriteriaByTask\ListCriteriaByTaskQuery;
 use Src\Simulation\Domain\Exceptions\RubricSetMissingException;
 use Src\Simulation\Presentation\Http\Request\StoreRubricCriterionRequest;
@@ -25,9 +26,10 @@ class RubricCriterionController
     public function index(string $taskId): View
     {
         $criteria = $this->queryBus->ask(new ListCriteriaByTaskQuery($taskId));
-        
+
         return view('admin.criteria.index', [
             'taskId' => $taskId,
+            'scenarioId' => $this->scenarioIdForTask($taskId),
             'criteria' => $criteria,
         ]);
     }
@@ -35,8 +37,10 @@ class RubricCriterionController
     public function create(string $taskId): View
     {
         $dimensions = $this->queryBus->ask(new ListCompetenceDimensionsQuery());
+
         return view('admin.criteria.create', [
             'taskId' => $taskId,
+            'scenarioId' => $this->scenarioIdForTask($taskId),
             'dimensions' => $dimensions,
         ]);
     }
@@ -54,7 +58,7 @@ class RubricCriterionController
                 dimensionWeight: $request->string('dimension_weight')->toString(),
                 claudeDetectionHint: $request->string('claude_detection_hint')->toString(),
                 distinguishedDescription: $request->string('distinguished_description')->toString(),
-                proficientDescription: $request->string('proficientDescription')->toString(),
+                proficientDescription: $request->string('proficient_description')->toString(),
                 developingDescription: $request->string('developing_description')->toString(),
                 beginningDescription: $request->string('beginning_description')->toString(),
                 isArchitectural: (bool) $request->input('is_architectural'),
@@ -76,8 +80,15 @@ class RubricCriterionController
 
         return view('admin.criteria.edit', [
             'taskId' => $taskId,
+            'scenarioId' => $this->scenarioIdForTask($taskId),
             'criterion' => $criterion,
         ]);
+    }
+
+    private function scenarioIdForTask(string $taskId): ?string
+    {
+        $task = $this->queryBus->ask(new GetTaskQuery($taskId));
+        return $task?->toPrimitives()['scenario_id'];
     }
 
     public function update(UpdateRubricCriterionRequest $request, string $id): RedirectResponse
@@ -89,15 +100,27 @@ class RubricCriterionController
             dimensionWeight: $request->string('dimension_weight')->toString(),
         ));
 
-        // Note: the route parameters don't include taskId directly on update.
-        // But we redirect back to the previous page or require taskId.
-        // Assuming we pass taskId as a hidden field or query param, or just redirect back.
-        return back()->with('success', 'Criterion updated.');
+        // The update route has no taskId param (PATCH criteria/{id}) — look the criterion
+        // back up post-update to redirect to its actual criteria index rather than back(),
+        // which would just re-render this same edit form.
+        $criterion = $this->queryBus->ask(new GetCriterionQuery($id));
+
+        return redirect()->route('admin.tasks.criteria.index', $criterion->taskId())
+            ->with('success', 'Criterion updated.');
     }
 
-    public function destroy(string $id): \Illuminate\Http\Response
+    public function destroy(string $id): RedirectResponse
     {
+        $criterion = $this->queryBus->ask(new GetCriterionQuery($id));
+        $taskId = $criterion?->taskId();
+
         $this->commandBus->dispatch(new RemoveRubricCriterionCommand($id));
-        return response('', 200); // For HTMX row swap
+
+        if ($taskId === null) {
+            return redirect()->route('admin.projects.index');
+        }
+
+        return redirect()->route('admin.tasks.criteria.index', $taskId)
+            ->with('success', 'Criterion removed.');
     }
 }

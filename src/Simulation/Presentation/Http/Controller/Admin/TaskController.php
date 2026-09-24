@@ -77,9 +77,11 @@ class TaskController
     public function update(UpdateTaskRequest $request, string $scenario, string $id): RedirectResponse
     {
         $this->commandBus->dispatch(new UpdateTaskCommand(
-            taskId:    $id,
-            title:     $request->string('title')->toString(),
-            taskBrief: $request->string('task_brief')->toString(),
+            taskId:              $id,
+            title:               $request->string('title')->toString(),
+            taskBrief:           $request->string('task_brief')->toString(),
+            consequenceTaskIds:  $request->parsedTaskIds('consequence_task_ids'),
+            suggestionTaskIds:   $request->parsedTaskIds('suggestion_task_ids'),
         ));
 
         return redirect()->route('admin.scenarios.tasks.index', $scenario)

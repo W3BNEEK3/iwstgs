@@ -13,6 +13,10 @@ final class ReferenceMaterial
     ) {}
 
     public function id(): string { return $this->id; }
+    public function type(): MaterialType { return $this->type; }
+    public function title(): string { return $this->title; }
+    public function content(): string { return $this->content; }
+    public function displayOrder(): int { return $this->displayOrder; }
 
     public function toPrimitives(): array
     {

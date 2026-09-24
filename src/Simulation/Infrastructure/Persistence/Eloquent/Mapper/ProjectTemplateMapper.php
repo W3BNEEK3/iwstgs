@@ -26,6 +26,7 @@ final class ProjectTemplateMapper
             velocityEstimate:       $m->velocity_estimate,
             isPublished:            (bool) $m->is_published,
             isActive:               (bool) $m->is_active,
+            onboardingBriefing:     $m->onboarding_briefing,
         );
     }
 }

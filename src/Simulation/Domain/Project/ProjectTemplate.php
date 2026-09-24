@@ -22,6 +22,7 @@ final class ProjectTemplate extends AggregateRoot
         private ?array   $velocityEstimate = null,
         private bool     $isPublished = false,
         private bool     $isActive = true,
+        private ?string  $onboardingBriefing = null,
     ) {}
 
     public static function create(
@@ -70,12 +71,14 @@ final class ProjectTemplate extends AggregateRoot
         ?array  $velocityEstimate,
         bool    $isPublished,
         bool    $isActive,
+        ?string $onboardingBriefing = null,
     ): self {
         return new self(
             $id, $title, $projectType, $businessContext, $specializationTags,
             $difficultyLevel, $tagline, $businessDomain, $stakeholders,
             $overarchingConstraints, $techContext, $organisationId,
             $codingGuidelines, $velocityEstimate, $isPublished, $isActive,
+            $onboardingBriefing,
         );
     }
 
@@ -86,9 +89,29 @@ final class ProjectTemplate extends AggregateRoot
     public function publish(): void                       { $this->isPublished = true; }
     public function unpublish(): void                     { $this->isPublished = false; }
 
+    /** Tiroco's onboarding brief — generated once, cached here, never re-generated once set. */
+    public function recordOnboardingBriefing(string $text): void { $this->onboardingBriefing = $text; }
+
     public function id(): string { return (string) $this->id; }
     public function projectTemplateId(): ProjectTemplateId { return $this->id; }
     public function isPublished(): bool { return $this->isPublished; }
+    public function isActive(): bool { return $this->isActive; }
+    public function title(): string { return $this->title; }
+    public function tagline(): ?string { return $this->tagline; }
+    public function businessContext(): string { return $this->businessContext; }
+    public function difficultyLevel(): string { return $this->difficultyLevel; }
+    public function onboardingBriefing(): ?string { return $this->onboardingBriefing; }
+
+    /** @return string[] */
+    public function specializationTags(): array { return $this->specializationTags; }
+
+    /** @return array{name: string, role: string, priority: string, concern: string}[] */
+    public function stakeholders(): array { return $this->stakeholders ?? []; }
+
+    /** @return array{type: string, description: string}[] */
+    public function overarchingConstraints(): array { return $this->overarchingConstraints ?? []; }
+
+    public function techContext(): ?array { return $this->techContext; }
 
     /** Flat representation for the mapper — keeps persistence code short. */
     public function toPrimitives(): array
@@ -110,6 +133,7 @@ final class ProjectTemplate extends AggregateRoot
             'velocity_estimate'       => $this->velocityEstimate,
             'is_published'            => $this->isPublished,
             'is_active'               => $this->isActive,
+            'onboarding_briefing'     => $this->onboardingBriefing,
         ];
     }
 }

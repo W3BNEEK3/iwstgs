@@ -100,8 +100,22 @@ final class Task extends AggregateRoot
 
     // --- own behaviour ---
     public function rename(string $t): void { $this->title = $t; }
+    public function updateBrief(string $taskBrief): void { $this->taskBrief = $taskBrief; }
     public function publish(): void { $this->isPublished = true; }
     public function unpublish(): void { $this->isPublished = false; }
+
+    /**
+     * The Adaptive Engine (Phase 9) selects an actual consequence/suggestion
+     * task by reading these ids off the failing/weak task — without a way to
+     * set them post-creation (cross-references between tasks are often only
+     * known once both tasks exist), no admin-authored task could ever have
+     * real injection targets.
+     */
+    public function updateAdaptiveLinks(array $consequenceTaskIds, array $suggestionTaskIds): void
+    {
+        $this->consequenceTaskIds = $consequenceTaskIds;
+        $this->suggestionTaskIds = $suggestionTaskIds;
+    }
 
     public function id(): string { return (string) $this->id; }
     public function isPublished(): bool { return $this->isPublished; }

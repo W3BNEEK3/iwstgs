@@ -7,5 +7,7 @@ final class UpdateTaskCommand
         public readonly string $taskId,
         public readonly string $title,
         public readonly string $taskBrief,
+        public readonly array $consequenceTaskIds = [],
+        public readonly array $suggestionTaskIds = [],
     ) {}
 }

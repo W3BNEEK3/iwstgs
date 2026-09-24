@@ -17,6 +17,8 @@ final class UpdateTaskHandler
         }
 
         $task->rename($command->title);
+        $task->updateBrief($command->taskBrief);
+        $task->updateAdaptiveLinks($command->consequenceTaskIds, $command->suggestionTaskIds);
 
         $this->repository->save($task);
     }

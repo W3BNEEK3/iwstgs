@@ -48,4 +48,31 @@ final class EloquentRubricCriterionRepository implements RubricCriterionReposito
             ->where('tasks.id', $taskId)
             ->value('rubric_sets.id');
     }
+
+    public function findAllWithTaskTitle(): array
+    {
+        return DB::table('rubric_criteria')
+            ->join('tasks', 'tasks.id', '=', 'rubric_criteria.task_id')
+            ->orderBy('rubric_criteria.parent_dimension_id')
+            ->orderBy('tasks.title')
+            ->get([
+                'rubric_criteria.id',
+                'rubric_criteria.task_id',
+                'tasks.title as task_title',
+                'rubric_criteria.parent_dimension_id',
+                'rubric_criteria.task_dimension_label',
+                'rubric_criteria.complexity_level',
+                'rubric_criteria.weight',
+            ])
+            ->map(fn ($row) => [
+                'id' => $row->id,
+                'taskId' => $row->task_id,
+                'taskTitle' => $row->task_title,
+                'parentDimensionId' => $row->parent_dimension_id,
+                'taskDimensionLabel' => $row->task_dimension_label,
+                'complexityLevel' => $row->complexity_level,
+                'weight' => (string) $row->weight,
+            ])
+            ->all();
+    }
 }

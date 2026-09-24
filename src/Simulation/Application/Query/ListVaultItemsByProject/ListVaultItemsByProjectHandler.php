@@ -13,7 +13,7 @@ final class ListVaultItemsByProjectHandler
     /**
      * @return ArtifactVaultItem[]
      */
-    public function __invoke(ListVaultItemsByProjectQuery $query): array
+    public function handle(ListVaultItemsByProjectQuery $query): array
     {
         return $this->repository->findByProject(ProjectTemplateId::fromString($query->projectId));
     }
