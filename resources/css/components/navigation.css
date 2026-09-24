@@ -1,0 +1,425 @@
+/* Dashboard/admin shell: collapsible sidebar + bar-less header (design doc §9) */
+
+.app-shell {
+  display: grid;
+  min-height: 100vh;
+}
+
+/*
+ * grid-template-columns and .app-sidebar's display are each set from exactly
+ * one of these two mutually-exclusive media queries, never from an unscoped
+ * base rule. Vite's CSS minifier (Lightning CSS) is free to reorder same-
+ * selector rules across chunks during the build, and a "base rule + a
+ * max-width override on the identical selector" pattern is order-dependent
+ * at equal specificity — it silently broke exactly this way once already
+ * (the base .app-sidebar{display:flex} ended up compiled *after* the
+ * @media(max-width:759px){display:none} block, so the sidebar never hid on
+ * mobile). Two non-overlapping media queries can't have this problem: only
+ * one of them ever matches a given viewport, so build-order never matters.
+ */
+@media (max-width: 759px) {
+  .app-shell, .app-shell.is-collapsed {
+    grid-template-columns: 1fr;
+  }
+  .app-sidebar { display: none; }
+}
+@media (min-width: 760px) {
+  .app-shell {
+    grid-template-columns: 248px 1fr;
+  }
+  .app-shell.is-collapsed {
+    grid-template-columns: 72px 1fr;
+  }
+  .app-sidebar { display: flex; }
+}
+
+.app-sidebar {
+  background: var(--bg-subtle);
+  border-right: 1px solid var(--border);
+  padding: var(--sp-lg) var(--sp-md);
+  flex-direction: column;
+  gap: var(--sp-2xl);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: 0 var(--sp-xs);
+  text-decoration: none;
+  color: inherit;
+}
+.brand-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--text-strong);
+  color: var(--bg);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+.brand-name {
+  font-weight: 650;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.app-shell.is-collapsed .brand-name,
+.app-shell.is-collapsed .nav-label,
+.app-shell.is-collapsed .sidebar-foot span {
+  display: none;
+}
+
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 550;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.nav-item svg, .nav-item .material-symbols-outlined { flex-shrink: 0; }
+.nav-item:hover { background: var(--bg-hover); color: var(--text); }
+.nav-item.is-active { background: var(--text-strong); color: var(--bg); }
+
+.sidebar-foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-sm);
+}
+.sidebar-collapse-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.sidebar-collapse-btn:hover { background: var(--bg-hover); }
+
+/* Mobile off-canvas drawer */
+.mobile-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  z-index: 95;
+  display: none;
+}
+.mobile-drawer-overlay.is-open { display: block; }
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  max-width: 85vw;
+  background: var(--bg-subtle);
+  border-right: 1px solid var(--border);
+  z-index: 96;
+  padding: var(--sp-lg) var(--sp-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2xl);
+  transform: translateX(-100%);
+  transition: transform var(--motion-slow) ease-out;
+}
+.mobile-drawer.is-open { transform: translateX(0); }
+
+/* Header — deliberately bar-less: no background, no border, no shadow (design doc §9) */
+.app-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-md);
+  padding: var(--sp-lg) var(--sp-3xl) 0;
+}
+.app-topbar .spacer { flex: 1; }
+@media (max-width: 759px) {
+  .app-topbar { padding: var(--sp-md) var(--sp-lg) 0; }
+}
+
+/* Same mutually-exclusive-media-query reasoning as .app-sidebar above. */
+@media (max-width: 759px) {
+  .mobile-menu-btn { display: inline-flex; }
+}
+@media (min-width: 760px) {
+  .mobile-menu-btn { display: none; }
+}
+
+.notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--error);
+  border: 1.5px solid var(--bg);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--neutral-300);
+  color: var(--neutral-700);
+  display: grid;
+  place-items: center;
+  font-weight: 650;
+  font-size: 13px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+:root[data-theme="dark"] .avatar { background: var(--neutral-700); color: var(--neutral-200); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .avatar { background: var(--neutral-700); color: var(--neutral-200); }
+}
+
+.app-content-column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  min-width: 0;
+  padding: var(--sp-2xl) var(--sp-3xl) var(--sp-4xl);
+}
+@media (max-width: 759px) {
+  .app-main { padding: var(--sp-lg); }
+}
+
+/* Profile dropdown — opened from the header avatar (design doc §9 doesn't
+   place a theme toggle in the bar itself, so it lives here alongside logout) */
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-raised);
+  padding: var(--sp-sm);
+  z-index: 70;
+}
+.profile-dropdown[hidden] { display: none; }
+.profile-dropdown-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-muted);
+  padding: var(--sp-xs) var(--sp-sm);
+}
+.theme-switch {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 2px;
+  gap: 2px;
+  margin: var(--sp-xs) var(--sp-sm) var(--sp-sm);
+}
+.theme-switch button {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 5px 0;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+.theme-switch button.is-active {
+  background: var(--text-strong);
+  color: var(--bg);
+}
+.profile-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  width: 100%;
+  padding: var(--sp-sm);
+  border-radius: var(--radius-sm);
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 550;
+  cursor: pointer;
+  text-align: left;
+}
+.profile-dropdown-item:hover { background: var(--bg-hover); }
+
+/* Guest/marketing header — above 760px the nav buttons sit inline and the
+   hamburger is hidden. Below 760px the hamburger opens a full-screen mobile
+   drawer (see .guest-mobile-drawer below) instead of a small dropdown.
+   Every property is set from exactly one mutually-exclusive media query —
+   see the .app-sidebar comment for why the "base + override" pattern breaks. */
+.guest-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-md);
+  padding: var(--sp-lg) var(--sp-3xl);
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  background: var(--bg);
+  transition: border-color var(--motion-fast);
+  border-bottom: 1px solid transparent;
+}
+@media (max-width: 759px) {
+  .guest-topbar { padding: var(--sp-md) var(--sp-lg); }
+  .guest-nav-toggle { display: inline-flex; }
+  /* Desktop inline nav is hidden on mobile — navigation moves to the drawer */
+  .guest-nav-menu { display: none !important; }
+}
+@media (min-width: 760px) {
+  .guest-topbar { padding: var(--sp-lg) var(--sp-3xl); }
+  .guest-nav-toggle { display: none; }
+  .guest-nav-menu {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* ── Mobile full-screen drawer ───────────────────────────────────────────── */
+.guest-mobile-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+}
+.guest-mobile-drawer[hidden] { display: none; }
+
+/* Slide-in panel */
+.guest-mobile-drawer-inner {
+  position: relative;
+  z-index: 1;
+  width: min(320px, 90vw);
+  height: 100%;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  box-shadow: var(--shadow-overlay);
+  animation: drawer-slide-in var(--motion-slow) ease-out both;
+}
+@keyframes drawer-slide-in {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .guest-mobile-drawer-inner { animation: none; }
+}
+
+.guest-mobile-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-lg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.guest-mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+  padding: var(--sp-xl) var(--sp-lg);
+  flex: 1;
+}
+/* Full-width buttons in the mobile nav */
+.guest-mobile-nav .btn {
+  width: 100%;
+  justify-content: center;
+  height: 44px; /* touch-target minimum — design doc §4 */
+}
+
+/* Scrim / backdrop */
+.guest-mobile-drawer-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  animation: scrim-fade-in var(--motion-base) ease both;
+}
+@keyframes scrim-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .guest-mobile-drawer-scrim { animation: none; }
+}
+
+/* Generic row-action dropdown (design doc §9/§16 "Overlays: dropdown menu,
+   popover") — same visual recipe and the same [data-dropdown-toggle]/
+   [data-dropdown] JS as .profile-dropdown above, just anchored to a table
+   row's own trigger instead of the header. Used wherever a row has more
+   than one or two actions, instead of leaving them as bare inline text
+   links (design doc §1 rule 3: elevation is earned — a floating menu is a
+   genuine separate surface, unlike inline text). */
+.action-menu-anchor { position: relative; display: inline-block; }
+.action-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 160px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-raised);
+  padding: var(--sp-sm);
+  z-index: 60;
+}
+.action-menu[hidden] { display: none; }
+.action-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  width: 100%;
+  padding: var(--sp-sm);
+  border-radius: var(--radius-sm);
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 550;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+}
+.action-menu-item:hover { background: var(--bg-hover); }

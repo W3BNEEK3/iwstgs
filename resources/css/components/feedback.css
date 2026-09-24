@@ -1,0 +1,184 @@
+/* Toast, network snackbar, confirmation modal, page loading bar — design doc §10 */
+
+/* ---- Page loading bar (any in-flight htmx request — instant feedback on
+   every boosted link/form click, distinct from the network snackbar's
+   4-second-delayed "poor connection" messaging) ---- */
+.page-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: var(--info);
+  z-index: 95;
+  opacity: 0;
+  transition: width 400ms ease-out, opacity 200ms ease-out;
+}
+.page-loading-bar.is-loading {
+  opacity: 1;
+  width: 70%;
+}
+.page-loading-bar.is-done {
+  width: 100%;
+  transition: width 200ms ease-out, opacity 300ms ease-out 150ms;
+}
+.page-loading-bar.is-hidden {
+  opacity: 0;
+}
+
+/* ---- Toast ---- */
+#toast-stack {
+  position: fixed;
+  top: var(--sp-lg);
+  right: var(--sp-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+  z-index: 80;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+}
+@media (max-width: 639px) {
+  #toast-stack {
+    top: var(--sp-sm);
+    right: var(--sp-sm);
+    left: var(--sp-sm);
+    width: auto;
+  }
+}
+
+.toast {
+  display: flex;
+  gap: var(--sp-sm);
+  align-items: flex-start;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--info);
+  border-radius: var(--radius-md);
+  padding: var(--sp-md);
+  box-shadow: var(--shadow-raised);
+  animation: toast-in var(--motion-base) ease-out;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.toast-success { border-left-color: var(--success); }
+.toast-error   { border-left-color: var(--error); }
+.toast-warning { border-left-color: var(--warning); }
+.toast-info    { border-left-color: var(--info); }
+
+.toast .toast-icon { flex-shrink: 0; margin-top: 1px; }
+.toast-success .toast-icon { color: var(--success); }
+.toast-error   .toast-icon { color: var(--error); }
+.toast-warning .toast-icon { color: var(--warning); }
+.toast-info    .toast-icon { color: var(--info); }
+
+.toast .toast-body { flex: 1; min-width: 0; }
+.toast .toast-msg {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.toast .toast-msg.clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.toast .toast-more {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--info);
+  cursor: pointer;
+  margin-top: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.toast .toast-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+}
+.toast .toast-close:hover { background: var(--bg-hover); }
+
+/* ---- Network snackbar (persistent connection-state indicator, not a one-off toast) ---- */
+.network-snackbar {
+  position: fixed;
+  bottom: var(--sp-lg);
+  left: var(--sp-lg);
+  z-index: 85;
+  display: none;
+  align-items: center;
+  gap: var(--sp-sm);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--warning);
+  background: var(--warning-bg);
+  color: var(--warning-fg);
+}
+.network-snackbar.is-visible { display: inline-flex; }
+.network-snackbar.state-offline  { background: var(--error-bg);   color: var(--error-fg);   border-color: var(--error); }
+.network-snackbar.state-restored { background: var(--success-bg); color: var(--success-fg); border-color: var(--success); }
+
+@media (max-width: 639px) {
+  .network-snackbar {
+    left: auto;
+    right: var(--sp-lg);
+    bottom: var(--sp-lg);
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+    box-shadow: var(--shadow-raised);
+    color: #fff;
+    background: var(--warning);
+    border: none;
+    cursor: pointer;
+    transition: width var(--motion-base), border-radius var(--motion-base);
+  }
+  .network-snackbar.state-offline  { background: var(--error); }
+  .network-snackbar.state-restored { background: var(--success); }
+  .network-snackbar .snackbar-label { display: none; white-space: nowrap; }
+  .network-snackbar .snackbar-close { display: none; }
+  .network-snackbar.is-expanded {
+    width: auto;
+    max-width: calc(100vw - 32px);
+    border-radius: var(--radius-md);
+    padding: 0 10px;
+  }
+  .network-snackbar.is-expanded .snackbar-label,
+  .network-snackbar.is-expanded .snackbar-close { display: inline-flex; }
+}
+
+/* ---- Confirmation modal — never window.confirm() (design doc §10.3) ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+  padding: var(--sp-lg);
+}
+.modal-overlay.is-open { display: flex; }
+.modal-box {
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-overlay);
+  padding: var(--sp-2xl);
+  max-width: 420px;
+  width: 100%;
+}
+.modal-box h3 { font-size: var(--text-lg); margin-bottom: var(--sp-sm); }
+.modal-box p { font-size: 13.5px; color: var(--text-muted); margin: 0 0 var(--sp-xl); }
+.modal-actions { display: flex; justify-content: flex-end; gap: var(--sp-sm); }

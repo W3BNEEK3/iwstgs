@@ -1,28 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" @if (request()->cookie('theme')) data-theme="{{ request()->cookie('theme') }}" @endif>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'IWSTGS')</title>
+    <title>@yield('title', config('app.name', 'IWSTGS'))</title>
 
-    {{-- HTMX: handles partial page updates via server-rendered HTML fragments.
-         No JavaScript written by us — HTMX attributes on HTML elements drive
-         all dynamic behaviour. Works perfectly with Laravel's Blade views because
-         the server always returns complete HTML, never JSON. --}}
+    {{-- Material Symbols via CDN — confirmed decision (design doc §6, §22.4); revisit
+         self-hosting at Phase 11, not before. --}}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+
+    {{-- --font-ui in tokens.css has named Instrument Sans since the design system was
+         drafted, but nothing ever linked it — every page has been silently falling
+         back to system-ui. --}}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;650;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
     <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
-
-    {{-- _HyperScript: handles lightweight client-side behaviour (toggling classes,
-         showing/hiding elements, simple animations). Syntax lives on the HTML element
-         itself as an _ attribute. No separate JS files needed. --}}
     <script src="https://unpkg.com/hyperscript.org@0.9.12" defer></script>
+    <script>
+      document.addEventListener('htmx:configRequest', (e) => {
+        e.detail.headers['X-CSRF-TOKEN'] = document.querySelector('meta[name=csrf-token]').content;
+      });
+    </script>
 
-    <link rel="stylesheet" href="{{ asset('css/ui.css') }}">
-
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body hx-headers='{"X-CSRF-TOKEN": "{{ csrf_token() }}"}'>
-    @yield('content')
+<body hx-boost="true">
+    @include('partials.feedback.page-loading-bar')
+
+    @yield('page')
+
+    @include('partials.feedback.toast-stack')
+    @include('partials.feedback.network-snackbar')
 
     @stack('scripts')
 </body>

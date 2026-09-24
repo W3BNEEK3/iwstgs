@@ -1,0 +1,124 @@
+/* Desktop rows/columns; collapses into cards under 640px (design doc §13) */
+
+.table-frame {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  overflow-x: auto;
+}
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+table.data-table th {
+  text-align: left;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-muted);
+  padding: 10px 14px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+table.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+table.data-table tr:last-child td { border-bottom: none; }
+table.data-table tbody tr:hover { background: var(--bg-hover); }
+
+@media (max-width: 639px) {
+  .table-frame { display: none; }
+}
+
+.mobile-row-cards {
+  flex-direction: column;
+  gap: var(--sp-sm);
+}
+/* Mutually-exclusive media queries, not a base rule + override — see the
+   comment on .app-sidebar in navigation.css for why that shape is unsafe
+   under this project's CSS minifier. */
+@media (max-width: 639px) {
+  .mobile-row-cards { display: flex; }
+}
+@media (min-width: 640px) {
+  .mobile-row-cards { display: none; }
+}
+
+.mobile-row-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-md) var(--sp-lg);
+  cursor: pointer;
+}
+.mobile-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-sm);
+}
+/* display:block is load-bearing here, not decorative — both are <span>s, and
+   margin-top has zero effect on an inline element, so without this the title
+   and subtitle silently flow together as one line of text. Only became
+   visible once a real card (project title + type + difficulty) had enough
+   content to make the run-together text obvious. */
+.mobile-row-title { display: block; font-weight: 650; font-size: var(--text-base); }
+.mobile-row-sub { display: block; font-size: 12.5px; color: var(--text-muted); margin-top: 3px; }
+.mobile-row-chevron { transition: transform var(--motion-fast); color: var(--text-muted); flex-shrink: 0; }
+.mobile-row-card.is-open .mobile-row-chevron { transform: rotate(180deg); }
+.mobile-row-more {
+  display: none;
+  margin-top: var(--sp-md);
+  padding-top: var(--sp-md);
+  border-top: 1px solid var(--border);
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-sm) var(--sp-lg);
+  font-size: 12.5px;
+}
+.mobile-row-card.is-open .mobile-row-more { display: grid; }
+.mobile-row-more .k { color: var(--text-muted); }
+
+.empty-state {
+  text-align: center;
+  padding: var(--sp-4xl) var(--sp-lg);
+  color: var(--text-muted);
+}
+.empty-state .material-symbols-outlined {
+  font-size: 32px;
+  color: var(--border-strong);
+  margin-bottom: var(--sp-sm);
+}
+
+/* Sprint board Kanban columns (design doc §16 "Kanban board / column / card") —
+   4 columns had no breakpoint at all, so on mobile they squeezed into an
+   unreadable single row instead of collapsing per the mobile breakpoint rule
+   (§4 "mobile <640px: Single column"). Mutually-exclusive media queries, not a
+   base rule + override — see the comment on .app-sidebar in navigation.css for
+   why that shape is unsafe under this project's CSS minifier. */
+.sprint-board-columns {
+  display: grid;
+  gap: var(--sp-lg);
+}
+@media (max-width: 639px) {
+  .sprint-board-columns { grid-template-columns: 1fr; }
+}
+@media (min-width: 640px) {
+  .sprint-board-columns { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Learner profile's paired sections (rank/graph, history/gaps, mastery/
+   sessions) — same fixed 1fr 1fr overflow this file already warns against,
+   just not caught until the profile page shipped. */
+.profile-grid-2 {
+  display: grid;
+  gap: var(--sp-xl);
+  margin-bottom: var(--sp-xl);
+}
+@media (max-width: 639px) {
+  .profile-grid-2 { grid-template-columns: 1fr; }
+}
+@media (min-width: 640px) {
+  .profile-grid-2 { grid-template-columns: 1fr 1fr; }
+}

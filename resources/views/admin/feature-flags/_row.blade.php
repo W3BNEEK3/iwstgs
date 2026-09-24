@@ -12,3 +12,4 @@
         </x-ui.button>
     </td>
 </tr>
+@include('admin.feature-flags._card', ['flag' => $flag, 'oob' => true])

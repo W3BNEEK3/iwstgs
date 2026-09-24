@@ -12,5 +12,15 @@
             {{ $scenario->isPublished() ? 'Published' : 'Draft' }}
         </x-ui.button>
     </td>
-    <td><a href="{{ route('admin.projects.scenarios.edit', [$projectId, $scenario->id()]) }}">Edit</a></td>
+    <td>
+        <x-ui.action-menu id="scenario-actions-{{ $scenario->id() }}">
+            <a class="action-menu-item" href="{{ route('admin.scenarios.tasks.index', $scenario->id()) }}">
+                <x-ui.icon name="task" :size="18" /> Tasks
+            </a>
+            <a class="action-menu-item" href="{{ route('admin.projects.scenarios.edit', [$projectId, $scenario->id()]) }}">
+                <x-ui.icon name="edit" :size="18" /> Edit
+            </a>
+        </x-ui.action-menu>
+    </td>
 </tr>
+@include('admin.scenarios._card', ['scenario' => $scenario, 'projectId' => $projectId, 'oob' => true])

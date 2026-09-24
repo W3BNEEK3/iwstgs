@@ -1,0 +1,41 @@
+/* In-universe narrative content — situation triggers, sprint goals, reference
+   material tickets/docs. Resolves design doc §16's previously-open "situation-
+   trigger panel" decision. Distinct from a plain paragraph via: subtle background,
+   a left accent border, an icon, AND an explicit label — never color alone (§1
+   rule 4). Deliberately monochrome (text-strong border, not a semantic/accent
+   color) — this isn't a status or a card-type signal, it's a content-source frame,
+   so it must stay visually distinct from the error/warning/success/consequence/
+   suggestion/diagnostic palette that DOES carry meaning elsewhere in the app. */
+.narrative-panel {
+  display: flex;
+  gap: var(--sp-md);
+  padding: var(--sp-md) var(--sp-lg);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--text-strong);
+  border-radius: var(--radius-md);
+}
+.narrative-panel-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+.narrative-panel-body {
+  min-width: 0;
+  flex: 1;
+}
+.narrative-panel-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.narrative-panel-content {
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+.narrative-panel-content textarea {
+  font-style: italic;
+}

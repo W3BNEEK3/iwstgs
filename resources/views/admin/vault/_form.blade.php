@@ -1,61 +1,42 @@
-<form hx-post="{{ route('admin.projects.vault.store', $projectId) }}"
-      hx-target="#vault-items-list"
-      hx-swap="innerHTML"
-      hx-on::after-request="this.reset()"
-      class="space-y-4">
+<form method="POST" action="{{ route('admin.projects.vault.store', $projectId) }}">
     @csrf
-    
-    <div class="grid grid-cols-2 gap-4">
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Type</label>
-            <select name="document_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm" required>
-                <option value="business_context">Business Context</option>
-                <option value="prd">PRD</option>
-                <option value="srs">SRS</option>
-                <option value="sad">SAD</option>
-                <option value="coding_guidelines">Coding Guidelines</option>
-                <option value="glossary">Glossary</option>
-                <option value="sprint_goal_template">Sprint Goal Template</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Title</label>
-            <input type="text" name="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm" required>
-        </div>
-    </div>
-    
-    <div>
-        <label class="block text-sm font-medium text-gray-700">Content</label>
-        <textarea name="content" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm" required></textarea>
+
+    <div class="field-grid">
+        <x-forms.select name="document_type" label="Type" required :options="[
+            'business_context' => 'Business Context',
+            'prd' => 'PRD',
+            'srs' => 'SRS',
+            'sad' => 'SAD',
+            'coding_guidelines' => 'Coding Guidelines',
+            'glossary' => 'Glossary',
+            'sprint_goal_template' => 'Sprint Goal Template',
+        ]" />
+        <x-forms.text-input name="title" label="Title" :value="old('title')" required />
     </div>
 
-    <div class="grid grid-cols-3 gap-4">
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Display Order</label>
-            <input type="number" name="display_order" value="1" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm" required>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Phase Gate</label>
-            <select name="phase_gate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
-                <option value="">(None)</option>
-                <option value="pre_induction">Pre-Induction</option>
-                <option value="post_induction">Post-Induction</option>
-                <option value="post_sprint_1">Post-Sprint 1</option>
-                <option value="mid_session">Mid-Session</option>
-                <option value="advanced_only">Advanced Only</option>
-            </select>
-        </div>
-        <div class="flex items-end pb-2">
-            <label class="flex items-center space-x-2">
-                <input type="checkbox" name="is_reference_doc" value="1" class="rounded border-gray-300 text-black focus:ring-black">
-                <span class="text-sm font-medium text-gray-700">Is Reference Doc</span>
-            </label>
-        </div>
+    <div style="margin-top:var(--sp-lg);">
+        <x-forms.textarea name="content" label="Content" :value="old('content')" required :rows="4" />
     </div>
 
-    <div class="pt-2">
-        <button type="submit" class="bg-black text-white px-4 py-2 rounded shadow hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
-            Add Item
-        </button>
+    <div class="field-grid" style="margin-top:var(--sp-lg);">
+        <x-forms.text-input name="display_order" type="number" min="1" label="Display Order" :value="old('display_order', 1)" required />
+        <x-forms.select name="phase_gate" label="Phase Gate" placeholder="(None)" :options="[
+            'pre_induction' => 'Pre-Induction',
+            'post_induction' => 'Post-Induction',
+            'post_sprint_1' => 'Post-Sprint 1',
+            'mid_session' => 'Mid-Session',
+            'advanced_only' => 'Advanced Only',
+        ]" />
     </div>
+
+    <div style="margin-top:var(--sp-lg);">
+        <x-forms.text-input name="rank_gate" label="Rank Gate" help="Optional — e.g. Junior, Mid, Senior" :value="old('rank_gate')" />
+    </div>
+
+    <label style="display:flex;align-items:center;gap:8px;margin-top:var(--sp-lg);">
+        <input type="checkbox" name="is_reference_doc" value="1" @checked(old('is_reference_doc'))>
+        Reference document (shown to learners on the sprint board)
+    </label>
+
+    <x-ui.button type="submit" severity="primary" icon="add" style="margin-top:var(--sp-lg);">Add Item</x-ui.button>
 </form>
