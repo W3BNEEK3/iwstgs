@@ -19,5 +19,5 @@
             <header class="rm-doc-header">📝 <strong>{{ $title }}</strong></header>
     @endswitch
 
-    <div class="rm-body">{!! nl2br(e($content)) !!}</div>
+    <div class="rm-body">{{ $content }}</div>
 </article>

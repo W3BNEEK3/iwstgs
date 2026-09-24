@@ -12,6 +12,16 @@
     <x-content.narrative-panel icon="mail" label="Briefing">{{ $board->situationTrigger }}</x-content.narrative-panel>
 </div>
 
+@if (!empty($board->referenceMaterials))
+    <x-forms.form-section title="Reference Materials">
+        <div style="display:flex;flex-direction:column;gap:var(--sp-md);">
+            @foreach ($board->referenceMaterials as $material)
+                <x-reference-material :type="$material->type" :title="$material->title" :content="$material->content" />
+            @endforeach
+        </div>
+    </x-forms.form-section>
+@endif
+
 <x-forms.form-section title="Tasks">
     <div style="display:flex;flex-direction:column;gap:var(--sp-md);">
         @foreach ($board->tasks as $task)
@@ -19,7 +29,7 @@
                 <div class="mobile-row-top">
                     <span class="mobile-row-title">{{ $task->title }}</span>
                 </div>
-                <p style="margin:var(--sp-xs) 0 var(--sp-sm);color:var(--text-muted);font-size:var(--text-sm);">{{ $task->taskBrief }}</p>
+                <p style="margin:var(--sp-xs) 0 var(--sp-sm);color:var(--text-muted);font-size:var(--text-sm);white-space:pre-line;">{{ $task->taskBrief }}</p>
 
                 @if ($task->submissionCount > 0)
                     <x-ui.badge tone="success">
@@ -37,6 +47,6 @@
 </x-forms.form-section>
 
 <p style="color:var(--text-muted);font-size:var(--text-sm);margin-top:var(--sp-xl);">
-    Your rank is assigned automatically once every task above has been submitted and evaluated — refresh this page after your last submission to see the result.
+    Your starting rank is assigned automatically once both tasks have been submitted and checked.
 </p>
 @endsection

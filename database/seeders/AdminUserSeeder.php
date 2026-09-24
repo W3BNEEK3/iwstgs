@@ -22,9 +22,10 @@ class AdminUserSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        // 2. Attach the super_admin role (role_id = 1)
+        // 2. Attach the super_admin role (role_id = 1) — to the existing admin's id
+        // on a re-run, since the insert above is then ignored.
         DB::table('user_role')->insertOrIgnore([
-            'user_id' => $userId,
+            'user_id' => DB::table('users')->where('email', 'admin@example.com')->value('id'),
             'role_id' => 1, // super_admin
         ]);
     }

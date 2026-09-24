@@ -5,7 +5,10 @@ use Src\LearnerProfile\Application\Query\GetLearnerRank\GetLearnerRankQuery;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\SimExecution\Application\Query\GetLearnerIdForUser\GetLearnerIdForUserQuery;
 use Src\SimExecution\Application\Query\GetLearnerSession\GetLearnerSessionQuery;
+use Src\Simulation\Application\Query\GetScenario\GetScenarioQuery;
 use Src\Simulation\Application\Query\GetTask\GetTaskQuery;
+use Src\Simulation\Domain\Scenario\ReferenceMaterial;
+use Src\Simulation\Domain\Scenario\ScenarioTemplate;
 use Src\Simulation\Domain\Task\CacVariant;
 use Src\Simulation\Domain\Task\ExpectedDeliverable;
 use Src\Simulation\Domain\Task\GuidancePrompt;
@@ -114,6 +117,19 @@ final class GetSubmissionFormHandler
             cacComplexity:       $cacComplexity,
             cacAutonomy:         $cacAutonomy,
             cacContextFidelity:  $cacContextFidelity,
+            referenceMaterials:  $this->referenceMaterials($taskPrimitives['scenario_id']),
+        );
+    }
+
+    /** @return array<array{type: string, title: string, content: string}> */
+    private function referenceMaterials(string $scenarioId): array
+    {
+        /** @var ScenarioTemplate|null $scenario */
+        $scenario = $this->queryBus->ask(new GetScenarioQuery($scenarioId));
+
+        return array_map(
+            fn (ReferenceMaterial $m) => ['type' => $m->type()->value, 'title' => $m->title(), 'content' => $m->content()],
+            $scenario?->referenceMaterials() ?? [],
         );
     }
 }

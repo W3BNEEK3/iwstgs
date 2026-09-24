@@ -30,15 +30,16 @@ final class RankAssignmentService
     ];
 
     /**
-     * Anchored on two facts the docs do give us: the pass threshold is
-     * "proficient" (score 2.0), and diagnostic tasks are fixed at mid
-     * complexity (BLD §4.2) — so a solidly-proficient average should land
-     * mid-tier, not junior or senior. [minScore, maxScore, RankTier value].
+     * The diagnostic is written for first-year developers, so a solidly
+     * proficient average (2.0) lands at the top of Junior; Mid needs mostly
+     * distinguished work and Senior needs near-perfect answers. Rank escalation
+     * moves learners up quickly once real project evidence arrives.
+     * [minScore, maxScore, RankTier value].
      */
     private const TIER_BOUNDARIES = [
-        [0.0, 1.5, 'Junior'],
-        [1.5, 2.5, 'Mid'],
-        [2.5, 3.0001, 'Senior'],
+        [0.0, 2.25, 'Junior'],
+        [2.25, 2.85, 'Mid'],
+        [2.85, 3.0001, 'Senior'],
     ];
 
     public function __construct(

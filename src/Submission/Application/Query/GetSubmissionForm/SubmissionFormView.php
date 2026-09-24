@@ -6,6 +6,7 @@ final class SubmissionFormView
     /**
      * @param DeliverableFieldView[] $deliverables
      * @param GuidancePromptFieldView[] $guidancePrompts
+     * @param array<array{type: string, title: string, content: string}> $referenceMaterials
      */
     public function __construct(
         public readonly string $taskId,
@@ -21,5 +22,6 @@ final class SubmissionFormView
         public readonly string $cacComplexity,
         public readonly string $cacAutonomy,
         public readonly string $cacContextFidelity,
+        public readonly array $referenceMaterials = [],
     ) {}
 }

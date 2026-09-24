@@ -3,7 +3,10 @@ namespace Src\SimExecution\Application\Query\GetDiagnosticBoard;
 
 final class DiagnosticBoardView
 {
-    /** @param DiagnosticTaskView[] $tasks */
+    /**
+     * @param DiagnosticTaskView[] $tasks
+     * @param \Src\SimExecution\Application\Query\GetSprintBoard\ReferenceMaterialBoardView[] $referenceMaterials
+     */
     public function __construct(
         public readonly string $sessionId,
         public readonly string $scenarioTitle,
@@ -13,5 +16,6 @@ final class DiagnosticBoardView
         public readonly bool $isComplete,
         public readonly ?string $assignedRankTier,
         public readonly ?int $assignedRankLevel,
+        public readonly array $referenceMaterials = [],
     ) {}
 }

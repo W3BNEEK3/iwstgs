@@ -39,3 +39,27 @@
 .narrative-panel-content textarea {
   font-style: italic;
 }
+
+/* ---- Scenario reference materials (tickets, emails, notes) ---- */
+.ref-material {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+  overflow: hidden;
+}
+.ref-material > header {
+  padding: var(--sp-sm) var(--sp-md);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+.rm-body {
+  padding: var(--sp-md);
+  font-size: var(--text-sm);
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+.ref-material--ticket .rm-body,
+.ref-material--report .rm-body {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}

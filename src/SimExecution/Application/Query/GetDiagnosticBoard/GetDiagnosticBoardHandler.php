@@ -8,6 +8,8 @@ use Src\SimExecution\Domain\Enrollment\LearnerRepository;
 use Src\SimExecution\Domain\Session\LearnerSessionRepository;
 use Src\Simulation\Application\Query\GetDiagnosticScenario\GetDiagnosticScenarioQuery;
 use Src\Simulation\Application\Query\ListTasksByScenario\ListTasksByScenarioQuery;
+use Src\SimExecution\Application\Query\GetSprintBoard\ReferenceMaterialBoardView;
+use Src\Simulation\Domain\Scenario\ReferenceMaterial;
 use Src\Simulation\Domain\Scenario\ScenarioTemplate;
 use Src\Simulation\Domain\Task\Task;
 use Src\Submission\Application\Query\CountSubmissionAttempts\CountSubmissionAttemptsQuery;
@@ -71,6 +73,10 @@ final class GetDiagnosticBoardHandler
             isComplete:         $diagnostic->status === DiagnosticStatus::Complete,
             assignedRankTier:   $diagnostic->assignedRankTier,
             assignedRankLevel:  $diagnostic->assignedRankLevel,
+            referenceMaterials: array_map(
+                fn (ReferenceMaterial $m) => new ReferenceMaterialBoardView($m->type()->value, $m->title(), $m->content()),
+                $scenario->referenceMaterials(),
+            ),
         );
     }
 }

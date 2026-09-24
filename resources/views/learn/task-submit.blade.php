@@ -11,7 +11,7 @@
 @section('body')
 <div style="margin-bottom:var(--sp-xl);">
     <h1 style="font-size:var(--text-2xl);margin-bottom:var(--sp-xs);">{{ $form->taskTitle }}</h1>
-    <p style="color:var(--text-muted);margin:0 0 var(--sp-sm);">{{ $form->taskBrief }}</p>
+    <p style="color:var(--text-muted);margin:0 0 var(--sp-sm);white-space:pre-line;">{{ $form->taskBrief }}</p>
     <div style="display:flex;gap:var(--sp-sm);align-items:center;flex-wrap:wrap;">
         <x-ui.badge tone="neutral">Attempt {{ $form->nextAttemptNumber }}</x-ui.badge>
         @if ($form->timeLimitMinutes)
@@ -38,6 +38,17 @@
             <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);"><strong>Context:</strong> {{ $form->contextNote }}</p>
         @endif
     </div>
+@endif
+
+@if (!empty($form->referenceMaterials))
+    <details class="form-section" style="margin-bottom:var(--sp-lg);" open>
+        <summary style="cursor:pointer;font-weight:600;margin-bottom:var(--sp-md);">Reference materials</summary>
+        <div style="display:flex;flex-direction:column;gap:var(--sp-md);">
+            @foreach ($form->referenceMaterials as $material)
+                <x-reference-material :type="$material['type']" :title="$material['title']" :content="$material['content']" />
+            @endforeach
+        </div>
+    </details>
 @endif
 
 @if (!empty($form->guidancePrompts))
