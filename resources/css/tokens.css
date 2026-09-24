@@ -1,0 +1,145 @@
+/*
+ * Areyna design tokens — the source of truth for every color, spacing, radius,
+ * type, and motion value in the product. See project-docs-n-plans/IWSTGS_Design_System.md.
+ *
+ * Never hardcode a color/spacing/font-size in component CSS or Blade — reference
+ * one of these custom properties (or its Tailwind utility, wired in app.css).
+ *
+ * Three-state theme contract: bare :root is the light default; the
+ * prefers-color-scheme block covers OS dark mode when no explicit choice has
+ * been made; [data-theme="dark"] covers an explicit user toggle. All three
+ * define the same token names so nothing ever resolves to an undefined value.
+ */
+
+:root {
+  /* Neutral ramp — "smoke grey," cool/blue-black, not flat/warm */
+  --neutral-0:   #ffffff;
+  --neutral-50:  #f7f7f8;
+  --neutral-100: #eeeeef;
+  --neutral-200: #e0e0e2;
+  --neutral-300: #c7c7cb;
+  --neutral-400: #9b9ba1;
+  --neutral-500: #71717a;
+  --neutral-600: #52525b;
+  --neutral-700: #3a3a40;
+  --neutral-800: #232326;
+  --neutral-900: #131316;
+  --neutral-950: #0d0d0f;
+
+  /* Semantic accents — general purpose (design doc §2.2) */
+  --error:    #dc2626; --error-bg:    #fef2f2; --error-fg:    #991b1b;
+  --success:  #16a34a; --success-bg:  #f0fdf4; --success-fg:  #166534;
+  --warning:  #d97706; --warning-bg:  #fffbeb; --warning-fg:  #92400e;
+  --info:     #2563eb; --info-bg:     #eff6ff; --info-fg:     #1e40af;
+
+  /* Sprint-board-only accents — scoped to Kanban cards, not general UI (design doc §2.2.1) */
+  --suggestion: #0d9488; --suggestion-bg: #f0fdfa; --suggestion-fg: #115e59;
+  --diagnostic: #4338ca; --diagnostic-bg: #eef2ff; --diagnostic-fg: #3730a3;
+
+  /* Role tokens — components reference these, never the raw neutrals/accents above */
+  --bg:            var(--neutral-0);
+  --bg-subtle:     var(--neutral-50);
+  --bg-hover:      var(--neutral-100);
+  --border:        var(--neutral-200);
+  --border-strong: var(--neutral-300);
+  --text-muted:    var(--neutral-500);
+  --text:          var(--neutral-800);
+  --text-strong:   var(--neutral-950);
+  --shadow-raised: 0 2px 8px rgba(13, 13, 15, .08);
+  --shadow-overlay: 0 8px 32px rgba(13, 13, 15, .20);
+  --scrim: rgba(13, 13, 15, .45);
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* Spacing — 4px base (design doc §4) */
+  --sp-2xs: 2px;
+  --sp-xs:  4px;
+  --sp-sm:  8px;
+  --sp-md:  12px;
+  --sp-lg:  16px;
+  --sp-xl:  20px;
+  --sp-2xl: 24px;
+  --sp-3xl: 32px;
+  --sp-4xl: 48px;
+  --sp-5xl: 64px;
+
+  /* Type scale — desktop values; mobile overrides live in the @media block below (design doc §3) */
+  --text-xs:   12px;
+  --text-sm:   14px;
+  --text-base: 16px;
+  --text-lg:   18px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  30px;
+  --text-4xl:  36px;
+
+  --font-ui: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+
+  /* Motion (design doc §7) */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 300ms;
+}
+
+/* Mobile type scale — design doc §3's desktop→mobile column */
+@media (max-width: 639px) {
+  :root {
+    --text-sm:  13px;
+    --text-lg:  16px;
+    --text-xl:  18px;
+    --text-2xl: 20px;
+    --text-3xl: 24px;
+    --text-4xl: 28px;
+  }
+}
+
+/* OS dark mode — only when the user hasn't made an explicit light choice */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --error:    #f87171; --error-bg:    #2a1414; --error-fg:    #fca5a5;
+    --success:  #4ade80; --success-bg:  #12261a; --success-fg:  #86efac;
+    --warning:  #fbbf24; --warning-bg:  #2a1f0c; --warning-fg:  #fcd34d;
+    --info:     #60a5fa; --info-bg:     #12203a; --info-fg:     #93c5fd;
+    --suggestion: #2dd4bf; --suggestion-bg: #0f2926; --suggestion-fg: #5eead4;
+    --diagnostic: #818cf8; --diagnostic-bg: #1e1b3a; --diagnostic-fg: #a5b4fc;
+
+    --bg:            var(--neutral-950);
+    --bg-subtle:     var(--neutral-900);
+    --bg-hover:      var(--neutral-800);
+    --border:        var(--neutral-700);
+    --border-strong: var(--neutral-600);
+    --text-muted:    var(--neutral-400);
+    --text:          var(--neutral-100);
+    --text-strong:   #ffffff;
+    --shadow-raised: 0 2px 10px rgba(0, 0, 0, .5);
+    --shadow-overlay: 0 8px 40px rgba(0, 0, 0, .6);
+    --scrim: rgba(0, 0, 0, .6);
+  }
+}
+
+/* Explicit user toggle — wins over both the OS preference and the light default */
+:root[data-theme="dark"] {
+  --error:    #f87171; --error-bg:    #2a1414; --error-fg:    #fca5a5;
+  --success:  #4ade80; --success-bg:  #12261a; --success-fg:  #86efac;
+  --warning:  #fbbf24; --warning-bg:  #2a1f0c; --warning-fg:  #fcd34d;
+  --info:     #60a5fa; --info-bg:     #12203a; --info-fg:     #93c5fd;
+  --suggestion: #2dd4bf; --suggestion-bg: #0f2926; --suggestion-fg: #5eead4;
+  --diagnostic: #818cf8; --diagnostic-bg: #1e1b3a; --diagnostic-fg: #a5b4fc;
+
+  --bg:            var(--neutral-950);
+  --bg-subtle:     var(--neutral-900);
+  --bg-hover:      var(--neutral-800);
+  --border:        var(--neutral-700);
+  --border-strong: var(--neutral-600);
+  --text-muted:    var(--neutral-400);
+  --text:          var(--neutral-100);
+  --text-strong:   #ffffff;
+  --shadow-raised: 0 2px 10px rgba(0, 0, 0, .5);
+  --shadow-overlay: 0 8px 40px rgba(0, 0, 0, .6);
+  --scrim: rgba(0, 0, 0, .6);
+}

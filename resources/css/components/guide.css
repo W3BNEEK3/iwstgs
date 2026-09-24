@@ -1,0 +1,97 @@
+/* In-app guide (Tiroco) — floating card bottom-right, bottom sheet on phones. */
+.guide-launcher {
+  position: fixed;
+  right: var(--sp-lg);
+  bottom: var(--sp-lg);
+  z-index: 70;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-strong);
+  box-shadow: var(--shadow-raised);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.guide-launcher:hover { background: var(--bg-hover); }
+
+.guide-card {
+  position: fixed;
+  right: var(--sp-lg);
+  bottom: var(--sp-lg);
+  z-index: 75;
+  width: min(360px, calc(100vw - 2 * var(--sp-lg)));
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+  padding: var(--sp-md) var(--sp-lg) var(--sp-lg);
+}
+
+.guide-head { display: flex; align-items: flex-start; gap: var(--sp-sm); }
+.guide-avatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--info-bg);
+  color: var(--info-fg);
+}
+.guide-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.guide-name { font-size: 11px; font-weight: 600; letter-spacing: .03em; color: var(--text-muted); text-transform: uppercase; }
+.guide-title { font-size: var(--text-base); color: var(--text-strong); }
+.guide-close { margin: -4px -8px 0 0; }
+
+.guide-body { margin-top: var(--sp-md); }
+.guide-body h4 { margin: 0 0 var(--sp-xs); font-size: var(--text-sm); color: var(--text-strong); }
+.guide-body p { margin: 0; font-size: var(--text-sm); line-height: 1.55; color: var(--text); }
+
+.guide-dots { display: flex; gap: 6px; margin-top: var(--sp-md); }
+.guide-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-strong); }
+.guide-dot.is-active { background: var(--text-strong); }
+
+.guide-foot { display: flex; align-items: center; gap: var(--sp-sm); margin-top: var(--sp-lg); }
+.guide-foot .spacer { flex: 1; }
+.guide-off {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 639px) {
+  .guide-card {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding-bottom: calc(var(--sp-lg) + env(safe-area-inset-bottom));
+  }
+  .guide-launcher { right: var(--sp-md); bottom: var(--sp-md); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide-card { transition: none !important; }
+}
+
+/* ---- Project explainer (catalogue detail page) ---- */
+.explainer { display: flex; flex-direction: column; gap: var(--sp-lg); }
+.explainer-summary { display: flex; gap: var(--sp-md); align-items: flex-start; }
+.explainer-summary p { margin: 0; white-space: pre-line; }
+.explainer-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--sp-md); }
+.explainer-fact { border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--sp-sm) var(--sp-md); }
+.explainer-fact span { display: block; font-size: var(--text-xs); color: var(--text-muted); }
+.explainer-fact strong { font-size: var(--text-base); }
+.explainer-sprints { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--sp-sm); }
+.explainer-sprints p { margin: 2px 0 0; color: var(--text-muted); font-size: var(--text-sm); }
+.explainer-chips { display: flex; flex-wrap: wrap; gap: var(--sp-xs); }

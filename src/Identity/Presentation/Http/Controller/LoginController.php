@@ -1,0 +1,66 @@
+<?php
+
+namespace Src\Identity\Presentation\Http\Controller;
+
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use Src\Identity\Application\Command\LoginUser\LoginUserCommand;
+use Src\Identity\Domain\Exceptions\InvalidCredentialsException;
+use Src\Identity\Presentation\Http\Request\LoginRequest;
+use Src\Shared\Application\Bus\CommandBus;
+
+class LoginController
+{
+    public function __construct(private readonly CommandBus $commandBus) {}
+
+    public function show(): View
+    {
+        return view('identity.login');
+    }
+
+    public function store(LoginRequest $request): RedirectResponse
+    {
+        try {
+            $this->commandBus->dispatch(new LoginUserCommand(
+                email:    $request->input('email'),
+                password: $request->input('password'),
+                remember: $request->boolean('remember'),
+            ));
+        } catch (InvalidCredentialsException) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'These credentials do not match our records.']);
+        }
+
+        /** @var \Src\Identity\Infrastructure\Persistence\Eloquent\Model\UserModel|null $user */
+        $user = Auth::user();
+
+        // System-level admins must use the dedicated system login portal
+        if ($user && $user->hasRole('super_admin')) {
+            Auth::logout();
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Please use the system administration portal to sign in.']);
+        }
+
+        if ($user && $user->hasRole('content_author')) {
+            return redirect()->intended('/admin/projects');
+        }
+
+        // Not yet a learner (no LearnerEnrolled fact has fired for them) — /learn itself
+        // is gated behind the learner role, but /learn/enrol only requires being logged in.
+        if ($user && ! $user->hasRole('learner')) {
+            return redirect()->intended('/learn/enrol');
+        }
+
+        return redirect()->intended('/learn');
+    }
+
+    public function destroy(): RedirectResponse
+    {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect()->route('login');
+    }
+}

@@ -1,0 +1,106 @@
+/* Button severity tiers — design doc §12. Color signals severity, never brand. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 var(--sp-lg);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background var(--motion-fast), border-color var(--motion-fast), opacity var(--motion-fast);
+  white-space: nowrap;
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--text-strong);
+  color: var(--bg);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--neutral-700);
+}
+:root[data-theme="dark"] .btn-primary:hover:not(:disabled) {
+  background: var(--neutral-200);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .btn-primary:hover:not(:disabled) { background: var(--neutral-200); }
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.btn-caution {
+  background: var(--warning-bg);
+  color: var(--warning-fg);
+  border-color: var(--warning);
+}
+.btn-caution:hover:not(:disabled) {
+  filter: brightness(0.97);
+}
+
+.btn-destructive {
+  background: var(--error);
+  color: #fff;
+}
+.btn-destructive:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+/* Icon-only button — always paired with aria-label on the element (design doc §6, §21) */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  position: relative;
+}
+.btn-icon:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-md);
+  align-items: center;
+}
+
+/* Loading state — shown while the button carries aria-busy="true" (set on
+   form submit and during $ajax calls, see resources/js/behaviors/busy-buttons.js) */
+.btn-spinner {
+  display: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: btn-spin .6s linear infinite;
+  flex-shrink: 0;
+}
+.btn[aria-busy="true"] .btn-spinner { display: inline-block; }
+.btn[aria-busy="true"] { pointer-events: none; }
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}

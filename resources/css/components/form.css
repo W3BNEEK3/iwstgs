@@ -1,0 +1,91 @@
+/* Forms — no card wrapper, fields sit on the page background (design doc §5, §11) */
+
+.form-section {
+  margin-bottom: var(--sp-2xl);
+}
+.form-section + .form-section {
+  padding-top: var(--sp-2xl);
+  border-top: 1px solid var(--border);
+}
+.form-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: var(--sp-lg);
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-lg);
+}
+@media (max-width: 639px) {
+  .field-grid { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.field input,
+.field select,
+.field textarea {
+  font: inherit;
+  font-size: var(--text-base);
+  padding: 9px 11px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+  min-height: 40px;
+}
+.field textarea {
+  min-height: unset;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--info);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--info) 20%, transparent);
+}
+
+.field.has-error input,
+.field.has-error select,
+.field.has-error textarea {
+  border-color: var(--error);
+}
+
+.field-help {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.field-error {
+  font-size: var(--text-xs);
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-sm);
+  margin-top: var(--sp-2xl);
+}
+@media (max-width: 639px) {
+  .form-actions { flex-direction: column-reverse; }
+  .form-actions .btn { width: 100%; }
+}

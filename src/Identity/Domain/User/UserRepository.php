@@ -1,0 +1,13 @@
+<?php
+namespace Src\Identity\Domain\User;
+
+interface UserRepository
+{
+    public function save(User $user): void;
+
+    public function findByEmail(string $email): ?User;
+
+    public function findById(UserId $id): ?User;
+
+    public function existsByEmail(string $email): bool;
+}

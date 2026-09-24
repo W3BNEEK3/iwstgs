@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+@import './tokens.css';
+@import './base.css';
+@import './components/button.css';
+@import './components/badge.css';
+@import './components/form.css';
+@import './components/feedback.css';
+@import './components/navigation.css';
+@import './components/table.css';
+@import './components/narrative-panel.css';
+@import './components/landing.css';
+@import './components/guide.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/*
+ * Tailwind v4's CSS-first @theme block maps utility classes to the same
+ * custom properties tokens.css defines — one scale, two ways to reach it
+ * (hand-written component CSS above, or a `bg-error`/`p-lg` utility class in
+ * a Blade view), never a second parallel scale. See design doc §18.1.
+ */
+@theme {
+  /* Only --font-sans is aliased here — tokens.css's --font-mono keeps its own
+     name, so mapping it to Tailwind's identically-named theme key would be a
+     self-referential var() (invalid, resolves to nothing). Use var(--font-mono)
+     directly, or Tailwind's arbitrary-value syntax font-[family-name:--font-mono],
+     if a utility class is ever needed. */
+  --font-sans: var(--font-ui);
+
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-hover: var(--bg-hover);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-strong: var(--text-strong);
+
+  --color-error: var(--error);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-suggestion: var(--suggestion);
+  --color-diagnostic: var(--diagnostic);
+
+  --spacing-2xs: var(--sp-2xs);
+  --spacing-xs: var(--sp-xs);
+  --spacing-sm: var(--sp-sm);
+  --spacing-md: var(--sp-md);
+  --spacing-lg: var(--sp-lg);
+  --spacing-xl: var(--sp-xl);
+  --spacing-2xl: var(--sp-2xl);
+  --spacing-3xl: var(--sp-3xl);
+  --spacing-4xl: var(--sp-4xl);
+
+  /* --radius-* is not remapped here for the same reason as --font-mono above —
+     tokens.css's --radius-sm/md/lg already use Tailwind's own theme key names,
+     so redeclaring them in @theme would self-reference rather than alias.
+     Hand-written component CSS already uses var(--radius-sm) directly; Tailwind's
+     rounded-sm/md/lg utilities fall back to Tailwind's own default scale, which
+     is a minor, low-stakes inconsistency, not a functional gap. */
+}

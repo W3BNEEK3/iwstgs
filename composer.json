@@ -1,0 +1,80 @@
+{
+  "name": "w3bneek3/iwstgs",
+  "type": "project",
+  "description": "Areyna modular monolith built with Laravel 13, DDD, Blade, and Alpine.js.",
+  "keywords": [
+    "laravel",
+    "ddd",
+    "modular-monolith",
+    "alpinejs"
+  ],
+  "license": "proprietary",
+  "require": {
+    "php": "^8.3",
+    "laravel/framework": "^13.0",
+    "laravel/tinker": "^3.0"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.23",
+    "laravel/pint": "^1.27",
+    "mockery/mockery": "^1.6",
+    "nunomaduro/collision": "^8.0",
+    "phpunit/phpunit": "^12.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",
+      "Src\\": "src/",
+      "Database\\Factories\\": "database/factories/",
+      "Database\\Seeders\\": "database/seeders/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+      "@php artisan package:discover --ansi"
+    ],
+    "post-update-cmd": [
+      "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+    ],
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ],
+    "post-create-project-cmd": [
+      "@php artisan key:generate --ansi",
+      "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+      "@php artisan migrate --graceful --ansi"
+    ],
+    "dev": [
+      "Composer\\Config::disableProcessTimeout",
+      "npx concurrently -c \"#6b7280,#111111,#8b8b87,#4b5563\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names=server,queue,vite"
+    ],
+    "test": [
+      "@php artisan config:clear --ansi",
+      "@php artisan test"
+    ],
+    "test:unit": [
+      "@php artisan test --testsuite=Unit"
+    ],
+    "test:feature": [
+      "@php artisan test --testsuite=Feature"
+    ]
+  },
+  "extra": {
+    "laravel": {
+      "dont-discover": []
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

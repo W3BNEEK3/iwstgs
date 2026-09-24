@@ -1,0 +1,70 @@
+/* Reset + base element styling. Component-specific rules live in resources/css/components/. */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-strong);
+  font-weight: 650;
+  text-wrap: balance;
+  margin: 0;
+}
+
+code, kbd, pre, .mono {
+  font-family: var(--font-mono);
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--info);
+  color: #fff;
+}
+
+/* Never remove this without replacing it — design doc §21 */
+:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Material Symbols baseline — components/ui/icon.blade.php sets the specific
+   FILL/wght/GRAD/opsz axes per instance via inline style. */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
+  user-select: none;
+}
+
+[x-cloak] { display: none !important; }

@@ -1,0 +1,26 @@
+/* Status/category badges — always icon-or-dot + text, never color alone (design doc §1 rule 4, §13.1) */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.badge-success  { background: var(--success-bg);  color: var(--success-fg); }
+.badge-warning  { background: var(--warning-bg);  color: var(--warning-fg); }
+.badge-error    { background: var(--error-bg);    color: var(--error-fg); }
+.badge-info     { background: var(--info-bg);     color: var(--info-fg); }
+.badge-neutral  { background: var(--bg-hover);    color: var(--text-muted); }
