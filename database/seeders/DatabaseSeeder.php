@@ -21,6 +21,10 @@ class DatabaseSeeder extends Seeder
             ShiftBoardSeeder::class,
             ShiftBoardScenario2Seeder::class,
             ShiftBoardScenario3Seeder::class,
+            ExistingProjectsAdaptiveContentSeeder::class,
+            PantryLinkSeeder::class,
+            CampusBookSeeder::class,
+            PayFlowSeeder::class,
             DiagnosticAssessmentSeeder::class,
         ]);
     }

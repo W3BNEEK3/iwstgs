@@ -9,6 +9,7 @@ use Src\LearnerProfile\Application\Command\GenerateFinalCompetencyGraph\Generate
 use Src\Shared\Application\Bus\CommandBus;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\SimExecution\Application\Command\SetTargetedDimension\SetTargetedDimensionCommand;
+use Src\SimExecution\Domain\Board\InjectedTaskCardRepository;
 use Src\SimExecution\Domain\Session\LearnerSessionRepository;
 use Src\SimExecution\Domain\Session\SessionStatus;
 use Src\Simulation\Application\Query\ListScenariosByProject\ListScenariosByProjectQuery;
@@ -37,6 +38,7 @@ final class ScenarioTransitionService
         private readonly CommandBus $commandBus,
         private readonly LearnerSessionRepository $sessions,
         private readonly HabitFlagRepository $habitFlags,
+        private readonly InjectedTaskCardRepository $injectedCards,
     ) {}
 
     public function transitionIfScenarioComplete(string $learnerSessionId): void
@@ -48,6 +50,12 @@ final class ScenarioTransitionService
 
         $liveTaskIds = $this->liveCoreTaskIds($session->currentScenarioId());
         if (! $this->allScenarioTasksAttempted($learnerSessionId, $liveTaskIds)) {
+            return;
+        }
+
+        // A consequence card is the fallout of a failed task in this scenario; the
+        // learner has to deal with it before the story moves on.
+        if ($this->hasUnattemptedConsequences($learnerSessionId, $session->currentScenarioId())) {
             return;
         }
 
@@ -113,6 +121,24 @@ final class ScenarioTransitionService
         }
 
         return $liveTaskIds;
+    }
+
+    private function hasUnattemptedConsequences(string $learnerSessionId, string $scenarioId): bool
+    {
+        /** @var Task[] $tasks */
+        $tasks = $this->queryBus->ask(new ListTasksByScenarioQuery($scenarioId));
+        $scenarioTaskIds = array_map(fn (Task $t) => $t->id(), $tasks);
+
+        foreach ($this->injectedCards->findAllForSession($learnerSessionId) as $card) {
+            if ($card->cardType !== 'consequence' || ! in_array($card->injectedTaskId, $scenarioTaskIds, true)) {
+                continue;
+            }
+            if ($this->queryBus->ask(new GetLatestSubmissionIdQuery($learnerSessionId, $card->injectedTaskId)) === null) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /** @param string[] $liveTaskIds */

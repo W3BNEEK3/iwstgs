@@ -5,6 +5,7 @@ use Src\LearnerProfile\Application\Query\GetLearnerRank\GetLearnerRankQuery;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\SimExecution\Application\Query\GetLearnerIdForUser\GetLearnerIdForUserQuery;
 use Src\SimExecution\Application\Query\GetLearnerSession\GetLearnerSessionQuery;
+use Src\SimExecution\Application\Query\IsTaskInjectedForSession\IsTaskInjectedForSessionQuery;
 use Src\Simulation\Application\Query\GetScenario\GetScenarioQuery;
 use Src\Simulation\Application\Query\GetTask\GetTaskQuery;
 use Src\Simulation\Domain\Scenario\ReferenceMaterial;
@@ -50,8 +51,10 @@ final class GetSubmissionFormHandler
 
         $taskPrimitives = $task->toPrimitives();
         // A task can only be submitted for while it's the session's current scenario — the
-        // scope a learner is actually meant to be working in right now.
-        if ($taskPrimitives['scenario_id'] !== $session->currentScenarioId) {
+        // scope a learner is actually meant to be working in right now — or when it was
+        // injected onto this session as a consequence/suggestion card.
+        if ($taskPrimitives['scenario_id'] !== $session->currentScenarioId
+            && ! $this->queryBus->ask(new IsTaskInjectedForSessionQuery($query->sessionId, $query->taskId))) {
             return null;
         }
 

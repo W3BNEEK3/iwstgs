@@ -198,6 +198,87 @@ trait AuthorsSimulationContent
         return $task;
     }
 
+    private const DELIVERABLES = [
+        'code'    => [['code', 'Your code', 'The implementation.'], ['written_explanation', 'Your reasoning', 'What you built, the choices you made, and why.']],
+        'written' => [['written_explanation', 'Your answer', 'Your explanation, in your own words.']],
+    ];
+
+    private const CONTEXT = [
+        'low'  => 'All the details you need are in the brief and the reference materials.',
+        'mid'  => 'Most details are provided. Where something is unclear, make a reasonable assumption and say what it is.',
+        'high' => 'Some details are deliberately missing. Decide what you need to know and state your assumptions.',
+    ];
+
+    /**
+     * Core project task. The CAC variants genuinely change the work: low adds a
+     * starting point, mid is the brief as written, high adds a stretch goal.
+     *
+     * Keys: title, brief, domain, roles, tools?, concepts?, time?, answer, deliver ('code'|'written'),
+     *       starter, stretch, hint_low, hint_mid, criteria: [[dim, label, text, hint, [d, p, dev, b]], ...]
+     */
+    protected function coreTask(ScenarioTemplateModel $scenario, RubricSetModel $rubricSet, int $sequence, array $c): TaskModel
+    {
+        return $this->task($scenario, $rubricSet, $sequence, [
+            'title'        => $c['title'],
+            'brief'        => $c['brief'],
+            'type'         => 'core',
+            'domain'       => $c['domain'],
+            'role_tags'    => $c['roles'],
+            'tools'        => $c['tools'] ?? [],
+            'concepts'     => $c['concepts'] ?? [],
+            'time'         => $c['time'] ?? 60,
+            'architectural' => $c['architectural'] ?? false,
+            'model_answer' => $c['answer'],
+            'deliverables' => self::DELIVERABLES[$c['deliver'] ?? 'code'],
+            'variants'     => [
+                'low'  => "{$c['brief']}\n\nTo get you started: {$c['starter']}",
+                'mid'  => $c['brief'],
+                'high' => "{$c['brief']}\n\nGo further: {$c['stretch']}",
+            ],
+            'scaffolding'  => ['low' => $c['hint_low'], 'mid' => $c['hint_mid'], 'high' => 'No extra guidance. Choose your own approach and justify it.'],
+            'context'      => self::CONTEXT,
+            'criteria'     => $this->weighCriteria($c['criteria']),
+            'hints'        => $c['hints'] ?? [],
+        ]);
+    }
+
+    /**
+     * Consequence (injected when a core task fails) or suggestion (injected at a
+     * scenario transition when a habit is detected) task. Keys: title, brief,
+     * domain, roles, answer, deliver?, hint, criteria (same shape as coreTask).
+     */
+    protected function adaptiveTask(string $type, ScenarioTemplateModel $scenario, RubricSetModel $rubricSet, int $sequence, array $c): TaskModel
+    {
+        return $this->task($scenario, $rubricSet, $sequence, [
+            'title'        => $c['title'],
+            'brief'        => $c['brief'],
+            'type'         => $type,
+            'domain'       => $c['domain'],
+            'role_tags'    => $c['roles'],
+            'time'         => $c['time'] ?? 45,
+            'model_answer' => $c['answer'],
+            'deliverables' => self::DELIVERABLES[$c['deliver'] ?? 'code'],
+            'variants'     => array_fill_keys(['low', 'mid', 'high'], $c['brief']),
+            'scaffolding'  => ['low' => $c['hint'], 'mid' => $c['hint'], 'high' => 'No extra guidance.'],
+            'context'      => self::CONTEXT,
+            'criteria'     => $this->weighCriteria($c['criteria']),
+        ]);
+    }
+
+    /** Spreads criterion weight evenly across a task's criteria (weights must sum to 1). */
+    private function weighCriteria(array $criteria): array
+    {
+        $count = count($criteria);
+        $weights = array_fill(0, $count, round(1 / $count, 3));
+        $weights[$count - 1] = round(1 - array_sum(array_slice($weights, 0, -1)), 3);
+
+        return array_map(
+            fn (array $c, float $w) => [$c[0], $c[1], $c[2], number_format($w, 3), '0.500', $c[3], $c[4], $c[5] ?? false],
+            $criteria,
+            $weights,
+        );
+    }
+
     protected function backlogItem(ProjectTemplateModel $project, string $title, string $description, string $priority, array $roleTags, ?TaskModel $task, int $order): BacklogItemTemplateModel
     {
         return BacklogItemTemplateModel::updateOrCreate(

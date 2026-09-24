@@ -21,8 +21,10 @@ final class EloquentEvaluationResultRepository implements EvaluationResultReposi
         bool $isUncertain,
         ?string $followUpPromptId,
     ): string {
-        // evaluated_at is left unset — the migration's DEFAULT CURRENT_TIMESTAMP fills it in.
+        // Set from the app clock (not the column default) so it follows the app time
+        // zone and "most recent" ordering is controllable in tests.
         $model = EvaluationResultModel::create([
+            'evaluated_at'        => now(),
             'id'                  => (string) Str::uuid(),
             'submission_id'       => $submissionId,
             'learner_id'          => $learnerId,

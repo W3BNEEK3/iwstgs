@@ -33,8 +33,9 @@ final class RecordEvaluationOutcomeHandler
                 eventType:        RankEventType::ReviewTriggered,
                 fromRankTier:     $profile->currentRankTier()->value,
                 fromRankLevel:    $profile->currentRankLevel(),
-                toRankTier:       null, // no change yet — the actual rank decision is Phase 9
-                toRankLevel:      null,
+                // A review doesn't move the rank; to = from (to_rank_* is NOT NULL).
+                toRankTier:       $profile->currentRankTier()->value,
+                toRankLevel:      $profile->currentRankLevel(),
                 triggerReason:    "Failure streak reached {$profile->failureStreak()} consecutive failures.",
                 sourceSessionId:  null,
             );

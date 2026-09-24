@@ -6,6 +6,7 @@ use Src\LearnerProfile\Application\Query\GetLearnerRank\GetLearnerRankQuery;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\SimExecution\Application\Query\GetLearnerIdForUser\GetLearnerIdForUserQuery;
 use Src\SimExecution\Application\Query\GetLearnerSession\GetLearnerSessionQuery;
+use Src\SimExecution\Application\Query\IsTaskInjectedForSession\IsTaskInjectedForSessionQuery;
 use Src\Simulation\Application\Query\GetTask\GetTaskQuery;
 use Src\Simulation\Domain\Task\Task;
 use Src\Submission\Application\Service\PlanningSnapshotAssembler;
@@ -72,7 +73,8 @@ final class SubmitTaskHandler
         }
 
         $taskPrimitives = $task->toPrimitives();
-        if ($taskPrimitives['scenario_id'] !== $session->currentScenarioId) {
+        if ($taskPrimitives['scenario_id'] !== $session->currentScenarioId
+            && ! $this->queryBus->ask(new IsTaskInjectedForSessionQuery($command->sessionId, $command->taskId))) {
             throw new SubmissionNotAllowedException('this task is not part of your current scenario');
         }
 

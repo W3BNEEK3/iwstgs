@@ -147,6 +147,91 @@ class LearnerJourneyTest extends TestCase
         $this->get("/learn/{$project->id}/sprint-board")->assertOk();
     }
 
+    public function test_consequence_card_must_be_attempted_before_scenario_advances(): void
+    {
+        $this->learner();
+        $this->completeDiagnostic();
+
+        $project = ProjectTemplateModel::where('title', 'like', 'PantryLink%')->firstOrFail();
+        $sessionId = $this->startProjectSession($project);
+        $scenarioId = $this->currentScenarioId($sessionId);
+        $this->planSprint($project, $sessionId);
+        [$first, $second] = $this->currentScenarioCoreTaskIds($sessionId);
+
+        $this->tier = 'developing';
+        $this->submit($sessionId, $first);
+        $consequenceTaskId = DB::table('injected_task_cards')
+            ->where('learner_session_id', $sessionId)->where('card_type', 'consequence')->value('injected_task_id');
+        $this->assertNotNull($consequenceTaskId);
+        $consequenceTitle = DB::table('tasks')->where('id', $consequenceTaskId)->value('title');
+        $this->get("/learn/{$project->id}/sprint-board")->assertOk()->assertSee($consequenceTitle, false);
+
+        $this->tier = 'proficient';
+        $this->submit($sessionId, $second);
+        $this->assertSame($scenarioId, $this->currentScenarioId($sessionId), 'An open consequence card must hold the scenario');
+
+        $this->submit($sessionId, $consequenceTaskId);
+        $this->assertNotSame($scenarioId, $this->currentScenarioId($sessionId));
+    }
+
+    public function test_suggestion_card_stays_submittable_after_the_scenario_ends(): void
+    {
+        $this->learner();
+        $this->completeDiagnostic();
+
+        $project = ProjectTemplateModel::where('title', 'like', 'PantryLink%')->firstOrFail();
+        $sessionId = $this->startProjectSession($project);
+        $this->planSprint($project, $sessionId);
+        [$first, $second] = $this->currentScenarioCoreTaskIds($sessionId);
+
+        // Three below-proficient results on the same dimensions form a habit.
+        $this->tier = 'developing';
+        foreach (range(1, 3) as $attempt) {
+            $this->submit($sessionId, $first);
+        }
+        $this->assertDatabaseHas('habit_flags', ['source_task_id' => $first]);
+
+        $this->tier = 'proficient';
+        $consequenceTaskId = DB::table('injected_task_cards')->where('card_type', 'consequence')->value('injected_task_id');
+        $this->submit($sessionId, $consequenceTaskId);
+        $this->submit($sessionId, $second);
+
+        $suggestionTaskId = DB::table('injected_task_cards')
+            ->where('learner_session_id', $sessionId)->where('card_type', 'suggestion')->value('injected_task_id');
+        $this->assertNotNull($suggestionTaskId, 'A habit should inject a suggestion card at the scenario transition');
+        $this->assertNotSame(DB::table('tasks')->where('id', $suggestionTaskId)->value('scenario_id'), $this->currentScenarioId($sessionId));
+
+        $this->submit($sessionId, $suggestionTaskId);
+    }
+
+    public function test_cac_complexity_escalates_after_a_fully_passed_scenario(): void
+    {
+        $this->learner();
+        $this->completeDiagnostic();
+
+        $project = ProjectTemplateModel::where('title', 'like', 'CampusBook%')->firstOrFail();
+        $sessionId = $this->startProjectSession($project);
+        $learnerId = DB::table('learner_sessions')->where('id', $sessionId)->value('learner_id');
+        $before = DB::table('learner_profiles')->where('learner_id', $learnerId)->value('cac_complexity');
+
+        $this->playCurrentScenario($project, $sessionId);
+
+        $after = DB::table('learner_profiles')->where('learner_id', $learnerId)->value('cac_complexity');
+        $this->assertSame(['low', 'mid'], [$before, $after]);
+    }
+
+    private function startProjectSession(ProjectTemplateModel $project): string
+    {
+        $this->startProject($project);
+
+        return DB::table('learner_sessions')->where('project_id', $project->id)->value('id');
+    }
+
+    private function currentScenarioId(string $sessionId): ?string
+    {
+        return DB::table('learner_sessions')->where('id', $sessionId)->value('current_scenario_id');
+    }
+
     private function startProject(ProjectTemplateModel $project): void
     {
         $this->get("/learn/{$project->id}")->assertOk();
@@ -210,6 +295,7 @@ class LearnerJourneyTest extends TestCase
 
     private function submit(string $sessionId, string $taskId): void
     {
+        $this->travel(1)->minutes();
         $this->get("/learn/sessions/{$sessionId}/tasks/{$taskId}/submit")->assertOk();
         $this->post("/learn/sessions/{$sessionId}/tasks/{$taskId}/submit", [
             'layer1_text' => 'My approach, the trade-offs I weighed, and why I chose it.',
