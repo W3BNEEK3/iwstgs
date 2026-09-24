@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
             CompetenceDimensionSeeder::class,
             RoleDefinitionSeeder::class,
             MedQueueSeeder::class,
+            MedQueueScenario2Seeder::class,
+            MedQueueScenario3Seeder::class,
+            ShiftBoardSeeder::class,
+            ShiftBoardScenario2Seeder::class,
+            ShiftBoardScenario3Seeder::class,
+            DiagnosticAssessmentSeeder::class,
         ]);
     }
 }
