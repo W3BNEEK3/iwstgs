@@ -1,15 +1,13 @@
 <?php
-namespace Src\Competency\Domain\Dimension;
+namespace Src\Competency\Application\Command\CreateCompetenceDimension;
 
-final class CompetenceDimensionSummary
+final class CreateCompetenceDimensionCommand
 {
+    /** @param string[] $observableIndicators */
     public function __construct(
-        public readonly string $id,
         public readonly string $name,
         public readonly string $shortLabel,
         public readonly string $coreQuestion,
-        /** @var string[] */
         public readonly array $observableIndicators,
-        public readonly int $sequenceOrder,
     ) {}
 }
