@@ -4,9 +4,8 @@
     <td>
         <x-ui.button
             :severity="$flag->isEnabled ? 'primary' : 'secondary'"
-            hx-patch="{{ route('admin.feature-flags.toggle', $flag->flagKey) }}"
-            hx-target="#flag-row-{{ $flag->flagKey }}"
-            hx-swap="outerHTML"
+            x-data
+            @click="$ajax('{{ route('admin.feature-flags.toggle', $flag->flagKey) }}', { method: 'PATCH', target: '#flag-row-{{ $flag->flagKey }}' })"
         >
             {{ $flag->isEnabled ? 'Enabled' : 'Disabled' }}
         </x-ui.button>

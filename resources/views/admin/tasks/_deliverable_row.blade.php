@@ -9,7 +9,7 @@
             title="Remove this deliverable?"
             description="This can't be undone."
             :action="route('admin.tasks.children.remove', [$taskId, 'deliverables', $deliverable->id()])"
-            :hx-target="'#deliverable-' . $deliverable->id()"
+            :swap-target="'#deliverable-' . $deliverable->id()"
             confirmLabel="Remove"
         />
     </td>

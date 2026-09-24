@@ -95,12 +95,12 @@ class TaskController
 
         $this->commandBus->dispatch(new PublishTaskCommand($id, ! $task->isPublished()));
 
-        // HTMX expects the updated row fragment back.
+        // The $ajax publish toggle swaps in the updated row fragment.
         $task = $this->queryBus->ask(new GetTaskQuery($id));
         return view('admin.tasks._row', ['task' => $task, 'scenarioId' => $scenario]);
     }
 
-    // --- HTMX child endpoints ---
+    // --- Inline child endpoints (return row partials for $ajax swaps) ---
 
     public function addDeliverable(AddExpectedDeliverableRequest $request, string $id): View
     {
@@ -192,7 +192,7 @@ class TaskController
             childId:    $childId,
         ));
 
-        // HTMX hx-swap="outerHTML" with an empty response removes the row.
+        // An empty response swapped over the row (outerHTML) removes it.
         return response('', 200);
     }
 }

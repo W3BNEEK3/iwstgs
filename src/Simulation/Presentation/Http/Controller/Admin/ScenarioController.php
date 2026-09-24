@@ -95,7 +95,7 @@ class ScenarioController
 
         $this->commandBus->dispatch(new PublishScenarioCommand($id, ! $scenario->isPublished()));
 
-        // HTMX expects the updated row fragment back.
+        // The $ajax publish toggle swaps in the updated row fragment.
         $scenario = $this->queryBus->ask(new GetScenarioQuery($id));
         return view('admin.scenarios._row', ['scenario' => $scenario, 'projectId' => $project]);
     }

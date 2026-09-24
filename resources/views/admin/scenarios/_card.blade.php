@@ -1,5 +1,5 @@
 @php $oob = $oob ?? false; @endphp
-<div class="mobile-row-card" id="scenario-card-{{ $scenario->id() }}" @if ($oob) hx-swap-oob="true" @endif style="cursor:default;">
+<div class="mobile-row-card" id="scenario-card-{{ $scenario->id() }}" @if ($oob) data-swap-oob @endif style="cursor:default;">
     <div class="mobile-row-top">
         <span>
             <span class="mobile-row-title">{{ $scenario->sequenceOrder() }}. {{ $scenario->title() }}</span>
@@ -9,9 +9,8 @@
     <div style="display:flex;align-items:center;gap:var(--sp-sm);margin-top:var(--sp-md);">
         <x-ui.button
             :severity="$scenario->isPublished() ? 'primary' : 'secondary'"
-            hx-patch="{{ route('admin.projects.scenarios.publish', [$projectId, $scenario->id()]) }}"
-            hx-target="#scenario-row-{{ $scenario->id() }}"
-            hx-swap="outerHTML"
+            x-data
+            @click="$ajax('{{ route('admin.projects.scenarios.publish', [$projectId, $scenario->id()]) }}', { method: 'PATCH', target: '#scenario-row-{{ $scenario->id() }}' })"
         >
             {{ $scenario->isPublished() ? 'Published' : 'Draft' }}
         </x-ui.button>

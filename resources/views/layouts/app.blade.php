@@ -15,18 +15,10 @@
          back to system-ui. --}}
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;650;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
-    <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
-    <script src="https://unpkg.com/hyperscript.org@0.9.12" defer></script>
-    <script>
-      document.addEventListener('htmx:configRequest', (e) => {
-        e.detail.headers['X-CSRF-TOKEN'] = document.querySelector('meta[name=csrf-token]').content;
-      });
-    </script>
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body hx-boost="true">
+<body>
     @include('partials.feedback.page-loading-bar')
 
     @yield('page')

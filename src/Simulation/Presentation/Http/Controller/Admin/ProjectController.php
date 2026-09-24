@@ -79,7 +79,7 @@ class ProjectController
 
         $this->commandBus->dispatch(new PublishProjectCommand($id, ! $project->isPublished()));
 
-        // HTMX expects the updated row fragment back.
+        // The $ajax publish toggle swaps in the updated row fragment.
         $project = $this->queryBus->ask(new GetProjectQuery($id));
         return view('admin.projects._row', ['project' => $project]);
     }

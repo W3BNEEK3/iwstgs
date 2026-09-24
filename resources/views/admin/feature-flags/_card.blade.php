@@ -4,7 +4,7 @@
      toggle response, so a click from either the desktop row or this card keeps both
      representations in sync regardless of which one is currently visible. --}}
 @php $oob = $oob ?? false; @endphp
-<div class="mobile-row-card" id="flag-card-{{ $flag->flagKey }}" @if ($oob) hx-swap-oob="true" @endif style="cursor:default;">
+<div class="mobile-row-card" id="flag-card-{{ $flag->flagKey }}" @if ($oob) data-swap-oob @endif style="cursor:default;">
     <div class="mobile-row-top">
         <span>
             <span class="mobile-row-title"><code>{{ $flag->flagKey }}</code></span>
@@ -13,9 +13,8 @@
     </div>
     <x-ui.button
         :severity="$flag->isEnabled ? 'primary' : 'secondary'"
-        hx-patch="{{ route('admin.feature-flags.toggle', $flag->flagKey) }}"
-        hx-target="#flag-row-{{ $flag->flagKey }}"
-        hx-swap="outerHTML"
+        x-data
+        @click="$ajax('{{ route('admin.feature-flags.toggle', $flag->flagKey) }}', { method: 'PATCH', target: '#flag-row-{{ $flag->flagKey }}' })"
         style="margin-top:var(--sp-sm);"
     >
         {{ $flag->isEnabled ? 'Enabled' : 'Disabled' }}

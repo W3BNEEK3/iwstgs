@@ -10,7 +10,7 @@
             title="Remove this guidance prompt?"
             description="This can't be undone."
             :action="route('admin.tasks.children.remove', [$taskId, 'prompts', $prompt->id()])"
-            :hx-target="'#prompt-' . $prompt->id()"
+            :swap-target="'#prompt-' . $prompt->id()"
             confirmLabel="Remove"
         />
     </td>

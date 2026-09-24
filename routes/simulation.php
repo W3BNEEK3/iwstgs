@@ -23,7 +23,7 @@ Route::post('projects/{project}/scenarios',             [ScenarioController::cla
 Route::get('projects/{project}/scenarios/{id}/edit',    [ScenarioController::class, 'edit'])->name('projects.scenarios.edit');
 Route::patch('projects/{project}/scenarios/{id}',       [ScenarioController::class, 'update'])->name('projects.scenarios.update');
 Route::patch('projects/{project}/scenarios/{id}/publish',[ScenarioController::class, 'publish'])->name('projects.scenarios.publish');
-// reference materials (HTMX)
+// reference materials
 Route::post('scenarios/{id}/materials',                 [ScenarioController::class, 'addMaterial'])->name('scenarios.materials.add');
 Route::delete('scenarios/{id}/materials/{materialId}',  [ScenarioController::class, 'removeMaterial'])->name('scenarios.materials.remove');
 
@@ -34,13 +34,13 @@ Route::post('scenarios/{scenario}/tasks',               [TaskController::class, 
 Route::get('scenarios/{scenario}/tasks/{id}/edit',      [TaskController::class, 'edit'])->name('scenarios.tasks.edit');
 Route::patch('scenarios/{scenario}/tasks/{id}',         [TaskController::class, 'update'])->name('scenarios.tasks.update');
 Route::patch('scenarios/{scenario}/tasks/{id}/publish', [TaskController::class, 'publish'])->name('scenarios.tasks.publish');
-// HTMX child add endpoints
+// Inline child add endpoints
 Route::post('tasks/{id}/deliverables',                  [TaskController::class, 'addDeliverable'])->name('tasks.deliverables.add');
 Route::post('tasks/{id}/cac-variants',                  [TaskController::class, 'addCacVariant'])->name('tasks.cac-variants.add');
 Route::post('tasks/{id}/dependencies',                  [TaskController::class, 'addDependency'])->name('tasks.dependencies.add');
 Route::post('tasks/{id}/anchors',                       [TaskController::class, 'addKnowledgeAnchor'])->name('tasks.anchors.add');
 Route::post('tasks/{id}/prompts',                       [TaskController::class, 'addGuidancePrompt'])->name('tasks.prompts.add');
-// HTMX shared child remove
+// Inline shared child remove
 Route::delete('tasks/{id}/children/{collection}/{childId}', [TaskController::class, 'removeChild'])->name('tasks.children.remove');
 
 // --- Rubric Criteria (nested under tasks) ---

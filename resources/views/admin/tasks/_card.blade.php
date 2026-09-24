@@ -1,5 +1,5 @@
 @php $oob = $oob ?? false; @endphp
-<div class="mobile-row-card" id="task-card-{{ $task->id() }}" @if ($oob) hx-swap-oob="true" @endif style="cursor:default;">
+<div class="mobile-row-card" id="task-card-{{ $task->id() }}" @if ($oob) data-swap-oob @endif style="cursor:default;">
     <div class="mobile-row-top">
         <span>
             <span class="mobile-row-title">{{ $task->toPrimitives()['title'] }}</span>
@@ -9,9 +9,8 @@
     <div style="display:flex;align-items:center;gap:var(--sp-sm);margin-top:var(--sp-md);">
         <x-ui.button
             :severity="$task->isPublished() ? 'primary' : 'secondary'"
-            hx-patch="{{ route('admin.scenarios.tasks.publish', [$scenarioId, $task->id()]) }}"
-            hx-target="#task-row-{{ $task->id() }}"
-            hx-swap="outerHTML"
+            x-data
+            @click="$ajax('{{ route('admin.scenarios.tasks.publish', [$scenarioId, $task->id()]) }}', { method: 'PATCH', target: '#task-row-{{ $task->id() }}' })"
         >
             {{ $task->isPublished() ? 'Published' : 'Draft' }}
         </x-ui.button>

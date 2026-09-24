@@ -41,7 +41,7 @@ src/
 | Layer | Technology |
 |-------|-----------|
 | Backend | Laravel 13 (PHP 8.3+) |
-| Frontend | Blade + HTMX + _Hyperscript |
+| Frontend | Blade + Alpine.js (bundled with Vite) |
 | Database | MySQL (recommended) / SQLite (local) |
 | Build | Vite (optional for MVP) |
 | Architecture | Modular Monolith (DDD) |
@@ -148,7 +148,7 @@ php artisan serve
 npm install && npm run dev
 ```
 
-> ⚠️ **Note (Android/Termux):** Vite may fail due to file watcher limits. Use Blade + HTMX only if this happens.
+> ⚠️ **Note (Android/Termux):** `npm run dev` may fail due to file watcher limits. Run `npm run build` once instead (or build on a laptop and copy `public/build`).
 
 ---
 
@@ -205,7 +205,7 @@ git remote add origin https://github.com/W3BNEEK3/iwstgs.git
 git push -u origin main
 ```
 
-> When prompted: Username = your GitHub username, Password = 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
+> When prompted: Username = your GitHub username, Password = a GitHub personal access token (never commit it).
 
 ### SSH Key (Optional)
 
@@ -221,7 +221,7 @@ cat ~/.ssh/id_ed25519.pub   # paste into GitHub → SSH keys
 | Issue | Status | Workaround |
 |-------|--------|-----------|
 | Symlinks in shared storage | ❌ Broken | Work in Termux home only |
-| Vite file watchers | ❌ May crash | Use Blade + HTMX, skip Vite |
+| Vite file watchers | ❌ May crash | Use `npm run build` instead of `npm run dev` |
 | npm outside Termux home | ⚠️ Unreliable | Keep project in ~/ |
 | Full Vite dev experience | ✅ On laptop | Clone repo, run npm normally |
 

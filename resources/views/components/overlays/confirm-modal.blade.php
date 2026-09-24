@@ -4,10 +4,10 @@
      <x-overlays.confirm-modal id="delete-project" title="Delete project?"
          description="This can't be undone." :action="route('admin.projects.destroy', $id)" />
 
-     Pass hxTarget (+ optionally hxSwap) for an in-place HTMX removal instead of a full-page
-     redirect — e.g. removing one row from a list of child items:
+     Pass swapTarget (+ optionally swap) for an in-place removal via $ajax instead of a
+     full-page redirect — e.g. removing one row from a list of child items:
      <x-overlays.confirm-modal id="remove-x" title="Remove?" description="..."
-         :action="route('admin.tasks.children.remove', [...])" :hx-target="'#row-'.$id" /> --}}
+         :action="route('admin.tasks.children.remove', [...])" :swap-target="'#row-'.$id" /> --}}
 @props([
     'id',
     'title',
@@ -17,8 +17,8 @@
     'confirmLabel' => 'Confirm',
     'confirmSeverity' => 'destructive',
     'cancelLabel' => 'Cancel',
-    'hxTarget' => null,
-    'hxSwap' => 'outerHTML',
+    'swapTarget' => null,
+    'swap' => 'outerHTML',
 ])
 
 <x-overlays.modal :id="$id" :title="$title">
@@ -26,10 +26,9 @@
     <form
         method="POST"
         action="{{ $action }}"
-        @if ($hxTarget)
-            hx-{{ strtolower($method) }}="{{ $action }}"
-            hx-target="{{ $hxTarget }}"
-            hx-swap="{{ $hxSwap }}"
+        @if ($swapTarget)
+            x-data
+            @submit.prevent="$ajax($el.action, { method: '{{ $method }}', form: $el, target: '{{ $swapTarget }}', swap: '{{ $swap }}' }).then((ok) => ok && $el.closest('.modal-overlay')?.classList.remove('is-open'))"
         @endif
     >
         @csrf

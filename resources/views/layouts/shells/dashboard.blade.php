@@ -19,7 +19,7 @@
 @endphp
 
 @section('page')
-<div class="app-shell" data-app-shell>
+<div class="app-shell" x-data :class="{ 'is-collapsed': $store.nav.collapsed }">
     @include('partials.navigation.sidebar', ['items' => $navItems, 'homeRoute' => 'learn.catalogue'])
 
     <div class="app-content-column">

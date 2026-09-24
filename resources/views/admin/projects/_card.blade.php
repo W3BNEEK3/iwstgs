@@ -1,5 +1,5 @@
 @php $oob = $oob ?? false; @endphp
-<div class="mobile-row-card" id="project-card-{{ $project->id() }}" @if ($oob) hx-swap-oob="true" @endif style="cursor:default;">
+<div class="mobile-row-card" id="project-card-{{ $project->id() }}" @if ($oob) data-swap-oob @endif style="cursor:default;">
     <div class="mobile-row-top">
         <span>
             {{-- The card's primary field should be a short, unlabeled identifier (design doc
@@ -12,9 +12,8 @@
     <div style="display:flex;align-items:center;gap:var(--sp-sm);margin-top:var(--sp-md);">
         <x-ui.button
             :severity="$project->isPublished() ? 'primary' : 'secondary'"
-            hx-patch="{{ route('admin.projects.publish', $project->id()) }}"
-            hx-target="#project-row-{{ $project->id() }}"
-            hx-swap="outerHTML"
+            x-data
+            @click="$ajax('{{ route('admin.projects.publish', $project->id()) }}', { method: 'PATCH', target: '#project-row-{{ $project->id() }}' })"
         >
             {{ $project->isPublished() ? 'Published' : 'Draft' }}
         </x-ui.button>

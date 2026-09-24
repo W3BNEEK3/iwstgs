@@ -2,7 +2,9 @@
 @extends('layouts.app')
 
 @section('page')
-<div style="display:flex;flex-direction:column;min-height:100vh;">
+<div style="display:flex;flex-direction:column;min-height:100vh;" x-data
+     @keydown.escape.window="$store.nav.closeDrawer()"
+     x-init="window.matchMedia('(min-width: 760px)').addEventListener('change', (e) => { if (e.matches) $store.nav.closeDrawer() })">
 
     <header class="guest-topbar" id="guest-topbar">
         <a href="{{ route('home') }}" class="brand">
@@ -27,7 +29,8 @@
             class="btn-icon guest-nav-toggle"
             id="guest-mobile-menu-toggle"
             aria-haspopup="true"
-            aria-expanded="false"
+            :aria-expanded="$store.nav.drawerOpen"
+            @click="$store.nav.openDrawer(); $nextTick(() => $refs.drawerClose.focus())"
             aria-controls="guest-mobile-drawer"
             aria-label="Open navigation menu"
         >
@@ -47,7 +50,8 @@
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
-        hidden
+        x-show="$store.nav.drawerOpen"
+        x-cloak
     >
         <div class="guest-mobile-drawer-inner">
             <div class="guest-mobile-drawer-header">
@@ -60,6 +64,8 @@
                     class="btn-icon"
                     id="guest-mobile-menu-close"
                     aria-label="Close navigation menu"
+                    x-ref="drawerClose"
+                    @click="$store.nav.closeDrawer()"
                 >
                     <x-ui.icon name="close" />
                 </button>
@@ -70,7 +76,7 @@
             </nav>
         </div>
         {{-- Scrim / backdrop --}}
-        <div class="guest-mobile-drawer-scrim" id="guest-mobile-drawer-scrim" aria-hidden="true"></div>
+        <div class="guest-mobile-drawer-scrim" id="guest-mobile-drawer-scrim" aria-hidden="true" @click="$store.nav.closeDrawer()"></div>
     </div>
 
     <main style="flex:1;">
@@ -87,45 +93,6 @@
 </div>
 
 @push('scripts')
-<script>
-  (function () {
-    var toggle   = document.getElementById('guest-mobile-menu-toggle');
-    var close    = document.getElementById('guest-mobile-menu-close');
-    var scrim    = document.getElementById('guest-mobile-drawer-scrim');
-    var drawer   = document.getElementById('guest-mobile-drawer');
-    if (!toggle || !drawer) return;
-
-    function openDrawer() {
-      drawer.hidden = false;
-      toggle.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
-      // Focus the close button for keyboard accessibility
-      if (close) close.focus();
-    }
-
-    function closeDrawer() {
-      drawer.hidden = true;
-      toggle.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-      toggle.focus();
-    }
-
-    toggle.addEventListener('click', openDrawer);
-    if (close)  close.addEventListener('click', closeDrawer);
-    if (scrim)  scrim.addEventListener('click', closeDrawer);
-
-    // Close on Escape key (design doc §10.3 — consistent with modal close pattern)
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !drawer.hidden) closeDrawer();
-    });
-
-    // Close automatically if the viewport widens past the mobile breakpoint
-    var mq = window.matchMedia('(min-width: 760px)');
-    mq.addEventListener('change', function (e) {
-      if (e.matches && !drawer.hidden) closeDrawer();
-    });
-  }());
-</script>
 <script>
   // Theme toggle — design doc §2.3: follow prefers-color-scheme on first visit,
   // explicit toggle persists via cookie so the server can read it on next load.

@@ -87,8 +87,10 @@
   align-items: center;
 }
 
-/* Loading state — paired with hx-indicator, see resources/views/components/ui/button.blade.php */
+/* Loading state — shown while the button carries aria-busy="true" (set on
+   form submit and during $ajax calls, see resources/js/behaviors/busy-buttons.js) */
 .btn-spinner {
+  display: none;
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -97,6 +99,8 @@
   animation: btn-spin .6s linear infinite;
   flex-shrink: 0;
 }
+.btn[aria-busy="true"] .btn-spinner { display: inline-block; }
+.btn[aria-busy="true"] { pointer-events: none; }
 @keyframes btn-spin {
   to { transform: rotate(360deg); }
 }

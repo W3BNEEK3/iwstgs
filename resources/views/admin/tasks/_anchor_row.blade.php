@@ -9,7 +9,7 @@
             title="Remove this knowledge anchor?"
             description="This can't be undone."
             :action="route('admin.tasks.children.remove', [$taskId, 'anchors', $anchor->id()])"
-            :hx-target="'#anchor-' . $anchor->id()"
+            :swap-target="'#anchor-' . $anchor->id()"
             confirmLabel="Remove"
         />
     </td>

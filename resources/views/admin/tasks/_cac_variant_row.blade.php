@@ -8,7 +8,7 @@
             title="Remove this CAC variant?"
             description="This can't be undone."
             :action="route('admin.tasks.children.remove', [$taskId, 'cacVariants', $variant->id()])"
-            :hx-target="'#cac-variant-' . $variant->id()"
+            :swap-target="'#cac-variant-' . $variant->id()"
             confirmLabel="Remove"
         />
     </td>

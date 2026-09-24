@@ -34,8 +34,8 @@
             elsewhere (suggestion).
         </p>
         <div class="field-grid">
-            <x-forms.textarea name="consequence_task_ids" label="Consequence Task IDs" :value="old('consequence_task_ids', implode(\"\n\", $p['consequence_task_ids']))" :rows="4" />
-            <x-forms.textarea name="suggestion_task_ids" label="Suggestion Task IDs" :value="old('suggestion_task_ids', implode(\"\n\", $p['suggestion_task_ids']))" :rows="4" />
+            <x-forms.textarea name="consequence_task_ids" label="Consequence Task IDs" :value="old('consequence_task_ids', implode(PHP_EOL, $p['consequence_task_ids']))" :rows="4" />
+            <x-forms.textarea name="suggestion_task_ids" label="Suggestion Task IDs" :value="old('suggestion_task_ids', implode(PHP_EOL, $p['suggestion_task_ids']))" :rows="4" />
         </div>
     </x-forms.form-section>
 
@@ -58,7 +58,7 @@
             </tbody>
         </table>
     </div>
-    <form hx-post="{{ route('admin.tasks.deliverables.add', $task->id()) }}" hx-target="#deliverables-body" hx-swap="beforeend" hx-on::after-request="this.reset()">
+    <form method="POST" action="{{ route('admin.tasks.deliverables.add', $task->id()) }}" x-data @submit.prevent="$ajax($el.action, { form: $el, target: '#deliverables-body', swap: 'beforeend', reset: true })">
         @csrf
         <div class="field-grid">
             <x-forms.select name="type" label="Type" :options="[
@@ -67,7 +67,9 @@
             ]" />
             <x-forms.text-input name="label" label="Label" required />
         </div>
+        <x-forms.textarea name="description" label="Description" required :rows="2" />
         <label style="display:flex;align-items:center;gap:8px;margin-top:var(--sp-md);">
+            <input type="hidden" name="is_required" value="0">
             <input type="checkbox" name="is_required" value="1" checked>
             Required
         </label>
@@ -88,7 +90,7 @@
         </table>
     </div>
     @php $usedLevels = collect($task->cacVariants())->map(fn ($v) => $v->toPrimitives()['complexity_level'])->all(); @endphp
-    <form hx-post="{{ route('admin.tasks.cac-variants.add', $task->id()) }}" hx-target="#cac-variants-body" hx-swap="beforeend" hx-on::after-request="this.reset()">
+    <form method="POST" action="{{ route('admin.tasks.cac-variants.add', $task->id()) }}" x-data @submit.prevent="$ajax($el.action, { form: $el, target: '#cac-variants-body', swap: 'beforeend', reset: true })">
         @csrf
         <div class="field-grid">
             <x-forms.select name="complexity_level" label="Level" :options="collect(['low' => 'Low', 'mid' => 'Mid', 'high' => 'High'])->filter(fn ($l, $k) => ! in_array($k, $usedLevels, true))->all()" />
@@ -107,7 +109,7 @@
             @include('admin.tasks._dependency_row', ['dependency' => $d, 'taskId' => $task->id()])
         @endforeach
     </ul>
-    <form hx-post="{{ route('admin.tasks.dependencies.add', $task->id()) }}" hx-target="#dependencies-body" hx-swap="beforeend" hx-on::after-request="this.reset()">
+    <form method="POST" action="{{ route('admin.tasks.dependencies.add', $task->id()) }}" x-data @submit.prevent="$ajax($el.action, { form: $el, target: '#dependencies-body', swap: 'beforeend', reset: true })">
         @csrf
         <x-forms.text-input name="prerequisite_task_id" label="Prerequisite Task UUID" required />
         <x-ui.button type="submit" severity="secondary" icon="add" style="margin-top:var(--sp-md);">Add Dependency</x-ui.button>
@@ -126,7 +128,7 @@
             </tbody>
         </table>
     </div>
-    <form hx-post="{{ route('admin.tasks.anchors.add', $task->id()) }}" hx-target="#anchors-body" hx-swap="beforeend" hx-on::after-request="this.reset()">
+    <form method="POST" action="{{ route('admin.tasks.anchors.add', $task->id()) }}" x-data @submit.prevent="$ajax($el.action, { form: $el, target: '#anchors-body', swap: 'beforeend', reset: true })">
         @csrf
         <div class="field-grid">
             <x-forms.text-input name="concept_name" label="Concept Name" required />
@@ -158,7 +160,7 @@
             </tbody>
         </table>
     </div>
-    <form hx-post="{{ route('admin.tasks.prompts.add', $task->id()) }}" hx-target="#prompts-body" hx-swap="beforeend" hx-on::after-request="this.reset()">
+    <form method="POST" action="{{ route('admin.tasks.prompts.add', $task->id()) }}" x-data @submit.prevent="$ajax($el.action, { form: $el, target: '#prompts-body', swap: 'beforeend', reset: true })">
         @csrf
         <x-forms.text-input name="trigger_dimension" label="Trigger Dimension" help="e.g. dim_004 or test-coverage" required />
         <div style="margin-top:var(--sp-md);">

@@ -13,7 +13,7 @@
 
     <div class="sidebar-foot">
         <span style="font-size:12px;color:var(--text-muted);">{{ auth()->user()->name ?? '' }}</span>
-        <button type="button" class="sidebar-collapse-btn" data-sidebar-toggle aria-label="Collapse sidebar">
+        <button type="button" class="sidebar-collapse-btn" x-data @click="$store.nav.toggleCollapsed()" :aria-label="$store.nav.collapsed ? 'Expand sidebar' : 'Collapse sidebar'" aria-label="Collapse sidebar">
             <span class="material-symbols-outlined" style="font-size:16px">chevron_left</span>
         </button>
     </div>

@@ -5,9 +5,8 @@
     <td>
         <x-ui.button
             :severity="$scenario->isPublished() ? 'primary' : 'secondary'"
-            hx-patch="{{ route('admin.projects.scenarios.publish', [$projectId, $scenario->id()]) }}"
-            hx-target="#scenario-row-{{ $scenario->id() }}"
-            hx-swap="outerHTML"
+            x-data
+            @click="$ajax('{{ route('admin.projects.scenarios.publish', [$projectId, $scenario->id()]) }}', { method: 'PATCH', target: '#scenario-row-{{ $scenario->id() }}' })"
         >
             {{ $scenario->isPublished() ? 'Published' : 'Draft' }}
         </x-ui.button>

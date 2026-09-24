@@ -12,7 +12,7 @@ class AddExpectedDeliverableRequest extends FormRequest
         return [
             'type'          => ['required', 'in:written_explanation,artifact,code,diagram,document'],
             'label'         => ['required', 'string', 'max:300'],
-            'description'   => ['nullable', 'string'],
+            'description'   => ['required', 'string'],
             'is_required'   => ['required', 'boolean'],
             'display_order' => ['nullable', 'integer', 'min:0'],
         ];

@@ -2,7 +2,7 @@
      Right-aligned: notifications, then the profile menu (theme choice + logout
      live there — the header spec has no room for a standalone toggle). --}}
 <div class="app-topbar">
-    <button type="button" class="btn-icon mobile-menu-btn" data-mobile-drawer-toggle aria-label="Open menu">
+    <button type="button" class="btn-icon mobile-menu-btn" x-data @click="$store.nav.openDrawer()" :aria-expanded="$store.nav.drawerOpen" aria-controls="app-mobile-drawer" aria-label="Open menu">
         <x-ui.icon name="menu" />
     </button>
 

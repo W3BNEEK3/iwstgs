@@ -1,31 +1,40 @@
 import './bootstrap';
-import { initSidebarCollapse } from './behaviors/sidebar-collapse';
+import Alpine from 'alpinejs';
+import nav from './alpine/nav';
+import { ajax } from './alpine/ajax';
 import { initNetworkStatus } from './behaviors/network-status';
-import { initToastAutodismiss, initHtmxErrorToasts } from './behaviors/toast-autodismiss';
+import { initToastAutodismiss } from './behaviors/toast-autodismiss';
 import { initModals } from './behaviors/modal';
 import { initThemeToggle } from './behaviors/theme-toggle';
 import { initDropdowns } from './behaviors/dropdown';
-import { initMobileDrawer } from './behaviors/mobile-drawer';
-import { initPageLoadingBar } from './behaviors/page-loading-bar';
+import { initPageLoadingBar, startLoading, finishLoading } from './behaviors/page-loading-bar';
 import { initProfileChartRotate } from './behaviors/profile-chart-rotate';
+import { initBusyButtons } from './behaviors/busy-buttons';
+
+Alpine.store('nav', nav);
+
+Alpine.magic('ajax', (el) => async (url, options = {}) => {
+  const busy = options.form?.querySelector('[type=submit]') ?? el.closest('button');
+  busy?.setAttribute('aria-busy', 'true');
+  startLoading();
+  try {
+    return await ajax(url, options);
+  } finally {
+    busy?.removeAttribute('aria-busy');
+    finishLoading();
+  }
+});
+
+window.Alpine = Alpine;
+Alpine.start();
 
 document.addEventListener('DOMContentLoaded', () => {
-  initSidebarCollapse();
   initNetworkStatus();
   initToastAutodismiss();
-  initHtmxErrorToasts();
   initModals();
   initThemeToggle();
   initDropdowns();
-  initMobileDrawer();
   initPageLoadingBar();
   initProfileChartRotate();
-});
-
-// hx-boost'ed navigations swap the body without a full reload, so re-run the
-// per-page wiring after every settle (design doc §19).
-document.body.addEventListener('htmx:afterSettle', () => {
-  initSidebarCollapse();
-  initToastAutodismiss();
-  initProfileChartRotate();
+  initBusyButtons();
 });

@@ -1,13 +1,12 @@
 {
   "name": "w3bneek3/iwstgs",
   "type": "project",
-  "description": "IWSTGS modular monolith built with Laravel 13, DDD, Blade, HTMX, and _Hyperscript.",
+  "description": "IWSTGS modular monolith built with Laravel 13, DDD, Blade, and Alpine.js.",
   "keywords": [
     "laravel",
     "ddd",
     "modular-monolith",
-    "htmx",
-    "hyperscript"
+    "alpinejs"
   ],
   "license": "proprietary",
   "require": {

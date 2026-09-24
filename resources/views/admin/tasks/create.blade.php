@@ -32,7 +32,7 @@
         <label style="display:flex;align-items:center;gap:8px;">
             <input type="hidden" name="is_cac_runtime_set" value="0">
             <input type="checkbox" name="is_cac_runtime_set" value="1" checked
-                   _="on change toggle .hidden on #fixed-cac-fields">
+                   x-data @change="document.getElementById('fixed-cac-fields').classList.toggle('hidden', $el.checked)">
             CAC is runtime-set (varies per learner rather than fixed)
         </label>
         <div id="fixed-cac-fields" class="hidden field-grid" style="margin-top:var(--sp-lg);">

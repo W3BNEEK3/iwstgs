@@ -6,7 +6,7 @@
         title="Remove this dependency?"
         description="This can't be undone."
         :action="route('admin.tasks.children.remove', [$taskId, 'dependencies', $dependency->id()])"
-        :hx-target="'#dependency-' . $dependency->id()"
+        :swap-target="'#dependency-' . $dependency->id()"
         confirmLabel="Remove"
     />
 </li>

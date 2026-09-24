@@ -1,8 +1,6 @@
 /* Toast, network snackbar, confirmation modal, page loading bar — design doc §10 */
 
-/* ---- Page loading bar (any in-flight htmx request — instant feedback on
-   every boosted link/form click, distinct from the network snackbar's
-   4-second-delayed "poor connection" messaging) ---- */
+/* ---- Page loading bar (navigation or in-flight $ajax request) ---- */
 .page-loading-bar {
   position: fixed;
   top: 0;
