@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Session expired — {{ config('app.name', 'IWSTGS') }}</title>
+<title>Session expired — {{ config('app.name', 'Areyna') }}</title>
 <style>
   :root { --bg:#fff; --text:#0d0d0f; --text-muted:#71717a; --btn-bg:#0d0d0f; --btn-text:#fff; }
   @media (prefers-color-scheme: dark) {

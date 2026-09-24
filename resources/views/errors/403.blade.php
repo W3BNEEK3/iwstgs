@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Access denied — {{ config('app.name', 'IWSTGS') }}</title>
+<title>Access denied — {{ config('app.name', 'Areyna') }}</title>
 <style>
   :root { --bg:#fff; --text:#0d0d0f; --text-muted:#71717a; }
   @media (prefers-color-scheme: dark) {

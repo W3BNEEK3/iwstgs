@@ -8,8 +8,8 @@
 
     <header class="guest-topbar" id="guest-topbar">
         <a href="{{ route('home') }}" class="brand">
-            <span class="brand-mark">IW</span>
-            <span class="brand-name">{{ config('app.name', 'IWSTGS') }}</span>
+            <span class="brand-mark">AR</span>
+            <span class="brand-name">{{ config('app.name', 'Areyna') }}</span>
         </a>
 
         {{-- Theme toggle — follows prefers-color-scheme on first visit, user choice persists via cookie (design doc §2.3) --}}
@@ -56,8 +56,8 @@
         <div class="guest-mobile-drawer-inner">
             <div class="guest-mobile-drawer-header">
                 <a href="{{ route('home') }}" class="brand">
-                    <span class="brand-mark">IW</span>
-                    <span class="brand-name">{{ config('app.name', 'IWSTGS') }}</span>
+                    <span class="brand-mark">AR</span>
+                    <span class="brand-name">{{ config('app.name', 'Areyna') }}</span>
                 </a>
                 <button
                     type="button"
@@ -84,7 +84,7 @@
     </main>
 
     <footer class="guest-footer">
-        <span>&copy; {{ date('Y') }} {{ config('app.name', 'IWSTGS') }}. All rights reserved.</span>
+        <span>&copy; {{ date('Y') }} {{ config('app.name', 'Areyna') }}. All rights reserved.</span>
         <span aria-hidden="true">&middot;</span>
         <a href="{{ route('login') }}" style="color:inherit;text-decoration:none;">Sign in</a>
         <span aria-hidden="true">&middot;</span>

@@ -1,6 +1,6 @@
 @extends('layouts.shells.guest')
 
-@section('title', config('app.name', 'IWSTGS') . ' — Intelligent Work Simulation Training & Grading System')
+@section('title', config('app.name', 'Areyna') . ' — Software engineering, learned by doing')
 
 @section('guest-nav')
     <x-ui.button severity="secondary" :href="route('login')">Log in</x-ui.button>
@@ -253,7 +253,7 @@
                     <h2 class="landing-feature-h">Graded across six competency dimensions simultaneously.</h2>
                     <p class="landing-feature-body">
                         Most hiring tools score on one axis — pass/fail, or a single numeric rating.
-                        IWSTGS evaluates every submission across Problem Analysis, Design, Implementation,
+                        Areyna evaluates every submission across Problem Analysis, Design, Implementation,
                         Testing, Debugging, and Communication. You get a radar, not a number.
                     </p>
                     <a href="{{ route('register') }}" class="landing-feature-link" id="feat1-cta">
@@ -609,7 +609,7 @@
          SECTION 8 — GIANT BRAND MARK
          ─────────────────────────────────────────────────────────────────────── --}}
     <div class="landing-brand-mark" aria-hidden="true">
-        <div class="landing-brand-mark-text">{{ config('app.name', 'IWSTGS') }}</div>
+        <div class="landing-brand-mark-text">{{ config('app.name', 'Areyna') }}</div>
     </div>
 
 </div>

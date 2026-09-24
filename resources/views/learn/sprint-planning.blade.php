@@ -4,7 +4,7 @@
     $guideContext = ['newScenario' => $planning->scenarioSequence > 1];
 @endphp
 
-@section('title', 'Sprint ' . $planning->sprintNumber . ' Planning — ' . config('app.name', 'IWSTGS'))
+@section('title', 'Sprint ' . $planning->sprintNumber . ' Planning — ' . config('app.name', 'Areyna'))
 
 @section('body')
 <div style="margin-bottom:var(--sp-2xl);">

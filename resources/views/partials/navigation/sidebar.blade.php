@@ -1,8 +1,8 @@
 {{-- Expects: $items = [['route','label','icon','active'?], ...], $homeRoute (optional) --}}
 <aside class="app-sidebar">
     <a href="{{ isset($homeRoute) ? route($homeRoute) : url('/') }}" class="brand">
-        <span class="brand-mark">IW</span>
-        <span class="brand-name">{{ config('app.name', 'IWSTGS') }}</span>
+        <span class="brand-mark">AR</span>
+        <span class="brand-name">{{ config('app.name', 'Areyna') }}</span>
     </a>
 
     <nav class="side-nav">

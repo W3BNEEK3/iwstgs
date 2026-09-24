@@ -1,6 +1,6 @@
 @extends('layouts.shells.dashboard')
 
-@section('title', 'Projects — ' . config('app.name', 'IWSTGS'))
+@section('title', 'Projects — ' . config('app.name', 'Areyna'))
 
 @section('body')
 <h1 style="margin-bottom:var(--sp-2xl);">Projects</h1>

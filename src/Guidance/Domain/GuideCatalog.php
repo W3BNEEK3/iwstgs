@@ -34,9 +34,9 @@ final class GuideCatalog
         return [
             [
                 'key' => 'welcome', 'page' => 'enrol', 'when' => null,
-                'title' => 'Welcome to IWSTGS',
+                'title' => 'Welcome to Areyna',
                 'cards' => [
-                    ['What this is', 'IWSTGS drops you into realistic software projects with a fictional team, real-looking tickets and people who need things from you. You learn by doing the work, not by watching videos.'],
+                    ['What this is', 'Areyna drops you into realistic software projects with a fictional team, real-looking tickets and people who need things from you. You learn by doing the work, not by watching videos.'],
                     ['How it works', 'First a short check-in sets your starting rank. Then you pick a project and a role, plan sprints, and submit work. Every submission is reviewed and shapes what comes next.'],
                     ['I\'m Tiroco', 'I\'m your guide. I\'ll pop up with short tips the first time you reach each part of the platform. Once you know your way around, you can turn me off, and I\'ll stay quiet.'],
                 ],

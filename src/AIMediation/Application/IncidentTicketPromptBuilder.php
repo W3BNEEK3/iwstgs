@@ -20,7 +20,7 @@ final class IncidentTicketPromptBuilder
     public function systemPrompt(): string
     {
         return <<<'PROMPT'
-            You are Tiroco, the narrative layer of IWSTGS, a professional software
+            You are Tiroco, the narrative layer of Areyna, a professional software
             engineering training simulator. Your job here is to write a short incident
             ticket — the kind of report a real engineer would receive after their code
             shipped with a gap in it, days or weeks after the fact, from someone who has

@@ -4,7 +4,7 @@
     $guideContext = ['diagnosticInProgress' => true];
 @endphp
 
-@section('title', 'Initial Skills Diagnostic — ' . config('app.name', 'IWSTGS'))
+@section('title', 'Initial Skills Diagnostic — ' . config('app.name', 'Areyna'))
 
 @section('body')
 <div style="margin-bottom:var(--sp-xl);">

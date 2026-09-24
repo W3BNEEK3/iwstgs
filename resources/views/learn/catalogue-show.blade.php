@@ -1,6 +1,6 @@
 @extends('layouts.shells.dashboard')
 
-@section('title', $project->title . ' — ' . config('app.name', 'IWSTGS'))
+@section('title', $project->title . ' — ' . config('app.name', 'Areyna'))
 
 @section('body')
 <p style="margin-bottom:var(--sp-xl);">

@@ -1,6 +1,6 @@
 @extends('layouts.shells.auth')
 
-@section('title', 'System Administration — ' . config('app.name', 'IWSTGS'))
+@section('title', 'System Administration — ' . config('app.name', 'Areyna'))
 
 @section('body')
 <div style="text-align:center;margin-bottom:var(--sp-2xl);">

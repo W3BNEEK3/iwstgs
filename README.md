@@ -1,5 +1,7 @@
-# IWSTGS 🚀
-**Intelligent Web-Based Simulation & Training System**
+# Areyna 🚀
+**Software engineering, learned by doing.**
+
+*Areyna* comes from the Old Norse *reyna*: to try, to test, to prove by experience.
 
 A modular, domain-driven Laravel 13 application for simulation-based learning, competency evaluation, and AI-assisted feedback.
 

@@ -4,11 +4,11 @@ return [
     // Laravel core
     App\Providers\AppServiceProvider::class,
 
-    // IWSTGS — Shared kernel (must be first: other modules depend on its bindings)
+    // Areyna — Shared kernel (must be first: other modules depend on its bindings)
     Src\Shared\Infrastructure\Providers\SharedServiceProvider::class,
 
     Src\Shared\Infrastructure\Providers\ModulesServiceProvider::class,
-    // IWSTGS — Bounded context providers (alphabetical for readability)
+    // Areyna — Bounded context providers (alphabetical for readability)
     Src\AIMediation\Infrastructure\Provider\AIMediationServiceProvider::class,
     Src\Competency\Infrastructure\Provider\CompetencyServiceProvider::class,
     Src\Content\Infrastructure\Provider\ContentServiceProvider::class,

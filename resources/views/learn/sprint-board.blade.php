@@ -11,7 +11,7 @@
     ];
 @endphp
 
-@section('title', 'Sprint ' . $board->sprintNumber . ' Board — ' . config('app.name', 'IWSTGS'))
+@section('title', 'Sprint ' . $board->sprintNumber . ' Board — ' . config('app.name', 'Areyna'))
 
 @section('body')
 @if (session('error'))

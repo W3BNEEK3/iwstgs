@@ -1,4 +1,4 @@
-const COLLAPSE_KEY = 'iwstgs-sidebar-collapsed';
+const COLLAPSE_KEY = 'areyna-sidebar-collapsed';
 
 function readCollapsed() {
   try {

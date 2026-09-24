@@ -6,8 +6,8 @@
 <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--sp-2xl) var(--sp-lg);">
     <div style="width:100%;max-width:400px;">
         <div style="display:flex;align-items:center;gap:var(--sp-sm);justify-content:center;margin-bottom:var(--sp-2xl);">
-            <span class="brand-mark">IW</span>
-            <span class="brand-name" style="font-size:var(--text-lg);">{{ config('app.name', 'IWSTGS') }}</span>
+            <span class="brand-mark">AR</span>
+            <span class="brand-name" style="font-size:var(--text-lg);">{{ config('app.name', 'Areyna') }}</span>
         </div>
 
         @if (session('success'))

@@ -1,6 +1,6 @@
 /**
  * Toasts can arrive two ways: rendered by the server into #toast-stack from
- * session flash data, or pushed by client-side JS (window.iwstgsToast /
+ * session flash data, or pushed by client-side JS (window.areynaToast /
  * pushToast). A MutationObserver on the stack covers both sources with
  * one piece of wiring — dismiss button, expand/collapse for long messages,
  * and auto-dismiss for success/info (errors and warnings wait for the user,
@@ -65,5 +65,5 @@ export function pushToast(kind, message) {
 }
 
 if (typeof window !== 'undefined') {
-  window.iwstgsToast = pushToast;
+  window.areynaToast = pushToast;
 }

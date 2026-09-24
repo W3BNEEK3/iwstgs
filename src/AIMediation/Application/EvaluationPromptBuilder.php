@@ -37,7 +37,7 @@ final class EvaluationPromptBuilder
     public function systemPrompt(): string
     {
         return <<<'PROMPT'
-            You are the evaluation engine for IWSTGS, a professional software engineering
+            You are the evaluation engine for Areyna, a professional software engineering
             training simulator. You grade a learner's submitted work against a fixed rubric
             authored by a human content designer.
 

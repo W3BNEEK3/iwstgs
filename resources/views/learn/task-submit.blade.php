@@ -1,6 +1,6 @@
 @extends('layouts.shells.dashboard')
 
-@section('title', 'Submit — ' . $form->taskTitle . ' — ' . config('app.name', 'IWSTGS'))
+@section('title', 'Submit — ' . $form->taskTitle . ' — ' . config('app.name', 'Areyna'))
 
 @php
     $hasWrittenExplanation = collect($form->deliverables)->contains(fn ($d) => $d->type === 'written_explanation');

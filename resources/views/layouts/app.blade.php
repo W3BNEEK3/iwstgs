@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', config('app.name', 'IWSTGS'))</title>
+    <title>@yield('title', config('app.name', 'Areyna'))</title>
 
     {{-- Material Symbols via CDN — confirmed decision (design doc §6, §22.4); revisit
          self-hosting at Phase 11, not before. --}}

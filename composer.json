@@ -1,7 +1,7 @@
 {
   "name": "w3bneek3/iwstgs",
   "type": "project",
-  "description": "IWSTGS modular monolith built with Laravel 13, DDD, Blade, and Alpine.js.",
+  "description": "Areyna modular monolith built with Laravel 13, DDD, Blade, and Alpine.js.",
   "keywords": [
     "laravel",
     "ddd",
