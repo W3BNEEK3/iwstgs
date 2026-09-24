@@ -3,6 +3,7 @@ namespace Src\EvalEngine\Infrastructure\Listener;
 
 use Illuminate\Support\Facades\Log;
 use Src\EvalEngine\Application\Service\EvaluationService;
+use Src\EvalEngine\Application\Service\RankAssignmentService;
 use Src\Shared\Infrastructure\Feature\FeatureFlagService;
 use Src\Submission\Domain\Submission\SubmissionReceived;
 
@@ -18,11 +19,13 @@ final class EvaluateOnSubmissionReceived
     public function __construct(
         private readonly FeatureFlagService $flags,
         private readonly EvaluationService $evaluationService,
+        private readonly RankAssignmentService $rankAssignment,
     ) {}
 
     public function handle(SubmissionReceived $event): void
     {
         if (! $this->flags->isEnabled('aimediation.claude_evaluation')) {
+            $this->rankAssignment->assignWithoutEvaluation($event->learnerId, $event->learnerSessionId, $event->taskId);
             return;
         }
 
@@ -37,6 +40,7 @@ final class EvaluateOnSubmissionReceived
             Log::error("Evaluation failed for submission {$event->submissionId}: {$e->getMessage()}", [
                 'exception' => $e,
             ]);
+            $this->rankAssignment->assignWithoutEvaluation($event->learnerId, $event->learnerSessionId, $event->taskId);
         }
     }
 }

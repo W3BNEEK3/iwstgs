@@ -46,4 +46,12 @@ final class EloquentLearnerBacklogItemRepository implements LearnerBacklogItemRe
     {
         return LearnerBacklogItemModel::where('learner_session_id', $learnerSessionId)->exists();
     }
+
+    public function seededTemplateIdsForSession(string $learnerSessionId): array
+    {
+        return LearnerBacklogItemModel::where('learner_session_id', $learnerSessionId)
+            ->whereNotNull('template_item_id')
+            ->pluck('template_item_id')
+            ->all();
+    }
 }

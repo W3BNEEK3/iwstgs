@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Migration: alter_learner_backlog_items_nullable_template
@@ -13,21 +14,28 @@ use Illuminate\Support\Facades\DB;
  * not authored as backlog content — so an injected item has template_item_id
  * NULL and injected_card_id set instead (the inverse of a template-seeded item).
  *
- * Raw SQL throughout — doctrine/dbal (needed by Blueprint::change()) isn't
- * installed in this project.
+ * Uses the schema builder (not raw MySQL) so it also runs on SQLite.
  */
 return new class extends Migration {
     public function up(): void
     {
-        DB::statement('ALTER TABLE learner_backlog_items DROP FOREIGN KEY learner_backlog_items_template_item_id_foreign');
-        DB::statement('ALTER TABLE learner_backlog_items MODIFY template_item_id CHAR(36) NULL');
-        DB::statement('ALTER TABLE learner_backlog_items ADD CONSTRAINT learner_backlog_items_template_item_id_foreign FOREIGN KEY (template_item_id) REFERENCES backlog_item_templates(id)');
+        Schema::table('learner_backlog_items', function (Blueprint $table) {
+            $table->dropForeign(['template_item_id']);
+        });
+        Schema::table('learner_backlog_items', function (Blueprint $table) {
+            $table->uuid('template_item_id')->nullable()->change();
+            $table->foreign('template_item_id')->references('id')->on('backlog_item_templates');
+        });
     }
 
     public function down(): void
     {
-        DB::statement('ALTER TABLE learner_backlog_items DROP FOREIGN KEY learner_backlog_items_template_item_id_foreign');
-        DB::statement('ALTER TABLE learner_backlog_items MODIFY template_item_id CHAR(36) NOT NULL');
-        DB::statement('ALTER TABLE learner_backlog_items ADD CONSTRAINT learner_backlog_items_template_item_id_foreign FOREIGN KEY (template_item_id) REFERENCES backlog_item_templates(id)');
+        Schema::table('learner_backlog_items', function (Blueprint $table) {
+            $table->dropForeign(['template_item_id']);
+        });
+        Schema::table('learner_backlog_items', function (Blueprint $table) {
+            $table->uuid('template_item_id')->nullable(false)->change();
+            $table->foreign('template_item_id')->references('id')->on('backlog_item_templates');
+        });
     }
 };

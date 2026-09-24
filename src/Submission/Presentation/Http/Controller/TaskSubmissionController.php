@@ -60,6 +60,12 @@ class TaskSubmissionController
             }
         }
 
+        // Read before submitting: the final diagnostic submission completes the
+        // diagnostic synchronously and flips the session out of 'diagnostic'.
+        $sessionView = $this->queryBus->ask(new GetLearnerSessionQuery($session));
+        abort_if($sessionView === null, 404);
+        $wasDiagnostic = $sessionView->status === 'diagnostic';
+
         try {
             $this->commandBus->dispatch(new SubmitTaskCommand(
                 userId:      Auth::id(),
@@ -90,9 +96,7 @@ class TaskSubmissionController
             }
         }
 
-        $sessionView = $this->queryBus->ask(new GetLearnerSessionQuery($session));
-
-        if ($sessionView->status === 'diagnostic') {
+        if ($wasDiagnostic) {
             return redirect()->route('learn.diagnostic')
                 ->with('success', 'Submission received.');
         }

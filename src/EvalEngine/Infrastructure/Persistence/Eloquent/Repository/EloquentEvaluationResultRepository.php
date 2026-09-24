@@ -109,4 +109,14 @@ final class EloquentEvaluationResultRepository implements EvaluationResultReposi
             ->values()
             ->all();
     }
+
+    public function writeFollowUpPrompt(string $evaluationId, string $followUpPromptText, string $status): void
+    {
+        $changes = ['follow_up_status' => $status];
+        if ($followUpPromptText !== '') {
+            $changes['follow_up_prompt_text'] = $followUpPromptText;
+        }
+
+        EvaluationResultModel::whereKey($evaluationId)->update($changes);
+    }
 }

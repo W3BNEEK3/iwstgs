@@ -22,7 +22,8 @@ class EvaluationResultModel extends Model
 
     protected $fillable = [
         'id', 'submission_id', 'learner_id', 'overall_tier', 'passes_threshold',
-        'gap_type', 'is_uncertain', 'follow_up_prompt_id', 'evaluated_at',
+        'gap_type', 'is_uncertain', 'follow_up_prompt_id', 'follow_up_prompt_text',
+        'follow_up_status', 'evaluated_at',
     ];
 
     protected $casts = [

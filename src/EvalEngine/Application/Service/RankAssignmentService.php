@@ -6,6 +6,7 @@ use Src\LearnerProfile\Application\Command\AssignInitialRank\AssignInitialRankCo
 use Src\Shared\Application\Bus\CommandBus;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\SimExecution\Application\Command\CompleteDiagnosticSession\CompleteDiagnosticSessionCommand;
+use Src\SimExecution\Application\Query\FindDiagnosticSessionForTask\FindDiagnosticSessionForTaskQuery;
 use Src\SimExecution\Application\Query\GetLearnerSession\GetLearnerSessionQuery;
 use Src\Submission\Application\Query\GetLatestSubmissionId\GetLatestSubmissionIdQuery;
 use Src\Simulation\Application\Query\ListTasksByScenario\ListTasksByScenarioQuery;
@@ -59,11 +60,37 @@ final class RankAssignmentService
 
         [$rankTier, $rankLevel] = $this->mapTiersToRank($tiers);
 
+        $this->assign($learnerId, $learnerSessionId, $diagnosticSessionId, $rankTier, $rankLevel,
+            'Diagnostic scenario completed — rank computed from aggregated diagnostic submission quality.');
+    }
+
+    /**
+     * Used when a diagnostic submission could not be evaluated (AI evaluation
+     * disabled or the provider failed). Without it the learner would be held on
+     * /learn/diagnostic forever by EnsureDiagnosticComplete. Falls back to the
+     * entry rank; rank escalation corrects it once real evaluations flow.
+     */
+    public function assignWithoutEvaluation(string $learnerId, string $learnerSessionId, string $taskId): void
+    {
+        $diagnosticSessionId = $this->queryBus->ask(new FindDiagnosticSessionForTaskQuery($learnerSessionId, $taskId));
+        if ($diagnosticSessionId === null || ! $this->allDiagnosticTasksAttempted($learnerSessionId)) {
+            return;
+        }
+
+        $tiers = $this->evaluationResults->findAllDimensionTiersForSession($learnerSessionId);
+        [$rankTier, $rankLevel] = $tiers !== [] ? $this->mapTiersToRank($tiers) : ['Junior', 1];
+
+        $this->assign($learnerId, $learnerSessionId, $diagnosticSessionId, $rankTier, $rankLevel,
+            'Diagnostic scenario completed without AI evaluation — entry rank assigned.');
+    }
+
+    private function assign(string $learnerId, string $learnerSessionId, string $diagnosticSessionId, string $rankTier, int $rankLevel, string $reason): void
+    {
         $this->commandBus->dispatch(new AssignInitialRankCommand(
             learnerId:        $learnerId,
             rankTier:         $rankTier,
             rankLevel:        $rankLevel,
-            triggerReason:    'Diagnostic scenario completed — rank computed from aggregated diagnostic submission quality.',
+            triggerReason:    $reason,
             sourceSessionId:  $learnerSessionId,
         ));
 

@@ -53,7 +53,7 @@ class MedQueueScenario2Seeder extends Seeder
         ScenarioReferenceMaterialModel::updateOrCreate(
             ['scenario_id' => $scenario->id, 'title' => 'Slow query log (attached)'],
             [
-                'material_type'    => 'log_file',
+                'material_type'    => 'report',
                 'content'          => "Query: SELECT * FROM queue_entries WHERE is_served = 0 ORDER BY enqueue_time ASC\nDuration: avg 4230ms at 40 concurrent connections\nRows examined: 18,500 (full table scan)\nExplain plan: type=ALL, key=NULL, rows=18500",
                 'embedded_signals' => ['no index on is_served', 'no composite index on (is_served, enqueue_time)', 'SELECT * returns unused columns'],
                 'display_order'    => 1,

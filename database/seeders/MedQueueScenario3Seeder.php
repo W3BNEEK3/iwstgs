@@ -18,7 +18,7 @@ use Src\Simulation\Infrastructure\Persistence\Eloquent\Model\BacklogItemTemplate
  * Content Rationale: The clinic has received a compliance audit finding:
  * patient data is accessible without proper authorization, and there is no
  * audit trail of queue actions. This scenario targets dim_design,
- * dim_implementation, and dim_professional_responsibility — areas not
+ * dim_implementation, and dim_communication (data-protection reasoning) — areas not
  * heavily covered in Scenarios 1 & 2. It gives the adaptive engine a
  * third scenario to route learners to when they show weaknesses in
  * security or professional/ethical reasoning.
@@ -64,7 +64,7 @@ class MedQueueScenario3Seeder extends Seeder
         ScenarioReferenceMaterialModel::updateOrCreate(
             ['scenario_id' => $scenario->id, 'title' => 'Existing roles in the system'],
             [
-                'material_type'    => 'system_note',
+                'material_type'    => 'notes',
                 'content'          => "Users have one of three roles: nurse (can enqueue, view own ward's patients, mark served), manager (can approve triage escalations, view all patients), admin (full access). Role is stored on the users table.",
                 'embedded_signals' => ['role is on users table', 'nurse scope is ward-limited — not all patients'],
                 'display_order'    => 2,
@@ -138,7 +138,7 @@ class MedQueueScenario3Seeder extends Seeder
         );
 
         TaskGuidancePromptModel::updateOrCreate(
-            ['task_id' => $rbacTask->id, 'trigger_dimension' => 'dim_professional_responsibility'],
+            ['task_id' => $rbacTask->id, 'trigger_dimension' => 'dim_communication'],
             [
                 'prompt_text'           => "The audit report describes this as HIGH risk. What does that classification imply about how quickly and carefully this needs to be addressed?",
                 'autonomy_level_filter' => 'low', 'delivery_mode' => 'proactive', 'display_order' => 1,
@@ -164,7 +164,7 @@ class MedQueueScenario3Seeder extends Seeder
         RubricCriterionModel::updateOrCreate(
             ['rubric_set_id' => $rubricSet->id, 'task_id' => $rbacTask->id, 'task_dimension_label' => 'Professional responsibility (data protection)'],
             [
-                'parent_dimension_id'    => 'dim_professional_responsibility',
+                'parent_dimension_id'    => 'dim_communication',
                 'complexity_level'       => 'mid',
                 'criterion_text'         => 'The learner acknowledges the patient-data sensitivity and applies the principle of least privilege — nurses can only access what they need for their role, not more.',
                 'weight'                 => '0.500', 'dimension_weight' => '0.300',

@@ -21,16 +21,16 @@ use Src\SimExecution\Domain\Sprint\SprintGoalPolicy;
 use Src\SimExecution\Domain\Sprint\SprintGoalSource;
 use Src\SimExecution\Domain\Sprint\SprintStatus;
 use Src\Simulation\Application\Query\ListBacklogItemTemplatesByProject\ListBacklogItemTemplatesByProjectQuery;
+use Src\Simulation\Application\Query\ListTasksByScenario\ListTasksByScenarioQuery;
 use Src\Simulation\Application\Query\ListVaultItemsByProject\ListVaultItemsByProjectQuery;
 use Src\Simulation\Domain\Backlog\BacklogItemTemplateSummary;
+use Src\Simulation\Domain\Task\Task;
 use Src\Simulation\Domain\Vault\ArtifactVaultItem;
 
 /**
  * Idempotent setup step run every time a learner opens sprint planning:
- * seeds their personal backlog copy from backlog_item_templates the first
- * time (never again — a template list changing after seeding is a content
- * authoring concern, not something a live sprint retroactively picks up),
- * and opens a new sprint in planning once the previous one has been
+ * seeds their personal backlog copy from backlog_item_templates for the
+ * current scenario (see seedBacklogForCurrentScenario), and opens a new sprint in planning once the previous one has been
  * submitted (or none exists yet). A sprint already in planning/active is
  * left untouched.
  */
@@ -61,20 +61,7 @@ final class EnsureSprintPlanningReadyHandler
         }
 
         DB::transaction(function () use ($learner, $session, $command) {
-            if (! $this->backlogItems->existsForSession($session->id())) {
-                /** @var BacklogItemTemplateSummary[] $templates */
-                $templates = $this->queryBus->ask(new ListBacklogItemTemplatesByProjectQuery($command->projectId));
-                foreach ($templates as $template) {
-                    $item = LearnerBacklogItem::seedFromTemplate(
-                        id:               LearnerBacklogItemId::generate(),
-                        learnerSessionId: $session->id(),
-                        learnerId:        $learner->id(),
-                        templateItemId:   $template->id,
-                        priority:         BacklogPriority::from($template->defaultPriority),
-                    );
-                    $this->backlogItems->save($item);
-                }
-            }
+            $this->seedBacklogForCurrentScenario($learner->id(), $session->id(), $command->projectId, $session->currentScenarioId());
 
             $latest = $this->sprints->findLatestForSession($session->id());
             $needsNewSprint = $latest === null
@@ -109,6 +96,48 @@ final class EnsureSprintPlanningReadyHandler
                 event($event);
             }
         });
+    }
+
+    /**
+     * Only items whose task belongs to the learner's current scenario are
+     * seeded, since SubmitTaskHandler rejects tasks from any other scenario.
+     * Items for later scenarios are topped up here once the session advances.
+     * Unlinked tickets (no task) are realistic backlog noise, seeded once.
+     */
+    private function seedBacklogForCurrentScenario(string $learnerId, string $sessionId, string $projectId, ?string $scenarioId): void
+    {
+        $alreadySeeded = $this->backlogItems->seededTemplateIdsForSession($sessionId);
+        $isFirstSeed = $alreadySeeded === [];
+
+        $currentScenarioTaskIds = [];
+        if ($scenarioId !== null) {
+            /** @var Task[] $tasks */
+            $tasks = $this->queryBus->ask(new ListTasksByScenarioQuery($scenarioId));
+            $currentScenarioTaskIds = array_map(fn (Task $t) => $t->id(), $tasks);
+        }
+
+        /** @var BacklogItemTemplateSummary[] $templates */
+        $templates = $this->queryBus->ask(new ListBacklogItemTemplatesByProjectQuery($projectId));
+        foreach ($templates as $template) {
+            if (in_array($template->id, $alreadySeeded, true)) {
+                continue;
+            }
+
+            $inScope = $template->taskId === null
+                ? $isFirstSeed
+                : in_array($template->taskId, $currentScenarioTaskIds, true);
+            if (! $inScope) {
+                continue;
+            }
+
+            $this->backlogItems->save(LearnerBacklogItem::seedFromTemplate(
+                id:               LearnerBacklogItemId::generate(),
+                learnerSessionId: $sessionId,
+                learnerId:        $learnerId,
+                templateItemId:   $template->id,
+                priority:         BacklogPriority::from($template->defaultPriority),
+            ));
+        }
     }
 
     /**

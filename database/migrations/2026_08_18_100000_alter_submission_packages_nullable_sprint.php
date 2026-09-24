@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Migration: alter_submission_packages_nullable_sprint
@@ -12,22 +13,28 @@ use Illuminate\Support\Facades\DB;
  * Planning Layer is inactive. Sprint board state is not evaluated during
  * diagnostic assessment." A diagnostic submission has no sprint at all.
  *
- * Raw SQL throughout — doctrine/dbal (needed by Blueprint::change()) isn't
- * installed in this project. Same pattern as
- * alter_learner_backlog_items_nullable_template.
+ * Uses the schema builder (not raw MySQL) so it also runs on SQLite.
  */
 return new class extends Migration {
     public function up(): void
     {
-        DB::statement('ALTER TABLE submission_packages DROP FOREIGN KEY submission_packages_sprint_id_foreign');
-        DB::statement('ALTER TABLE submission_packages MODIFY sprint_id CHAR(36) NULL');
-        DB::statement('ALTER TABLE submission_packages ADD CONSTRAINT submission_packages_sprint_id_foreign FOREIGN KEY (sprint_id) REFERENCES learner_sprints(id) ON DELETE RESTRICT');
+        Schema::table('submission_packages', function (Blueprint $table) {
+            $table->dropForeign(['sprint_id']);
+        });
+        Schema::table('submission_packages', function (Blueprint $table) {
+            $table->uuid('sprint_id')->nullable()->change();
+            $table->foreign('sprint_id')->references('id')->on('learner_sprints')->restrictOnDelete();
+        });
     }
 
     public function down(): void
     {
-        DB::statement('ALTER TABLE submission_packages DROP FOREIGN KEY submission_packages_sprint_id_foreign');
-        DB::statement('ALTER TABLE submission_packages MODIFY sprint_id CHAR(36) NOT NULL');
-        DB::statement('ALTER TABLE submission_packages ADD CONSTRAINT submission_packages_sprint_id_foreign FOREIGN KEY (sprint_id) REFERENCES learner_sprints(id) ON DELETE RESTRICT');
+        Schema::table('submission_packages', function (Blueprint $table) {
+            $table->dropForeign(['sprint_id']);
+        });
+        Schema::table('submission_packages', function (Blueprint $table) {
+            $table->uuid('sprint_id')->nullable(false)->change();
+            $table->foreign('sprint_id')->references('id')->on('learner_sprints')->restrictOnDelete();
+        });
     }
 };

@@ -11,7 +11,7 @@ use Src\AIMediation\Domain\Review\HumanReviewEntryId;
 use Src\AIMediation\Domain\Review\HumanReviewRepository;
 use Src\EvalEngine\Domain\Evaluation\EvaluationComplete;
 use Src\EvalEngine\Domain\Evaluation\EvaluationResultRepository;
-use Src\EvalEngine\Domain\Evaluation\FollowUpPromptTemplateRepository;
+use Src\EvalEngine\Domain\FollowUp\FollowUpPromptRepository;
 use Src\EvalEngine\Domain\Gap\GapFlagRepository;
 use Src\LearnerProfile\Application\Command\AdjustCacFromSubmission\AdjustCacFromSubmissionCommand;
 use Src\LearnerProfile\Application\Command\RecordEvaluationOutcome\RecordEvaluationOutcomeCommand;
@@ -65,7 +65,7 @@ final class PostEvaluationRouter
         private readonly HabitPatternDetector $habitPatternDetector,
         private readonly FeatureFlagService $flags,
         private readonly RankAssignmentService $rankAssignmentService,
-        private readonly FollowUpPromptTemplateRepository $followUpPromptTemplates,
+        private readonly FollowUpPromptRepository $followUpPrompts,
     ) {}
 
     public function handle(EvaluationComplete $event): void
@@ -216,12 +216,13 @@ final class PostEvaluationRouter
         // write the follow-up prompt text to the evaluation result so the learner
         // gets a chance to clarify. The human review entry is created immediately
         // as a safety net; if the learner never answers, the reviewer sees it.
-        $promptTemplate = $this->followUpPromptTemplates->findForTask($event->taskId);
+        $promptId = $this->evaluationResults->findBySubmissionId($event->submissionId)?->followUpPromptId;
+        $promptText = $promptId !== null ? $this->followUpPrompts->findTextById($promptId) : null;
 
-        if ($promptTemplate !== null) {
+        if ($promptText !== null) {
             $this->evaluationResults->writeFollowUpPrompt(
                 evaluationId:       $event->evaluationId,
-                followUpPromptText: $promptTemplate->promptText(),
+                followUpPromptText: $promptText,
                 status:             'pending',
             );
         }

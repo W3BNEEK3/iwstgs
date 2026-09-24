@@ -14,4 +14,7 @@ interface LearnerBacklogItemRepository
     public function findAllForSprint(string $sprintId): array;
 
     public function existsForSession(string $learnerSessionId): bool;
+
+    /** @return string[] template_item_id values already copied into this session's backlog */
+    public function seededTemplateIdsForSession(string $learnerSessionId): array;
 }

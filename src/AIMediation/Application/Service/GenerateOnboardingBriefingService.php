@@ -1,6 +1,7 @@
 <?php
 namespace Src\AIMediation\Application\Service;
 
+use Illuminate\Support\Facades\Log;
 use Src\AIMediation\Application\NarrativePromptBuilder;
 use Src\AIMediation\Domain\Provider\AiTextGeneratorClient;
 use Src\Shared\Application\Bus\CommandBus;
@@ -41,13 +42,41 @@ final class GenerateOnboardingBriefingService
             return $existing;
         }
 
-        $text = $this->generator->generate(
-            $this->promptBuilder->systemPrompt(),
-            $this->promptBuilder->userContent($project),
-        );
+        try {
+            $text = $this->generator->generate(
+                $this->promptBuilder->systemPrompt(),
+                $this->promptBuilder->userContent($project),
+            );
+        } catch (\Throwable $e) {
+            // An unconfigured or failing AI provider must never block a learner
+            // from starting a project. The fallback is not cached, so the next
+            // request retries generation.
+            Log::warning("Onboarding briefing generation failed for project {$project->id()}: {$e->getMessage()}");
+
+            return $this->fallbackBriefing($project);
+        }
 
         $this->commandBus->dispatch(new RecordOnboardingBriefingCommand($project->id(), $text));
 
         return $text;
+    }
+
+    private function fallbackBriefing(ProjectTemplate $project): string
+    {
+        $lines = ["Welcome to the {$project->title()} team.", '', $project->businessContext()];
+
+        $stakeholders = array_filter(array_map(
+            fn ($s) => is_array($s) && isset($s['name']) ? "{$s['name']}" . (isset($s['role']) ? " ({$s['role']})" : '') : null,
+            $project->stakeholders(),
+        ));
+        if ($stakeholders !== []) {
+            $lines[] = '';
+            $lines[] = 'People you will hear from: ' . implode(', ', $stakeholders) . '.';
+        }
+
+        $lines[] = '';
+        $lines[] = 'Read the scenario brief and reference materials carefully, then plan your first sprint.';
+
+        return implode("\n", $lines);
     }
 }

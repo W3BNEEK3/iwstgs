@@ -16,7 +16,7 @@ class ShiftBoardScenario2Seeder extends Seeder
 {
     public function run(): void
     {
-        $project = ProjectTemplateModel::where('title', 'ShiftBoard — Employee Scheduling System')->firstOrFail();
+        $project = ProjectTemplateModel::where('title', 'ShiftBoard — Staff Scheduling for Retail Teams')->firstOrFail();
         $rubricSet = $project->rubricSet;
 
         $scenario = ScenarioTemplateModel::updateOrCreate(
