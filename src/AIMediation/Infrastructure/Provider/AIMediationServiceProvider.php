@@ -54,7 +54,7 @@ class AIMediationServiceProvider extends ServiceProvider
         // services.ai_evaluation.provider (env AI_EVALUATION_PROVIDER) picks which
         // concrete client EvaluationService actually calls — see config/services.php.
         $this->app->bind(AiEvaluatorClient::class, function ($app) {
-            return match (config('services.ai_evaluation.provider')) {
+            return match (self::resolveProviderName()) {
                 'gemini' => $app->make(GeminiApiClient::class),
                 default  => $app->make(ClaudeApiClient::class),
             };
@@ -63,11 +63,17 @@ class AIMediationServiceProvider extends ServiceProvider
         // Same provider switch as AiEvaluatorClient — Tiroco's narrative generation
         // uses whichever provider is already configured for evaluation.
         $this->app->bind(AiTextGeneratorClient::class, function ($app) {
-            return match (config('services.ai_evaluation.provider')) {
+            return match (self::resolveProviderName()) {
                 'gemini' => $app->make(GeminiApiClient::class),
                 default  => $app->make(ClaudeApiClient::class),
             };
         });
+    }
+
+    /** The provider actually in use: 'gemini' or 'claude' (anything unrecognised falls back to Claude). */
+    public static function resolveProviderName(): string
+    {
+        return strtolower(trim((string) config('services.ai_evaluation.provider', 'claude'))) === 'gemini' ? 'gemini' : 'claude';
     }
 
     public function boot(): void

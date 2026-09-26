@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Src\AIMediation\Application\Query\ListAiMediationEvents\ListAiMediationEventsQuery;
 use Src\AIMediation\Application\Query\ListConceptTagRecommendations\ListConceptTagRecommendationsQuery;
+use Src\AIMediation\Infrastructure\Provider\AIMediationServiceProvider;
 use Src\AIMediation\Infrastructure\Persistence\Eloquent\Model\ConceptTagRecommendationModel;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\Shared\Infrastructure\Feature\FeatureFlagService;
@@ -88,9 +89,30 @@ final class AiEngineController extends Controller
             $key => $this->flags->isEnabled($key),
         ])->all();
 
+        $configuredProvider = (string) config('services.ai_evaluation.provider', 'claude');
+
+        $providers = [
+            'claude' => [
+                'label'     => 'Claude (Anthropic)',
+                'model'     => config('services.anthropic.model'),
+                'key_set'   => ! empty(config('services.anthropic.key')),
+                'key_env'   => 'ANTHROPIC_API_KEY',
+                'model_env' => 'ANTHROPIC_MODEL',
+            ],
+            'gemini' => [
+                'label'     => 'Gemini (Google)',
+                'model'     => config('services.gemini.model'),
+                'key_set'   => ! empty(config('services.gemini.key')),
+                'key_env'   => 'GEMINI_API_KEY',
+                'model_env' => 'GEMINI_MODEL',
+            ],
+        ];
+
         $config = [
-            'provider'             => config('services.claude.model', 'claude-3-5-sonnet-20241022'),
-            'api_key_set'          => ! empty(config('services.claude.api_key')),
+            'active_provider'          => AIMediationServiceProvider::resolveProviderName(),
+            'configured_provider'      => $configuredProvider,
+            'provider_recognised'      => array_key_exists(strtolower(trim($configuredProvider)), $providers),
+            'providers'                => $providers,
             'success_streak_threshold' => 3,
             'failure_streak_threshold' => 3,
             'habit_pattern_threshold'  => 3,

@@ -18,24 +18,46 @@
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:var(--sp-xl);">
 
-    {{-- Provider --}}
+    {{-- Providers --}}
     <div class="panel">
-        <h2 style="margin:0 0 var(--sp-lg);font-size:var(--text-md);display:flex;align-items:center;gap:var(--sp-sm);">
+        <h2 style="margin:0 0 var(--sp-sm);font-size:var(--text-md);display:flex;align-items:center;gap:var(--sp-sm);">
             <span class="material-symbols-outlined" style="font-size:1.1em;">api</span>
-            AI Provider
+            AI Providers
         </h2>
-        <dl style="display:grid;grid-template-columns:auto 1fr;gap:var(--sp-xs) var(--sp-lg);font-size:var(--text-sm);">
-            <dt style="color:var(--text-muted);">Model</dt>
-            <dd style="margin:0;font-family:monospace;">{{ $config['provider'] }}</dd>
-            <dt style="color:var(--text-muted);">API Key</dt>
-            <dd style="margin:0;">
-                @if ($config['api_key_set'])
-                    <x-ui.badge tone="success">Configured</x-ui.badge>
-                @else
-                    <x-ui.badge tone="danger">Missing — set CLAUDE_API_KEY in .env</x-ui.badge>
-                @endif
-            </dd>
-        </dl>
+        <p style="font-size:var(--text-sm);color:var(--text-muted);margin:0 0 var(--sp-lg);">
+            One provider handles all evaluation and generated text. Switch it with
+            <code>AI_EVALUATION_PROVIDER=claude</code> or <code>gemini</code> in <code>.env</code>, then run <code>php artisan config:clear</code>.
+        </p>
+
+        @unless ($config['provider_recognised'])
+            <p style="font-size:var(--text-sm);color:var(--error);margin:0 0 var(--sp-md);">
+                AI_EVALUATION_PROVIDER is set to "{{ $config['configured_provider'] }}", which isn't recognised, so Claude is being used.
+            </p>
+        @endunless
+
+        <div style="display:grid;gap:var(--sp-lg);">
+            @foreach ($config['providers'] as $key => $provider)
+                @php($isActive = $config['active_provider'] === $key)
+                <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--sp-md);{{ $isActive ? 'border-color:var(--text-strong);' : '' }}">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--sp-sm);margin-bottom:var(--sp-sm);">
+                        <strong>{{ $provider['label'] }}</strong>
+                        <x-ui.badge :tone="$isActive ? 'info' : 'neutral'">{{ $isActive ? 'Active' : 'Standby' }}</x-ui.badge>
+                    </div>
+                    <dl style="display:grid;grid-template-columns:auto 1fr;gap:var(--sp-xs) var(--sp-lg);font-size:var(--text-sm);margin:0;">
+                        <dt style="color:var(--text-muted);">Model</dt>
+                        <dd style="margin:0;font-family:monospace;">{{ $provider['model'] }} <span style="color:var(--text-muted);font-family:var(--font-ui);">({{ $provider['model_env'] }})</span></dd>
+                        <dt style="color:var(--text-muted);">API key</dt>
+                        <dd style="margin:0;">
+                            @if ($provider['key_set'])
+                                <x-ui.badge tone="success">Configured</x-ui.badge>
+                            @else
+                                <x-ui.badge :tone="$isActive ? 'error' : 'neutral'">Not set — {{ $provider['key_env'] }}</x-ui.badge>
+                            @endif
+                        </dd>
+                    </dl>
+                </div>
+            @endforeach
+        </div>
     </div>
 
     {{-- Feature flags --}}

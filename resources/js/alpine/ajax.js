@@ -32,6 +32,16 @@ function applyOutOfBand(fragment) {
   });
 }
 
+/**
+ * '#some-id' is looked up with getElementById, not querySelector: ids built
+ * from keys like "simulation.project_catalogue" contain dots, which a CSS
+ * selector would read as class names and silently match nothing.
+ */
+function resolveTarget(target) {
+  if (typeof target !== 'string') return target;
+  return target.startsWith('#') ? document.getElementById(target.slice(1)) : document.querySelector(target);
+}
+
 function swapInto(target, fragment, swap) {
   if (!target) return;
   if (swap === 'beforeend') target.append(fragment);
@@ -85,7 +95,7 @@ export async function ajax(url, { method = 'POST', target = null, swap = 'outerH
 
   const fragment = parse(await response.text());
   applyOutOfBand(fragment);
-  swapInto(typeof target === 'string' ? document.querySelector(target) : target, fragment, swap);
+  swapInto(resolveTarget(target), fragment, swap);
 
   if (reset && form) form.reset();
   return true;

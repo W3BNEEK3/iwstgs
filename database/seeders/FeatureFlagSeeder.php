@@ -20,7 +20,7 @@ class FeatureFlagSeeder extends Seeder
             ['flag_key' => 'simulation.sprint_board',          'module' => 'SimExecution',  'description' => 'Enables the Kanban sprint board and Artifact Vault access.'],
             ['flag_key' => 'simulation.task_submission',       'module' => 'Submission',    'description' => 'Enables the task submission form and four-layer submission assembly.'],
             ['flag_key' => 'submission.code_execution',        'module' => 'Submission',    'description' => 'Enables Docker-based code execution. Leave disabled until Phase 11.'],
-            ['flag_key' => 'aimediation.claude_evaluation',    'module' => 'AIMediation',   'description' => 'Enables live Claude API evaluation. When disabled, submissions queue for human review.'],
+            ['flag_key' => 'aimediation.claude_evaluation',    'module' => 'AIMediation',   'description' => 'Enables live AI evaluation of submissions (Claude or Gemini, chosen by AI_EVALUATION_PROVIDER).'],
             ['flag_key' => 'adaptive.consequence_tasks',       'module' => 'EvalEngine',    'description' => 'Enables automatic injection of consequence task cards on failed submissions.'],
             ['flag_key' => 'adaptive.suggestion_tasks',        'module' => 'EvalEngine',    'description' => 'Enables habit pattern detection and suggestion task injection.'],
             ['flag_key' => 'adaptive.rank_management',         'module' => 'EvalEngine',    'description' => 'Enables automatic rank escalation, de-escalation, and mismatch detection.'],
@@ -30,9 +30,12 @@ class FeatureFlagSeeder extends Seeder
             ['flag_key' => 'reporting.admin_analytics',        'module' => 'Reporting',     'description' => 'Enables the admin reporting views for learner progress and task performance.'],
         ];
 
+        // A fresh install should be usable end to end: every flag starts on except
+        // Docker code execution, which is not built yet. insertOrIgnore leaves flags
+        // an admin has already configured untouched.
         foreach ($flags as $flag) {
             DB::table('feature_flags')->insertOrIgnore(array_merge($flag, [
-                'is_enabled' => false,
+                'is_enabled' => $flag['flag_key'] !== 'submission.code_execution',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]));
