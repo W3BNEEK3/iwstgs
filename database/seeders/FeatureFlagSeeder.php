@@ -30,9 +30,12 @@ class FeatureFlagSeeder extends Seeder
             ['flag_key' => 'reporting.admin_analytics',        'module' => 'Reporting',     'description' => 'Enables the admin reporting views for learner progress and task performance.'],
         ];
 
+        // A fresh install should be usable end to end: every flag starts on except
+        // Docker code execution, which is not built yet. insertOrIgnore leaves flags
+        // an admin has already configured untouched.
         foreach ($flags as $flag) {
             DB::table('feature_flags')->insertOrIgnore(array_merge($flag, [
-                'is_enabled' => false,
+                'is_enabled' => $flag['flag_key'] !== 'submission.code_execution',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]));

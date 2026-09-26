@@ -15,6 +15,9 @@
          back to system-ui. --}}
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;650;700&family=JetBrains+Mono:wght@400;500&display=swap">
 
+    {{-- Inline so cloaked elements stay hidden even before (or without) the CSS bundle. --}}
+    <style>[x-cloak] { display: none !important; }</style>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>

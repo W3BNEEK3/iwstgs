@@ -10,19 +10,19 @@ import { initThemeToggle } from './behaviors/theme-toggle';
 import { initDropdowns } from './behaviors/dropdown';
 import { initPageLoadingBar, startLoading, finishLoading } from './behaviors/page-loading-bar';
 import { initProfileChartRotate } from './behaviors/profile-chart-rotate';
-import { initBusyButtons } from './behaviors/busy-buttons';
+import { initBusyButtons, setBusy } from './behaviors/busy-buttons';
 
 Alpine.store('nav', nav);
 Alpine.data('guide', guide);
 
 Alpine.magic('ajax', (el) => async (url, options = {}) => {
   const busy = options.form?.querySelector('[type=submit]') ?? el.closest('button');
-  busy?.setAttribute('aria-busy', 'true');
+  setBusy(busy, true);
   startLoading();
   try {
     return await ajax(url, options);
   } finally {
-    busy?.removeAttribute('aria-busy');
+    setBusy(busy, false);
     finishLoading();
   }
 });
