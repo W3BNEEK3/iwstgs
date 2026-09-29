@@ -2,7 +2,7 @@
      Large forms group into labeled sections instead of separate cards (design doc §11). --}}
 @props(['title'])
 
-<div class="form-section">
+<div {{ $attributes->merge(['class' => 'form-section']) }}>
     <div class="form-section-title">{{ $title }}</div>
     {{ $slot }}
 </div>

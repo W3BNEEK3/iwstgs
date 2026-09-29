@@ -11,6 +11,7 @@
         ['route' => 'admin.competence-dimensions.index', 'label' => 'Competency Model', 'icon' => 'category', 'active' => 'admin.competence-dimensions.*'],
         ['route' => 'admin.human-review.index', 'label' => 'Human Review', 'icon' => 'fact_check', 'active' => 'admin.human-review.*'],
         ['route' => 'admin.ai-engine.index', 'label' => 'AI Engine', 'icon' => 'smart_toy', 'active' => 'admin.ai-engine.*'],
+        ['route' => 'admin.guide.index', 'label' => 'Guide', 'icon' => 'assistant', 'active' => 'admin.guide.*'],
         ['route' => 'admin.feature-flags.index', 'label' => 'Feature Flags', 'icon' => 'toggle_on', 'active' => 'admin.feature-flags.*'],
     ];
 @endphp

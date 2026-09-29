@@ -33,8 +33,9 @@ When a trigger fires, a `LearnerSnapshotBuilder` assembles a compact, factual su
 | Last 5 evaluations: pass/fail, tier per dimension, `criteria_missed`, `gap_type` | `evaluation_results`, `dimension_evaluations` |
 | Dimension trends (improving / flat / falling) | `dimension_scores` |
 | Habit flags, gap flags | `habit_flags`, `gap_flags` |
-| Attempts on the current task, hints revealed, reference materials opened | `learner_activity_events` (*new*, §8.1) |
-| Time on the current task, days since last visit | `learner_activity_events` (*new*) |
+| Attempts on the current task, the last explanation's length | `submission_packages` |
+| Time on the current task | reported by the task page after 25 minutes (`POST /guide/stuck`, verified server-side) |
+| Days since last visit | `user_guide_preferences.last_active_at` (*new*) |
 | CI results and regressions (v2) | `submission_packages.ci_*` |
 | Consequence / suggestion cards injected, rank events | `sprint_board_events`, `rank_events` |
 | What Tiroco already said recently, and what the learner dismissed or rated | `guide_messages` (*new*) |
@@ -43,7 +44,10 @@ When a trigger fires, a `LearnerSnapshotBuilder` assembles a compact, factual su
 
 ## 3. Triggers (When Tiroco Speaks)
 
-Each trigger is a small class with a condition, a **cooldown** and a **priority**. Triggers run at three moments: after an evaluation (`PostEvaluationRouter` dispatches `GuideSignalObserved`), on page load (cheap checks only, no AI call in the request), and from a scheduled job every 10 minutes (idle and returning learners).
+Each trigger has a condition, a **cooldown** and a place in the priority order (`TriggerCatalog`). Triggers run at three moments: after an evaluation (a Guidance listener on `EvaluationComplete`, registered after `PostEvaluationRouter`), when the guide card asks for its message after a page has loaded (cheap checks only), and when the task page reports a learner has been on it for 25 minutes.
+
+> **Built in the first release:** `repeat-fail`, `stuck-idle`, `thin-explanations`, `rank-change` (up or down), `welcome-back`, `weak-dimension`, `quiet-moment`, `announcement`.
+> **Deferred:** `skipped-materials` and `hint-reliance` need the task page to record when materials and hints are opened (today both are always visible, so there is nothing to observe); `first-consequence` is already covered by the authored "An amber card appeared" walkthrough; `ci-failing` and `regression` arrive with v2-1.
 
 ### 3.1 Pilot trigger catalogue
 
@@ -100,12 +104,12 @@ Each tip has: `area`, `text`, `applies_to` (tracks/pages/ranks), `active`.
 
 Tiroco recommends outside resources that support what Areyna trains: reference docs, practice sites, spaced-repetition tools, communities. To keep this trustworthy:
 
-- **Only from an admin-curated list** (`guide_resources`). The AI receives the candidate resources (filtered by skill, level and stack) and returns a resource **ID**, never a URL, so it cannot invent or mis-type a link.
+- **Only from an admin-curated list** (`guide_resources`). The resource is **chosen by rules** (matches the weak skill, closest to the learner's level, never recommended before, not opted out of, link check not failing); the AI only writes the one-sentence reason around it. The link on the card comes from the list, never from the AI, so it cannot invent or mis-type one.
 - One resource at a time, with a one-sentence reason tied to what the learner is struggling with.
 - The learner can mark "Already use it" or "Not for me"; either hides that resource from them for good.
 - Nothing is sponsored, and the list is reviewed every quarter for dead links (a scheduled link check flags broken URLs to admins).
 
-Fields: `name`, `url`, `kind` (reference / practice / course / tool / community), `dimensions` (competence dimension IDs), `concept_tags`, `stacks`, `level` (beginner / intermediate / advanced), `is_free`, `blurb`, `active`, `last_checked_at`.
+Fields: `name`, `url`, `kind` (reference / practice / course / tool / community), `dimensions` (competence dimension IDs), `level` (beginner / intermediate / advanced), `is_free`, `blurb`, `is_active`, `last_checked_at`, `last_check_ok`. (`concept_tags` and `stacks` come with v2, when stack variants exist.) Links are checked weekly by `php artisan guide:check-resources` (scheduled) or from the admin page; a 401/403/429 counts as working because bot protection often answers automated checks that way.
 
 Suggested seed list (verify at authoring time):
 
@@ -153,65 +157,65 @@ In the Tiroco card (a small ⋯ menu) and on **Profile → Guide settings**:
 
 ## 8. How It Works
 
-### 8.1 Data model (new)
+### 8.1 Data model (as built)
 
-**`learner_activity_events`**: the light activity log that nudges need and nothing records today.
+Migration `2026_09_29_100000_create_ai_guide_tables`. No separate activity log was needed: the one fact nothing recorded (when the learner was last here) is a column on the preferences row, and time on a task is reported by the task page itself.
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | uuid | |
-| `learner_id` | uuid FK | |
-| `session_id` | uuid FK nullable | |
-| `task_id` | uuid nullable | |
-| `type` | string(40) | `task_opened`, `hint_revealed`, `materials_opened`, `draft_saved`, `submitted`, `page_viewed` |
-| `meta` | json nullable | e.g. hint number |
-| `created_at` | timestamp | Pruned after 90 days |
-
-**`guide_messages`**: everything Tiroco decided to say, whether AI-written or not.
+**`guide_messages`**: everything Tiroco decided to say, whether AI-written or not. Keyed by **user** (the guide is per account, and announcements reach users who haven't enrolled yet).
 
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid | |
-| `learner_id` | uuid FK | |
-| `kind` | enum | `nudge`, `tip`, `resource`, `announcement` |
+| `user_id` | uuid FK | |
+| `kind` | string | `nudge`, `tip`, `resource`, `announcement` |
 | `trigger_key` | string | e.g. `repeat-fail` |
-| `context_ref` | string nullable | e.g. task ID, used for cooldowns |
-| `title`, `body` | string, text | Final text shown |
-| `cta_label`, `cta_url` | nullable | Internal links only, validated against named routes |
-| `resource_id` / `tip_id` / `announcement_id` | uuid nullable | |
-| `status` | enum | `queued`, `shown`, `dismissed`, `expired` |
-| `rating` | enum nullable | `helpful`, `not_helpful` |
-| `generated_by` | enum | `ai`, `fallback`, `authored` |
-| `shown_at`, `dismissed_at`, `created_at` | timestamps | Queued messages expire after 48 h |
+| `context_ref` | string nullable | e.g. task ID, dimension ID, rank event ID; scopes cooldowns |
+| `facts` | json | What the trigger saw; the writer's input |
+| `title`, `body` | string, text | The authored fallback until written, then the final text |
+| `cta_label`, `cta_url` | nullable | Set by the trigger (an internal path, or a curated resource's link), never by the AI |
+| `tip_id` / `resource_id` / `announcement_id` | uuid nullable | |
+| `status` | string | `pending` (fallback only) → `ready` (written) → `shown` → `dismissed`; `expired` after 48 h unshown |
+| `generated_by` | string | `authored`, `ai`, `fallback` |
+| `rating` | string nullable | `helpful`, `not_helpful` |
+| `shown_at`, `dismissed_at` | timestamps | "Closed unread" = dismissed within 2 s of showing |
 
-**`guide_tips`**, **`guide_resources`** (fields in §4, §5), **`learner_resource_opt_outs`** (`learner_id`, `resource_id`, `reason`), **`feature_announcements`** (`id`, `internal_title`, `notes`, `title`, `body`, `link_route`, `feature_flag` nullable, `status` draft/published/archived, `published_at`, `created_by`).
+**`guide_tips`** and **`guide_resources`** (fields in §4 and §5; both keyed by a stable `key` so re-seeding never overwrites admin edits), **`guide_resource_opt_outs`** (`user_id`, `resource_id`, `reason`), **`feature_announcements`** (`internal_title`, `notes`, `title`, `body`, `link_url`, `feature_flag`, `status` draft/published/archived, `published_at`, `created_by`), **`platform_settings`** (key → JSON; holds `guide.daily_cap` and `guide.triggers`, and later the WE sprint deadline).
 
-**`user_guide_preferences`** (exists) gains `muted_kinds` json (the per-kind switches) and `paused_until` json (back-off per kind).
+**`user_guide_preferences`** (exists) gains `muted_kinds` json (the learner's switches), `paused_until` json (back-off per kind) and `last_active_at`.
 
-### 8.2 Flow
+The migration also inserts the two feature flags and the starter tips and resources, so an existing install gets a working guide from `php artisan migrate` alone.
+
+### 8.2 Flow (as built)
 
 ```
-Signal (evaluation done / page view / scheduled scan)
-  → GuideTriggerEvaluator runs the triggers whose moment matches
-  → caps + cooldowns + learner switches checked (cheap, no AI)
-  → queued job: GenerateGuideMessage
-        LearnerSnapshotBuilder → GuidePromptBuilder → AiTextGeneratorClient
-        → GuideMessageValidator (length, no code blocks for the active task,
-          CTA route exists, resource ID in candidate list)
-        → store guide_messages (status queued)
-  → next page load: GuideComponent shows the top queued message in the
-    existing Tiroco card (same Alpine component as walkthroughs)
+Evaluation complete ─┐   Guide card asks after page load ─┐   Task page: 25 min, no submit ─┐
+                     ▼                                     ▼                                 ▼
+          EvaluationGuideTriggers              VisitGuideTriggers                 StuckGuideTrigger
+                     └──────────────► GuideMessageQueue ◄──────────────────────────────────┘
+                        flag · admin trigger switch · learner switches/back-off · cooldown
+                        → guide_messages row, status pending, with authored fallback text
+                                              │
+      GET /guide/next (the card's own background request, after the page has rendered)
+                                              ▼
+                                        GuideDelivery
+            expire stale · quiet zones · daily cap · priority → pick one message
+                                              ▼
+                                      GuideMessageWriter
+       LearnerSnapshotBuilder + GuidePromptBuilder → AI provider → GuideMessageValidator
+       valid → generated_by ai · anything else → keep fallback · provider failing → 10 min back-off
+                                              ▼
+                                  marked shown → Tiroco card
 ```
 
-Generation always happens **in a queued job**, never during a page request, so a slow or failing AI never slows a page. If the AI fails or the validator rejects the output twice, Tiroco uses the trigger's **authored fallback text** (`generated_by = fallback`). Every trigger has one.
+**No AI call ever happens while a page renders, and no queue worker is needed.** The AI is called from the guide card's own request after the page is on screen, once per message (a cache lock stops two tabs paying twice). Every trigger writes an authored fallback, so the learner always gets a sensible message even with no AI key configured.
 
 ### 8.3 The prompt (outline)
 
 *System:* You are Tiroco, the guide inside Areyna, a platform where junior developers learn by doing realistic project work. Speak like a kind senior colleague: warm, plain English, specific, never patronising. You are given one trigger and facts about the learner. Write **one** short message (title ≤ 8 words, body ≤ 60 words) that helps with exactly that trigger. Rules: never give the solution or code for the task they're working on; refer to hints and materials instead; never grade or predict grades; never mention internal names (CAC, gap_type, dimension IDs); never invent facts or links; use only resource/tip IDs from the lists provided; if the facts aren't enough to say something useful, return `{"skip": true}`.
 
-*User content:* trigger key and its purpose, learner snapshot (§2), the candidate tips or resources, the last 5 messages Tiroco sent (to avoid repeating itself).
+*User content:* what this situation's message should achieve, the trigger's facts, the learner snapshot (§2), the authored draft (which it may keep), and the last 5 messages Tiroco sent this learner (so it doesn't repeat itself).
 
-*Output (JSON):* `{ "title", "body", "cta": {"label", "route"} | null, "resource_id" | null, "tip_id" | null, "skip": false }`
+*Output (JSON):* `{"title": "...", "body": "..."}` or `{"skip": true}`. The tip, resource and link are fixed by the trigger before the AI is asked, so only the text needs checking: the validator rejects code, URLs, internal jargon and over-long text.
 
 ### 8.4 Cost
 
@@ -222,30 +226,34 @@ A learner triggers at most ~3 AI generations a day (caps), each a short prompt u
 All inside the existing `src/Guidance` module:
 
 ```
-Domain/        GuideTrigger (interface), TriggerCatalog, GuideMessage, GuideMessageRepository,
-               Tip, Resource, Announcement (+ repositories), FrequencyPolicy
-Application/   Command: RecordActivity, QueueGuideMessage, RateGuideMessage, SetGuideKindMuted,
-                        PublishAnnouncement, GenerateAnnouncementSummary
-               Query:   GetNextGuideMessage, ListAnnouncements, GetGuideSettings
-               Service: GuideTriggerEvaluator, LearnerSnapshotBuilder, GuidePromptBuilder,
-                        GuideMessageValidator
-               Job:     GenerateGuideMessage, ScanIdleLearners (scheduled)
+Domain/         GuidePreference(+Repository), Message/ (GuideKind, TriggerCatalog, NewGuideMessage,
+                GuideMessage, GuideMessageRepository), Content/ (GuideTip, GuideResource,
+                FeatureAnnouncement, GuideContentRepository, AnnouncementNotReady)
+Application/    Service/  GuideMessageQueue, GuideDelivery, GuideMessageWriter, GuidePromptBuilder,
+                          GuideMessageValidator, LearnerSnapshotBuilder, ContentPicker, GuideBackoff,
+                          GuideSettings, EvaluationGuideTriggers, VisitGuideTriggers, StuckGuideTrigger
+                Listener/ QueueGuideMessagesOnEvaluation
+                Command/  DismissGuideMessage, RateGuideMessage, OptOutOfResource, SetGuideKindsMuted,
+                          ReportStuckOnTask, SaveGuideContent, DeleteGuideContent, SetAnnouncementStatus,
+                          GenerateAnnouncementSummary, CheckGuideResourceLinks, UpdateGuideSettings
+                Query/    GetNextGuideMessage, ListWhatsNew, GetGuideSettings, GetGuideHealth,
+                          ListGuideContent, GetGuideContentItem
 Infrastructure/ Eloquent models + repositories
-Presentation/  GuideController (+ rate, mute), Admin\GuideAdminController (tips, resources,
-               announcements, trigger settings, message log)
+Presentation/   GuideMessageController (next, dismiss, rate, opt-out, stuck, kinds, What's new),
+                Admin/GuideAdminController, GuideComponent
 ```
 
-Guidance reads other modules through the QueryBus (as `EvaluationPromptBuilder` already does), and listens to an event dispatched by `PostEvaluationRouter` rather than being called by it.
+Guidance reads other modules only through the QueryBus (one new query was added for it: SimExecution's `GetUserIdForLearner`), and listens to `EvaluationComplete` rather than being called by `PostEvaluationRouter`.
 
 ---
 
 ## 9. Admin: Guide Section
 
-- **Triggers**: enable/disable each trigger, edit its cooldown and authored fallback text; global caps.
+- **Triggers**: enable/disable each trigger and edit its cooldown; the daily cap. (Fallback text is written in code next to each trigger, because it is built from the trigger's facts.)
 - **Tips** and **Resources**: CRUD; resource link-check status.
 - **Announcements**: draft → generate summary → edit → publish / archive.
 - **Message log**: recent messages (learner, trigger, text, rating), filterable by trigger.
-- **Health**: per trigger, shown count, helpful %, dismiss %, and for nudges the **next-attempt pass rate** compared with learners who didn't get it (the real measure that Tiroco helps).
+- **Health**: per trigger over the last 30 days: shown, helpful (with %), not helpful, closed unread. *Later:* the next-attempt pass rate of nudged learners compared with learners who weren't nudged (the real measure of whether Tiroco helps).
 
 ---
 
@@ -260,17 +268,11 @@ Rollout: ship with `guide.ai_nudges` on for a small share of learners first (fla
 
 ---
 
-## 11. Build Order
+## 11. Build Status
 
-1. `learner_activity_events` + recording from the task page (hint reveal, materials opened, draft saved).
-2. `guide_messages`, `muted_kinds`, the extended Tiroco card (rating, ⋯ menu, "Why am I seeing this?") showing queued messages, walkthroughs unchanged.
-3. Trigger engine + frequency policy with **authored fallback text only** (no AI yet). This is already useful and fully testable.
-4. `GuidePromptBuilder` + validator + queued AI generation, behind `guide.ai_nudges`.
-5. Tips library and resources (admin CRUD + seeders), `quiet-moment` and `weak-dimension` triggers.
-6. Announcements (admin flow + AI summary + What's new).
-7. Admin health page.
+Built on branch `claude/cloud-credits-detection-2mhvbg`: everything in §1–§10 except the deferred triggers listed in §3 and the pass-rate comparison in §9. Feature tests in `tests/Feature/AiGuideTest.php` cover each built trigger, cooldowns, the daily cap, priority, quiet zones, learner switches, back-off, AI fallback and validation, resources and opt-out, announcements end to end, flag-gated announcements and admin access.
 
-Tests: each trigger's condition and cooldown; caps and back-off; the validator (rejects code for the active task, unknown resource IDs, unknown routes, over-long text); fallback when the AI fails; announcements hidden when their flag is off; muted kinds respected; no AI call inside a web request.
+Next, with v2-1: the `ci-failing` and `regression` triggers, git and procedure tips, and `stacks` on resources.
 
 ---
 

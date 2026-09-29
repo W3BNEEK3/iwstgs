@@ -10,6 +10,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             FeatureFlagSeeder::class,
+            GuideContentSeeder::class,
             RoleSeeder::class,
             AdminUserSeeder::class,
             TestLearnerUserSeeder::class,
