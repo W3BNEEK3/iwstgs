@@ -145,7 +145,7 @@ Chapter = scenario. Milestones unlock one at a time (doc 01 §6). Default autono
 - Brief: accessible labels and button names; comfortable on a phone; a README a stranger can follow; deploy to a free host and share the URL.
 - Tests: `T7.1` every input has a label and every button an accessible name (automated a11y check on the main page) · `T7.2` no horizontal scrolling at 375 px wide · `T7.3` *(if a URL is submitted)* the deployed URL responds with `app-title`.
 - Rubric: communication (README: what it is, how to run, how to test, known limitations) · implementation (a11y fixes) · problem analysis (what they chose not to do and why).
-- Deploy target: chosen at authoring time among current free hosts; if none is suitable, M7's deploy part becomes an optional stretch (Overview §7.3).
+- Deploying is **optional** (decision D16). A learner who deploys elsewhere submits the URL for `T7.3`; otherwise, when the project is complete, Areyna offers **free hosting** for the finished app (doc 01 §6.1) and `T7.3` runs against the Areyna-hosted URL.
 
 ---
 
@@ -187,7 +187,7 @@ Chapter = scenario. Milestones unlock one at a time (doc 01 §6). Default autono
 
 ## 7. Pilot Exit Criteria
 
-- A tester completes Taskly end to end in **both** variants with a real GitHub account, ending with a deployed app (or the optional-deploy fallback).
+- A tester completes Taskly end to end in **both** variants with a real GitHub account, ending with a working app, published through Areyna hosting at least once.
 - Every reference tag passes exactly its cumulative tests in CI.
 - At least one regression and one validation failure were triggered deliberately and produced the right consequence task.
 - Average time per milestone recorded for both variants (feeds the explainer's time estimate).

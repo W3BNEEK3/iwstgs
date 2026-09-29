@@ -11,6 +11,7 @@
 > | **02 — Build Pilot: Taskly** | The first Build-track project: a to-do app in two JavaScript variants, milestone by milestone |
 > | **03 — Work Experience Pilot: PantryLink** | Converting PantryLink into a role-based, team-based full build |
 > | **04 — Content Authoring Guide** | The repeatable recipe for adding any new project, stack variant or role |
+> | **05 — AI Guide** | Tiroco, the learner-aware guide: observations, nudges, tips, resource recommendations, feature announcements |
 
 ---
 
@@ -119,7 +120,8 @@ Harder **stack variants** of any project are gated by rank, independently of whi
 | Checking | AI rubric only | **Acceptance tests (CI) + AI review** of the actual diff + explanation |
 | Other roles' work | Not represented | **Teammate PRs** from our reference build, delivered into the learner's repo |
 | Disruptions | Adaptive only (consequence/suggestion) | **Scripted events** (planned for everyone) + adaptive (consequence/suggestion) |
-| Sprints, backlog, CAC, ranks, dimensions, guide, reporting | ✔ | ✔ unchanged in concept, extended where noted in doc 01 |
+| Sprints, backlog, CAC, ranks, dimensions, reporting | ✔ | ✔ unchanged in concept, extended where noted in doc 01 |
+| In-app guide (Tiroco) | Fixed tips per page + project explainer | **Learner-aware AI guide**: nudges, tips, resources, feature announcements (doc 05) |
 | Diagnostic | Paste-in assessment | **Unchanged** (short assessment, not a build) |
 
 ---
@@ -151,14 +153,18 @@ Harder **stack variants** of any project are gated by rank, independently of whi
 | **v2-1 Foundation** (doc 01) | Tracks and stack variants in the schema; GitHub App connect + repo linking; milestone submissions (commit / PR); CI result ingestion; evaluation of diff + tests + explanation; scripted events; admin authoring for the new fields | A learner can connect GitHub, link a repo made from a template, submit a milestone, and see it graded from real CI results + AI review |
 | **v2-2 Build pilot** (doc 02) | Taskly: product spec, 2 variants × (starter template, reference build tagged per milestone), shared black-box acceptance suite, milestones, rubrics, disruptions, consequences | A tester completes Taskly end to end in **both** variants and ends with a working, deployed app |
 | **v2-3 Work Experience pilot** (doc 03) | PantryLink conversion: monorepo template, reference build, API contract, roles (Backend / Frontend / Full-stack), teammate PR schedule, procedures, AI PR review | A tester completes PantryLink as Frontend and as Backend; the final repo runs as a complete app |
+| **G — AI Guide** (doc 05) | Learner activity log, trigger engine with frequency caps, AI-written nudges, tips library, curated resources, feature announcements, learner controls. Works with classic projects too, so it can run **in parallel with v2-1** | A tester gets relevant, well-timed nudges within the caps; no message gives away a task solution; an admin can publish an announcement end to end |
 | **v2-4 Scale** (doc 04) | More projects, variants and roles using the authoring recipe; convert remaining classic projects | Each new project passes the authoring QA checklist |
 
 ---
 
-## 7. Open Questions (to confirm before or during v2-1)
+## 7. Resolved Questions (answered by the product owner, Sept 2026)
 
-1. **Public or private learner repos?** GitHub Actions minutes are free for public repos on standard runners; private repos draw from the learner's monthly free minutes. *Proposal:* default public ("it's your portfolio"), allow private with a warning.
-2. **Learners without GitHub** — v2 projects require a (free) GitHub account. Classic projects remain for anyone who can't or won't. *Confirm this is acceptable.*
-3. **Deploy milestone** — the Build pilot's last milestone deploys the app to a free host. Free hosting offers change often; the doc names candidates but the final choice is made when authoring. *Or make deploy an optional stretch?*
-4. **Deadlines in Work Experience** — real calendar deadlines (e.g. sprint ends in 7 days) or simulated time only? *Proposal:* soft, simulated deadlines shown on the board; missing one produces a stakeholder message, not a lock-out.
-5. **AI review comments on GitHub** — should the "senior reviewer" post directly on the learner's PR (most realistic), or only inside Areyna? *Proposal:* on the PR, with an Areyna-side copy.
+| # | Question | Answer |
+|---|---|---|
+| D14 | Public or private learner repos? | **Public.** It's the learner's portfolio, and CI minutes are free on public repos |
+| D15 | Is requiring a free GitHub account acceptable? | **Yes.** Classic projects remain for anyone without one |
+| D16 | Deploy in the last Build step? | **Optional.** At the end of a project Areyna **offers free hosting** for the finished app to encourage follow-through (doc 01 §6.1) |
+| D17 | Work Experience deadlines? | **Soft, real-day deadlines, configurable in the admin panel, default 7 days** per sprint (doc 01 §6) |
+| D18 | Where does the AI reviewer comment? | **On the learner's GitHub PR, plus a copy in Areyna** (doc 01 §5.4) |
+| D19 | The in-app guide | **AI-driven and learner-aware**: observes the learner, gives timely hints and explanations, general tips on using Areyna well, recommends supporting resources, and announces new learner features. Can be turned off (doc 05) |

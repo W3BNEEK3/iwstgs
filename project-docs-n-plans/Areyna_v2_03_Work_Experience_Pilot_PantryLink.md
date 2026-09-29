@@ -133,7 +133,7 @@ Acceptance tests (IDs `S1-*`): API contract tests for PL-3/PL-5, UI tests for PL
 
 ## 7. Deadlines and Time
 
-Proposal (Overview §7.4): each sprint has a **soft deadline of 7 real days** from sprint confirmation. `sprint_day` events use real elapsed days, but any not-yet-fired day events fire when the learner submits the sprint early, so fast learners still see the whole story. Missing the deadline triggers a stakeholder message ("Grace: we had to use the spreadsheet again this Saturday") and is recorded for reporting — it never locks the learner out.
+Decision D17: each sprint has a **soft deadline** counted in real days from sprint confirmation. The length is set in **Admin → Settings** (default **7 days**) and can be overridden per project (doc 01 §6). `sprint_day` events use real elapsed days, but any not-yet-fired day events fire when the learner submits the sprint early, so fast learners still see the whole story. Missing the deadline triggers a stakeholder message ("Grace: we had to use the spreadsheet again this Saturday") and is recorded for reporting — it never locks the learner out.
 
 ---
 

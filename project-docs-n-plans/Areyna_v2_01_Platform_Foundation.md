@@ -155,7 +155,7 @@ Enrol ─▶ choose stack variant ─▶ Connect GitHub (once) ─▶ Create rep
 Creating repositories *in a user's personal account* requires broad user permissions we don't want to hold. The robust, least-privilege flow:
 
 1. Areyna shows **Create my repo** → deep link to GitHub's "use this template" page for the variant's `template_repo`, with the repo name pre-filled (e.g. `taskly`).
-2. The learner creates it (one click on GitHub; public by default — see Overview §7.1).
+2. The learner creates it (one click on GitHub). **Repos are public** (decision D14): it's the learner's portfolio, and GitHub Actions minutes are free on public repos. The flow says so plainly before the learner creates the repo, and the template README reminds them never to commit secrets.
 3. Areyna shows **Give Areyna access** → the App's install page, where the learner selects **only that repo**.
 4. The `installation` / `installation_repositories` webhook arrives → Areyna matches the repo to the waiting session (by GitHub user ID + expected template) and creates the `learner_repositories` row.
 5. Areyna verifies the repo was generated from the expected template (`template_repository` field on the repo API). If not, it asks the learner to recreate it.
@@ -170,7 +170,7 @@ The learner owns the repo from minute one and keeps it after the project.
 2. Fetch the **compare** (`base...head`) → file list + unified diff → truncate to a budget (e.g. 60 KB, largest generated/lock files skipped) → `layer3_code`, `diff_summary`.
 3. Look up the CI run for that SHA. If already finished → evaluate now. If pending → submission shows **"Tests running…"** and evaluation starts when the `workflow_run` webhook arrives. If none within 15 minutes → `ci_status = not_run` and evaluation proceeds with a flag (AI told tests didn't run; milestone cannot *pass* without them — learner is told how to fix CI).
 
-**Work Experience track** — the learner opens a PR in their repo using the template's PR description template; "Submit ticket" picks that PR. Same pipeline, plus: the AI review is posted as PR review comments (Overview §7.5), and the ticket is **done** when the PR is merged after tests + review pass.
+**Work Experience track** — the learner opens a PR in their repo using the template's PR description template; "Submit ticket" picks that PR. Same pipeline, plus: the AI review is posted as PR review comments with a copy kept in Areyna (decision D18, §5.4), and the ticket is **done** when the PR is merged after tests + review pass.
 
 ---
 
@@ -309,6 +309,8 @@ A failed test from an **earlier** milestone is a regression. `ConsequenceTaskInj
 
 After evaluation, `PostReviewComments` posts a GitHub review on the learner's PR as the persona "Areyna Senior Reviewer": a summary comment + up to N line comments drawn from `criteria_missed` and the diff. `REQUEST_CHANGES` when failing, `APPROVE` when passing. The learner addresses comments with new commits; each push re-runs CI and re-evaluates (attempt n+1, as today).
 
+**Areyna copy (decision D18):** the same review (summary + line comments with file/line and a code excerpt) is stored with the evaluation result and shown on the Areyna result page, so feedback is never lost if the PR is closed, the App is uninstalled or GitHub is unreachable. If posting to GitHub fails, the Areyna copy is still shown and the post is retried by a queued job.
+
 ---
 
 ## 6. Catalogue, Enrolment and Guide Changes
@@ -317,7 +319,21 @@ After evaluation, `PostReviewComments` posts a GitHub review on the learner's PR
 - Catalogue: tabs **Build** / **Work Experience** / **Classic**; cards show available stack variants and their difficulty; locked variants show the rank needed.
 - Enrolment: choose variant (Build) or role → variant (WE). Classic unchanged.
 - New "Repository" panel on the board: repo link, connection status, latest CI run, last accepted milestone.
-- Guide (Guidance module): new steps — `github-connect`, `repo-setup`, `first-milestone-submit`, `ci-failed`, `teammate-pr`, `pr-review` — using the existing milestone-tip mechanism.
+- Guide (Guidance module): new steps — `github-connect`, `repo-setup`, `first-milestone-submit`, `ci-failed`, `teammate-pr`, `pr-review` — using the existing milestone-tip mechanism. The guide itself becomes AI-driven and learner-aware: see **doc 05**.
+- **WE sprint deadlines (decision D17):** each sprint has a soft deadline counted in real days from sprint confirmation. The length is an admin setting — **Admin → Settings → Work Experience → Sprint deadline (days)**, default **7** — with an optional per-project override on the project edit form. Stored in a new key–value `platform_settings` table (`key` string primary, `value` json, timestamps; key `we.sprint_deadline_days`) and `project_templates.sprint_deadline_days` (nullable, falls back to the platform setting). The deadline is shown on the board; missing it fires a stakeholder message and is recorded for reporting, never a lock-out (doc 03 §7).
+- **Deploy (decision D16):** the Build deploy step is optional. At the end of a Build project the learner is offered **free Areyna hosting** for the finished app (see §6.1).
+
+---
+
+### 6.1 Areyna hosting (end-of-project reward)
+
+Offered when a learner completes a Build project (and later, a WE project) to encourage follow-through. Scope for the pilot:
+
+- The learner clicks **Publish my app**; Areyna builds the repo's last accepted commit in a sandboxed container and serves it at `<repo>-<username>.apps.areyna.<domain>`.
+- Limits: one app per completed project, small CPU/memory quota, sleeps when idle, SQLite on a small persistent volume, no outbound email. The learner can unpublish any time; apps idle for 90 days are put to sleep permanently with an email first.
+- Redeploys: the learner can redeploy after new pushes (rate-limited).
+- The hosting provider and cost ceiling are decided in phase v2-2; until then the button is behind the `hosting.publish` flag and the milestone's deploy test (`T7.3`) stays optional.
+- Security: apps run with no access to Areyna's network or secrets; abuse reporting link in the footer; the terms are shown before the first publish.
 
 ---
 
@@ -374,7 +390,9 @@ Reuse `role_definitions` (title, `specialization_tags`, `min_years_experience`, 
 | `tracks.build` | Build track in the catalogue |
 | `tracks.work_experience` | Work Experience track in the catalogue |
 | `scenario.scripted_events` | `ScenarioEventDispatcher` |
-| `sourcecontrol.pr_review_comments` | Posting AI reviews to GitHub PRs |
+| `sourcecontrol.pr_review_comments` | Posting AI reviews to GitHub PRs (the Areyna copy is always shown) |
+| `hosting.publish` | "Publish my app" free hosting offer (§6.1) |
+| `guide.ai_nudges`, `guide.announcements` | AI-driven guide and feature announcements (doc 05) |
 
 Classic projects keep working with all of these off.
 
