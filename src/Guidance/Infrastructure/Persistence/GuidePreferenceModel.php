@@ -10,10 +10,13 @@ class GuidePreferenceModel extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $fillable = ['user_id', 'is_enabled', 'dismissed_steps'];
+    protected $fillable = ['user_id', 'is_enabled', 'dismissed_steps', 'muted_kinds', 'paused_until', 'last_active_at'];
 
     protected $casts = [
         'is_enabled'      => 'boolean',
         'dismissed_steps' => 'array',
+        'muted_kinds'     => 'array',
+        'paused_until'    => 'array',
+        'last_active_at'  => 'datetime',
     ];
 }

@@ -28,6 +28,8 @@ class FeatureFlagSeeder extends Seeder
             ['flag_key' => 'reporting.learner_profile',        'module' => 'Reporting',     'description' => 'Enables the learner profile dashboard with radar chart and competency summary.'],
             ['flag_key' => 'reporting.qualification_report',   'module' => 'Reporting',     'description' => 'Enables the role qualification report comparing learner scores to role thresholds.'],
             ['flag_key' => 'reporting.admin_analytics',        'module' => 'Reporting',     'description' => 'Enables the admin reporting views for learner progress and task performance.'],
+            ['flag_key' => 'guide.ai_nudges',                  'module' => 'Guidance',      'description' => 'Tiroco watches how each learner is doing and queues nudges, tips and resource suggestions (AI-written when a provider is configured).'],
+            ['flag_key' => 'guide.announcements',              'module' => 'Guidance',      'description' => 'Learner feature announcements from Tiroco and the What\'s new page.'],
         ];
 
         // A fresh install should be usable end to end: every flag starts on except

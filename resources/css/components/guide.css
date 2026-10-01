@@ -68,6 +68,23 @@
   cursor: pointer;
 }
 
+/* Tiroco's own messages */
+.guide-card--announcement .guide-avatar { background: var(--success-bg, var(--info-bg)); color: var(--success-fg, var(--info-fg)); }
+.guide-card--nudge .guide-avatar { background: var(--warning-bg, var(--info-bg)); color: var(--warning-fg, var(--info-fg)); }
+.guide-cta { margin-top: var(--sp-md); display: inline-flex; align-items: center; gap: var(--sp-xs); text-decoration: none; }
+.guide-optout { display: flex; gap: var(--sp-md); margin-top: var(--sp-sm); }
+.guide-why { margin: var(--sp-sm) 0 0; font-size: var(--text-xs); color: var(--text-muted); }
+.guide-rate { display: inline-flex; align-items: center; gap: 2px; font-size: var(--text-xs); color: var(--text-muted); }
+.guide-rate > span { margin-right: var(--sp-xs); }
+.guide-settings-link { margin: var(--sp-sm) 0 0; font-size: var(--text-xs); }
+.guide-settings-link a { color: var(--text-muted); }
+
+/* What's new page */
+.whats-new { display: flex; flex-direction: column; gap: var(--sp-md); max-width: 720px; }
+.whats-new-item h2 { margin: 0 0 var(--sp-xs); font-size: var(--text-md); }
+.whats-new-item time { font-size: var(--text-xs); color: var(--text-muted); }
+.whats-new-item p { margin: var(--sp-xs) 0 var(--sp-sm); }
+
 @media (max-width: 639px) {
   .guide-card {
     left: 0;

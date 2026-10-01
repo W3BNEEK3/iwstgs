@@ -16,10 +16,6 @@
     </a>
 </div>
 
-@if (session('success'))
-    <x-ui.alert tone="success" style="margin-bottom:var(--sp-lg);">{{ session('success') }}</x-ui.alert>
-@endif
-
 @if (empty($recommendations))
     <div class="empty-state">
         <x-ui.icon name="lightbulb" :size="32" />
