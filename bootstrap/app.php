@@ -23,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // decrypt it, fails silently on the unencrypted value, and the theme
         // never persists across a real page load.
         $middleware->encryptCookies(except: ['theme']);
+
+        // GitHub webhooks carry no session; each delivery is verified by its HMAC signature instead.
+        $middleware->validateCsrfTokens(except: ['github/webhook']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

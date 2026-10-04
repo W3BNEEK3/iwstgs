@@ -14,6 +14,7 @@ use Src\EvalEngine\Domain\Evaluation\EvaluationResultRepository;
 use Src\EvalEngine\Domain\FollowUp\FollowUpPromptRepository;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\Simulation\Application\Query\GetTask\GetTaskQuery;
+use Src\Submission\Application\Query\GetSubmissionDetail\GetSubmissionDetailQuery;
 
 /**
  * Orchestrates evaluation for a single submission: build prompt -> call the
@@ -46,6 +47,10 @@ final class EvaluationService
         $rawResponse = $this->aiEvaluatorClient->evaluate($systemPrompt, $userContent);
         $parsed = $this->parser->parse($rawResponse);
 
+        // v2 milestones (design doc v2-01 §5.2): the reviewer's tier and the commit's
+        // acceptance tests must both pass. The tier still stands as feedback.
+        [$passes, $gapType, $isRegression] = $this->applyAcceptanceTests($submissionId, $parsed->passesThreshold, $parsed->gapType);
+
         $followUpPromptId = null;
         if ($parsed->isUncertain) {
             $task = $this->queryBus->ask(new GetTaskQuery($taskId));
@@ -57,8 +62,8 @@ final class EvaluationService
             submissionId:      $submissionId,
             learnerId:         $learnerId,
             overallTier:       $parsed->overallTier,
-            passesThreshold:   $parsed->passesThreshold,
-            gapType:           $parsed->gapType,
+            passesThreshold:   $passes,
+            gapType:           $gapType,
             isUncertain:       $parsed->isUncertain,
             followUpPromptId:  $followUpPromptId,
         );
@@ -91,7 +96,7 @@ final class EvaluationService
             triggerType:      TriggerType::SubmissionReceived,
             triggerSourceId:  $submissionId,
             actionTaken:      ActionTaken::NoAction,
-            actionDetail:     ['overall_tier' => $parsed->overallTier, 'passes_threshold' => $parsed->passesThreshold],
+            actionDetail:     ['overall_tier' => $parsed->overallTier, 'passes_threshold' => $passes],
             isDeterministic:  false,
         );
 
@@ -102,10 +107,31 @@ final class EvaluationService
             learnerSessionId:          $learnerSessionId,
             taskId:                    $taskId,
             overallTier:               $parsed->overallTier,
-            passesThreshold:           $parsed->passesThreshold,
+            passesThreshold:           $passes,
             isUncertain:               $parsed->isUncertain,
-            gapType:                   $parsed->gapType,
+            gapType:                   $gapType,
             knowledgeAnchorsDetected:  $parsed->knowledgeAnchorsDetected,
+            isRegression:              $isRegression,
         ));
+    }
+
+    /**
+     * @return array{0: bool, 1: ?string, 2: bool} passes, gap type, regression
+     */
+    private function applyAcceptanceTests(string $submissionId, bool $aiPasses, ?string $aiGapType): array
+    {
+        $detail = $this->queryBus->ask(new GetSubmissionDetailQuery($submissionId));
+        if ($detail === null || ! $detail->submission->isFromRepository()) {
+            return [$aiPasses, $aiGapType, false];
+        }
+
+        $testsPass = $detail->submission->ciStatus === 'passed';
+        $isRegression = ($detail->submission->ciReport['regressions'] ?? []) !== [];
+
+        // Good work that the tests reject is usually a process miss (not checking it
+        // runs, not running the tests) rather than missing knowledge.
+        $gapType = $aiPasses && ! $testsPass ? 'strategy_gap' : $aiGapType;
+
+        return [$aiPasses && $testsPass, $gapType, $isRegression];
     }
 }

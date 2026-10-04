@@ -20,6 +20,7 @@ final class ListSessionsForLearnerHandler
                 status:             $s->status()->value,
                 currentScenarioId:  $s->currentScenarioId(),
                 currentSprintId:    $s->currentSprintId(),
+                stackVariantId:     $s->stackVariantId(),
             ),
             $this->sessions->findAllForLearner($query->learnerId),
         );

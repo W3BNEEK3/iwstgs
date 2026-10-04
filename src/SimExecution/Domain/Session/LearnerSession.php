@@ -34,6 +34,8 @@ final class LearnerSession extends AggregateRoot
         private ?string $inductionCompletedAt,
         /** BLD §11.4 — dimension to prioritise when selecting the next scenario. */
         private ?string $targetedDimensionId = null,
+        /** v2: the stack variant chosen for a Build / Work Experience project; null for classic projects. */
+        private readonly ?string $stackVariantId = null,
     ) {}
 
     public static function begin(
@@ -41,6 +43,7 @@ final class LearnerSession extends AggregateRoot
         string $learnerId,
         string $projectId,
         string $roleEnrolmentId,
+        ?string $stackVariantId = null,
     ): self {
         $session = new self(
             id:                    $id,
@@ -52,6 +55,7 @@ final class LearnerSession extends AggregateRoot
             currentTaskId:         null,
             currentSprintId:       null,
             inductionCompletedAt:  null,
+            stackVariantId:        $stackVariantId,
         );
 
         $session->recordEvent(new LearnerSessionStarted(
@@ -74,11 +78,12 @@ final class LearnerSession extends AggregateRoot
         ?string $currentSprintId,
         ?string $inductionCompletedAt,
         ?string $targetedDimensionId = null,
+        ?string $stackVariantId = null,
     ): self {
         return new self(
             $id, $learnerId, $projectId, $roleEnrolmentId, $status,
             $currentScenarioId, $currentTaskId, $currentSprintId,
-            $inductionCompletedAt, $targetedDimensionId,
+            $inductionCompletedAt, $targetedDimensionId, $stackVariantId,
         );
     }
 
@@ -164,6 +169,7 @@ final class LearnerSession extends AggregateRoot
     public function currentSprintId(): ?string { return $this->currentSprintId; }
     public function inductionCompletedAt(): ?string { return $this->inductionCompletedAt; }
     public function targetedDimensionId(): ?string { return $this->targetedDimensionId; }
+    public function stackVariantId(): ?string { return $this->stackVariantId; }
 
     public function toPrimitives(): array
     {
@@ -178,6 +184,7 @@ final class LearnerSession extends AggregateRoot
             'current_sprint_id'       => $this->currentSprintId,
             'induction_completed_at'  => $this->inductionCompletedAt,
             'targeted_dimension_id'   => $this->targetedDimensionId,
+            'stack_variant_id'        => $this->stackVariantId,
         ];
     }
 }

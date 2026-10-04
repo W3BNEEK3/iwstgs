@@ -7,6 +7,7 @@ use Src\Guidance\Application\Query\GetGuideSettings\GetGuideSettingsQuery;
 use Src\Guidance\Domain\Message\GuideKind;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\Shared\Infrastructure\Feature\FeatureFlagService;
+use Src\SourceControl\Application\Query\GetGitHubConnection\GetGitHubConnectionQuery;
 
 /**
  * Account info (read-only), theme choice, and the in-app guide: on/off, and
@@ -34,6 +35,8 @@ class LearnerSettingsController
                 fn (GuideKind $k) => $k === GuideKind::Announcement ? $announcementsOn : $nudgesOn,
             )),
             'announcementsOn' => $announcementsOn,
+            'githubOn'        => $this->flags->isEnabled('sourcecontrol.github'),
+            'github'          => $this->queryBus->ask(new GetGitHubConnectionQuery((string) Auth::id())),
         ]);
     }
 }

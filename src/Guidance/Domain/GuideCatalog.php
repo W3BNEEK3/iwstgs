@@ -24,6 +24,8 @@ final class GuideCatalog
         'learn.task-submit'        => 'task-submit',
         'learn.evaluation-result'  => 'evaluation-result',
         'learn.profile'            => 'profile',
+        'learn.build'              => 'build-board',
+        'learn.milestone'          => 'milestone',
     ];
 
     /**
@@ -132,6 +134,40 @@ final class GuideCatalog
                     ['Explain, then show', 'The written explanation is where you show your reasoning. Say what you did, the choices you made, and why. It counts as much as the code.'],
                     ['The three badges', 'Complexity is how hard the task is. Guidance is how much help you get. Realism is how much detail is given. They adjust to how you\'re doing.'],
                     ['You can resubmit', 'If you realise you missed something, submit again. Every attempt is reviewed, and improving is exactly what the platform rewards.'],
+                ],
+            ],
+            [
+                'key' => 'build-board', 'page' => 'build-board', 'when' => null,
+                'title' => 'Your build',
+                'cards' => [
+                    ['A real app, step by step', 'This project is built for real, in your own GitHub repository. Each milestone adds one working piece. By the last one you have a complete app you own.'],
+                    ['One at a time', 'Milestones open in order, because each builds on the last. The highlighted one is where you are now.'],
+                    ['Messages', 'The people you\'re building for send messages as the build goes on. Sometimes they change their minds, just like real clients.'],
+                ],
+            ],
+            [
+                'key' => 'repo-setup', 'page' => 'build-board', 'when' => 'needsRepo',
+                'title' => 'Set up your repository',
+                'cards' => [
+                    ['Four quick steps', 'Connect GitHub, create your repository from the starter code, give Areyna access to just that repository, then check again. It takes about two minutes.'],
+                    ['Why public', 'Your repository is public: it becomes part of your portfolio, and the automatic tests run free on public repositories. Never commit passwords or API keys.'],
+                ],
+            ],
+            [
+                'key' => 'milestone', 'page' => 'milestone', 'when' => null,
+                'title' => 'Submitting a milestone',
+                'cards' => [
+                    ['Work locally, then push', 'Write the code on your computer, commit, and push to GitHub. Then come back here and pick the commit that completes the milestone.'],
+                    ['Two checks', 'Automatic tests run on your commit on GitHub, and a reviewer reads your changes and your explanation. The milestone passes when both are happy.'],
+                    ['Earlier work counts', 'The tests for milestones you already passed run every time. If a change breaks one, that\'s a regression, and fixing it comes first.'],
+                ],
+            ],
+            [
+                'key' => 'ci-failed', 'page' => 'milestone', 'when' => 'testsFailed',
+                'title' => 'When tests fail',
+                'cards' => [
+                    ['Read the first failure', 'Open "Test run on GitHub" and find the first failing test. Its message usually says what it expected and what it found.'],
+                    ['Reproduce it locally', 'Run your app the way the test does and try the same thing yourself. Fix the cause, push, and submit the new commit.'],
                 ],
             ],
             [

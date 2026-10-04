@@ -62,7 +62,8 @@ final class SubmitTaskHandler
 
         // Integration Spec §10: the Planning Layer (sprint board) is inactive
         // during diagnostic scenarios — a null sprint is expected, not an error.
-        if (! $isDiagnostic && $session->currentSprintId === null) {
+        // Build-track sessions (a stack variant) have no sprints either: milestones replace planning.
+        if (! $isDiagnostic && $session->stackVariantId === null && $session->currentSprintId === null) {
             throw new SubmissionNotAllowedException('no sprint is currently active for this session');
         }
 
@@ -113,7 +114,7 @@ final class SubmitTaskHandler
         }
 
         $attemptNumber = $this->packages->countAttempts($command->sessionId, $command->taskId) + 1;
-        $planningSnapshot = $this->planningSnapshotAssembler->assemble($command->sessionId);
+        $planningSnapshot = $session->stackVariantId === null ? $this->planningSnapshotAssembler->assemble($command->sessionId) : null;
 
         $artifactIds = [];
         $storedArtifacts = [];

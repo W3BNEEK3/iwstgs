@@ -31,6 +31,24 @@
     </div>
 </x-forms.form-section>
 
+@if ($githubOn)
+    <div style="margin-top:var(--sp-xl);"></div>
+    <x-forms.form-section title="GitHub" id="github">
+        <p style="font-size:var(--text-sm);color:var(--text-muted);margin:0 0 var(--sp-md);">
+            Build projects live in your own GitHub repository. Areyna only reads the repositories you give the Areyna app access to.
+        </p>
+        @if ($github)
+            <p style="margin:0 0 var(--sp-md);">Connected as <strong>{{ $github->githubLogin }}</strong></p>
+            <form method="POST" action="{{ route('github.disconnect') }}" onsubmit="return confirm('Disconnect GitHub? Your builds pause until you reconnect.')">
+                @csrf
+                <x-ui.button type="submit" severity="secondary" icon="link_off">Disconnect GitHub</x-ui.button>
+            </form>
+        @else
+            <x-ui.button :href="route('github.connect', ['return' => '/learn/settings'])" severity="secondary" icon="link">Connect GitHub</x-ui.button>
+        @endif
+    </x-forms.form-section>
+@endif
+
 <div style="margin-top:var(--sp-xl);"></div>
 <x-forms.form-section title="Guide" id="guide">
     <p style="font-size:var(--text-sm);color:var(--text-muted);margin:0 0 var(--sp-md);">

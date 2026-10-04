@@ -21,6 +21,7 @@ use Src\SimExecution\Domain\Exceptions\SessionNotFoundException;
 use Src\SimExecution\Domain\Exceptions\SprintGoalRequiredException;
 use Src\SimExecution\Domain\Exceptions\SprintNotFoundException;
 use Src\SimExecution\Presentation\Http\Request\WriteSprintGoalRequest;
+use Src\Simulation\Application\Query\GetProject\GetProjectQuery;
 
 class SprintPlanningController
 {
@@ -31,6 +32,11 @@ class SprintPlanningController
 
     public function show(string $project): View|RedirectResponse
     {
+        // Build projects have no sprints (design doc v2-01 §6); never create one for them.
+        if ($this->queryBus->ask(new GetProjectQuery($project))?->isBuildTrack()) {
+            return redirect()->route('learn.build', $project);
+        }
+
         try {
             $this->commandBus->dispatch(new EnsureSprintPlanningReadyCommand(Auth::id(), $project));
         } catch (LearnerNotFoundException|SessionNotFoundException $e) {

@@ -29,6 +29,8 @@ final class EvaluationComplete extends DomainEvent
         public readonly ?string $gapType,
         public readonly array $knowledgeAnchorsDetected,
         public readonly array $conceptSuggestions = [],
+        /** v2: an acceptance test from an earlier, already-passed milestone failed (design doc v2-01 §5.3). */
+        public readonly bool $isRegression = false,
     ) {
         parent::__construct();
     }

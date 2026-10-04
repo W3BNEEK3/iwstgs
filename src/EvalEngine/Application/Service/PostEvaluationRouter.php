@@ -21,6 +21,7 @@ use Src\Shared\Application\Bus\CommandBus;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\Shared\Infrastructure\Feature\FeatureFlagService;
 use Src\SimExecution\Application\Command\CompleteBacklogItemFromEvaluation\CompleteBacklogItemFromEvaluationCommand;
+use Src\SimExecution\Application\Command\FireScenarioEvents\FireScenarioEventsCommand;
 use Src\SimExecution\Application\Command\TransitionScenarioIfComplete\TransitionScenarioIfCompleteCommand;
 use Src\SimExecution\Application\Query\FindBacklogItemForTask\FindBacklogItemForTaskQuery;
 use Src\SimExecution\Application\Query\FindDiagnosticSessionForTask\FindDiagnosticSessionForTaskQuery;
@@ -153,7 +154,16 @@ final class PostEvaluationRouter
             projectId:        $session->projectId,
         ));
 
+        // Scripted story beats waiting on this task (v2) fire before any scenario
+        // transition, so they land in the chapter the work belongs to.
+        $this->commandBus->dispatch(new FireScenarioEventsCommand($event->learnerSessionId, 'after_task', $event->taskId));
+
         if ($backlogItemId === null) {
+            // Build sessions (a stack variant, no backlog): passing a milestone or a fix
+            // can complete the chapter directly.
+            if ($session->stackVariantId !== null) {
+                $this->commandBus->dispatch(new TransitionScenarioIfCompleteCommand($event->learnerSessionId));
+            }
             return;
         }
 

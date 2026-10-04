@@ -13,7 +13,9 @@ class EnrolInProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role_id' => ['required', 'uuid'],
+            // Build projects choose a stack instead of a role (the role is implied).
+            'role_id'          => ['required_without:stack_variant_id', 'nullable', 'uuid'],
+            'stack_variant_id' => ['required_without:role_id', 'nullable', 'uuid'],
         ];
     }
 }

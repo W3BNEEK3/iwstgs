@@ -11,8 +11,8 @@
         </div>
 
         <div class="explainer-facts">
-            <div class="explainer-fact"><span>Sprints</span><strong>{{ count($explainer->scenarios) }}</strong></div>
-            <div class="explainer-fact"><span>Main tasks</span><strong>{{ $explainer->coreTaskCount }}</strong></div>
+            <div class="explainer-fact"><span>{{ $explainer->isBuild ? 'Chapters' : 'Sprints' }}</span><strong>{{ count($explainer->scenarios) }}</strong></div>
+            <div class="explainer-fact"><span>{{ $explainer->isBuild ? 'Milestones' : 'Main tasks' }}</span><strong>{{ $explainer->coreTaskCount }}</strong></div>
             <div class="explainer-fact"><span>Time needed</span><strong>about {{ $explainer->estimatedHours }} {{ \Illuminate\Support\Str::plural('hour', $explainer->estimatedHours) }}</strong></div>
             @if (!empty($explainer->stack))
                 <div class="explainer-fact"><span>Tech</span><strong style="font-size:var(--text-sm);">{{ implode(', ', $explainer->stack) }}</strong></div>
@@ -56,7 +56,11 @@
         @endif
 
         <p style="margin:0;font-size:var(--text-sm);color:var(--text-muted);">
-            After you enrol you'll get a short induction, then plan your first sprint. Tasks adapt as you go: strong work earns more complex, less guided tasks, and a missed detail comes back as a follow-up task to fix.
+            @if ($explainer->isBuild)
+                After you start you'll set up your own GitHub repository from the starter code, then build the app one milestone at a time. Each milestone is checked by automatic tests and a reviewer; if a change breaks something that worked before, fixing it comes first.
+            @else
+                After you enrol you'll get a short induction, then plan your first sprint. Tasks adapt as you go: strong work earns more complex, less guided tasks, and a missed detail comes back as a follow-up task to fix.
+            @endif
         </p>
     </div>
 </x-forms.form-section>

@@ -36,6 +36,18 @@ interface SubmissionPackageRepository
 
     public function findDetailById(string $id): ?SubmissionPackageDetail;
 
+    /** v2: marks a submission as made from a commit in the learner's repository; CI starts as pending. */
+    public function attachCommit(string $id, string $commitSha, string $baseSha, array $diffSummary): void;
+
+    /** @param array|null $report AcceptanceResult::toArray() */
+    public function recordCi(string $id, string $status, ?string $runUrl, ?array $report): void;
+
+    /** @return string[] ids of every attempt at this task in this session, newest first */
+    public function attemptIds(string $learnerSessionId, string $taskId): array;
+
+    /** @return string[] submissions still waiting for CI, oldest first */
+    public function pendingCiIds(?string $learnerSessionId = null, ?string $commitSha = null): array;
+
     /** @return SubmissionTrajectoryEntry[] every submission this learner has ever made, oldest first */
     public function findAllForLearner(string $learnerId): array;
 }

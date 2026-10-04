@@ -28,6 +28,7 @@ class SubmissionPackageModel extends Model
         'layer3_execution_result', 'layer4_planning_snapshot',
         'cac_complexity_at_sub', 'cac_autonomy_at_sub', 'cac_context_at_sub',
         'rank_at_submission', 'submitted_at',
+        'source', 'commit_sha', 'base_sha', 'pr_number', 'ci_status', 'ci_run_url', 'ci_report', 'diff_summary',
     ];
 
     protected $casts = [
@@ -39,6 +40,8 @@ class SubmissionPackageModel extends Model
         'cac_autonomy_at_sub'      => CacLevelAtSubmission::class,
         'cac_context_at_sub'       => CacLevelAtSubmission::class,
         'submitted_at'             => 'datetime',
+        'ci_report'                => 'array',
+        'diff_summary'             => 'array',
     ];
 
     public function session(): BelongsTo

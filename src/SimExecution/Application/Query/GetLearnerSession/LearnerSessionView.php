@@ -10,5 +10,6 @@ final class LearnerSessionView
         public readonly string $status,
         public readonly ?string $currentScenarioId,
         public readonly ?string $currentSprintId,
+        public readonly ?string $stackVariantId = null,
     ) {}
 }

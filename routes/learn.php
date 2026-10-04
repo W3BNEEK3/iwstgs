@@ -1,5 +1,7 @@
 <?php
 
+use Src\SimExecution\Presentation\Http\Controller\BuildBoardController;
+use Src\Submission\Presentation\Http\Controller\MilestoneController;
 use Illuminate\Support\Facades\Route;
 use Src\SimExecution\Presentation\Http\Controller\DiagnosticController;
 use Src\SimExecution\Presentation\Http\Controller\LearnerEnrolmentController;
@@ -66,4 +68,12 @@ Route::middleware(['auth', 'role:learner', 'feature:simulation.task_submission']
     Route::get('/learn/sessions/{session}/tasks/{task}/submit', [TaskSubmissionController::class, 'show'])->name('learn.task-submit');
     Route::post('/learn/sessions/{session}/tasks/{task}/submit', [TaskSubmissionController::class, 'store'])->name('learn.task-submit.store');
     Route::get('/learn/submissions/{submission}/evaluation', [EvaluationResultController::class, 'show'])->name('learn.evaluation-result');
+});
+
+// v2 Build track — a milestone path instead of sprints, built in the learner's own GitHub repository.
+Route::middleware(['auth', 'role:learner', 'diagnostic.complete', 'feature:tracks.build'])->group(function () {
+    Route::get('/learn/{project}/build', [BuildBoardController::class, 'show'])->name('learn.build');
+    Route::get('/learn/sessions/{session}/milestones/{task}', [MilestoneController::class, 'show'])->name('learn.milestone');
+    Route::post('/learn/sessions/{session}/milestones/{task}', [MilestoneController::class, 'store'])->name('learn.milestone.store');
+    Route::post('/learn/sessions/{session}/milestones/{task}/refresh', [MilestoneController::class, 'refresh'])->name('learn.milestone.refresh');
 });

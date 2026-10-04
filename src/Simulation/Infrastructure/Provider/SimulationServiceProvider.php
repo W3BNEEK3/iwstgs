@@ -3,7 +3,9 @@ namespace Src\Simulation\Infrastructure\Provider;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Src\Simulation\Domain\Build\BuildContentRepository;
 use Src\Simulation\Domain\Project\ProjectTemplateRepository;
+use Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentBuildContentRepository;
 use Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentProjectTemplateRepository;
 
 class SimulationServiceProvider extends ServiceProvider
@@ -11,6 +13,7 @@ class SimulationServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(ProjectTemplateRepository::class, EloquentProjectTemplateRepository::class);
+        $this->app->bind(BuildContentRepository::class, EloquentBuildContentRepository::class);
         $this->app->bind(
             \Src\Simulation\Domain\Scenario\ScenarioTemplateRepository::class,
             \Src\Simulation\Infrastructure\Persistence\Eloquent\Repository\EloquentScenarioTemplateRepository::class,

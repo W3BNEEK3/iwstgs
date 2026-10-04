@@ -4,8 +4,11 @@ namespace Src\AIMediation\Application;
 use Illuminate\Support\Facades\Storage;
 use Src\AIMediation\Domain\Exceptions\SubmissionNotFoundForEvaluationException;
 use Src\Shared\Application\Bus\QueryBus;
+use Src\SimExecution\Application\Query\GetLearnerSession\GetLearnerSessionQuery;
 use Src\Simulation\Application\Query\GetScenario\GetScenarioQuery;
+use Src\Simulation\Application\Query\GetStackVariant\GetStackVariantQuery;
 use Src\Simulation\Application\Query\GetTask\GetTaskQuery;
+use Src\Simulation\Application\Query\GetTaskVariantSpec\GetTaskVariantSpecQuery;
 use Src\Simulation\Application\Query\ListCriteriaByTask\ListCriteriaByTaskQuery;
 use Src\Simulation\Domain\Rubric\RubricCriterion;
 use Src\Simulation\Domain\Scenario\ReferenceMaterial;
@@ -230,7 +233,10 @@ final class EvaluationPromptBuilder
             $submissionText .= "### Written Explanation\n{$detail->submission->layer1Text}\n\n";
         }
         if ($detail->submission->layer3Code) {
-            $submissionText .= "### Code\n```\n{$detail->submission->layer3Code}\n```\n\n";
+            $submissionText .= $detail->submission->isFromRepository()
+                ? "### Changes since the last accepted milestone (diff of commit {$detail->submission->commitSha})\n"
+                    . "Secrets, dependencies, lock files and build output are left out on purpose.\n```diff\n{$detail->submission->layer3Code}\n```\n\n"
+                : "### Code\n```\n{$detail->submission->layer3Code}\n```\n\n";
         }
         $textArtifacts = array_filter($detail->artifacts, fn (SubmissionArtifactDetail $a) => in_array(pathinfo($a->filename, PATHINFO_EXTENSION), ['txt', 'md'], true));
         foreach ($textArtifacts as $artifact) {
@@ -244,12 +250,51 @@ final class EvaluationPromptBuilder
         }
         $sections[] = $submissionText;
 
+        if ($detail->submission->isFromRepository()) {
+            $sections[] = $this->repositorySection($detail);
+        }
+
         if ($detail->submission->layer4PlanningSnapshot !== null) {
             $sections[] = "## Planning Layer Snapshot (context only, not itself graded unless a criterion references it)\n"
                 . json_encode($detail->submission->layer4PlanningSnapshot, JSON_PRETTY_PRINT);
         }
 
         return implode("\n\n", $sections);
+    }
+
+    /**
+     * v2 milestone submissions (design doc v2-01 §5.1): the stack the learner
+     * builds in, its stack-specific guidance, and the acceptance-test results
+     * for this commit. Tests are decided by CI, not by the reviewer; the
+     * reviewer judges the quality of the work and explains failures.
+     */
+    private function repositorySection(SubmissionDetailView $detail): string
+    {
+        $lines = ["## Built in the learner's own repository"];
+
+        $session = $this->queryBus->ask(new GetLearnerSessionQuery($detail->submission->learnerSessionId));
+        $variant = $session?->stackVariantId !== null ? $this->queryBus->ask(new GetStackVariantQuery($session->stackVariantId)) : null;
+        if ($variant !== null) {
+            $lines[] = "Stack: {$variant->name} (" . implode(', ', $variant->languages) . ')';
+            $spec = $this->queryBus->ask(new GetTaskVariantSpecQuery($detail->submission->taskId, $variant->id));
+            if ($spec?->briefAddendum) {
+                $lines[] = "Stack-specific guidance the learner was given: {$spec->briefAddendum}";
+            }
+        }
+
+        $report = $detail->submission->ciReport ?? [];
+        $lines[] = "\n### Acceptance tests (run automatically on the commit)";
+        $lines[] = 'Result: ' . strtoupper($detail->submission->ciStatus ?? 'unknown') . ' — ' . ($report['summary'] ?? '');
+        foreach ($report['tests'] ?? [] as $test) {
+            $lines[] = "- {$test['id']} [{$test['status']}]" . ($test['regression'] ? ' (REGRESSION: worked in an earlier milestone)' : '')
+                . " {$test['title']}" . ($test['message'] ? " — {$test['message']}" : '');
+        }
+        $lines[] = "\nThe milestone only passes when the required tests pass, whatever tier you award. "
+            . 'Judge the quality of the work and the explanation against the rubric; when tests failed, '
+            . 'point the learner toward the cause in their changes without writing the fix for them. '
+            . 'If the diff edits test or workflow files, say so.';
+
+        return implode("\n", $lines);
     }
 
     /**

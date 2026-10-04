@@ -11,8 +11,11 @@ use Src\Shared\Application\Bus\CommandBus;
 use Src\Shared\Application\Bus\QueryBus;
 use Src\SimExecution\Application\Command\InjectAdaptiveTask\InjectAdaptiveTaskCommand;
 use Src\SimExecution\Application\Query\GetLearnerSession\GetLearnerSessionQuery;
+use Src\SimExecution\Application\Query\IsTaskInjectedForSession\IsTaskInjectedForSessionQuery;
+use Src\Simulation\Application\Query\GetProject\GetProjectQuery;
 use Src\Simulation\Application\Query\GetTask\GetTaskQuery;
 use Src\Simulation\Domain\Task\Task;
+use Src\Submission\Application\Query\GetLatestSubmissionId\GetLatestSubmissionIdQuery;
 
 /**
  * Implementation Plan §9.2. Called by PostEvaluationRouter on a failing
@@ -56,15 +59,35 @@ final class ConsequenceTaskInjector
             );
         }
 
-        $task = $this->queryBus->ask(new GetTaskQuery($event->taskId));
-        $consequenceTaskIds = $task?->toPrimitives()['consequence_task_ids'] ?? [];
+        $session = $this->queryBus->ask(new GetLearnerSessionQuery($event->learnerSessionId));
 
-        if ($consequenceTaskIds === []) {
-            $this->logNoAction($event, 'no consequence_task_ids configured for this task');
+        // v2 (design doc v2-01 §5.3): breaking something an earlier milestone delivered
+        // brings the project's regression consequence, whatever the task's own ones are.
+        $regressionTaskId = $event->isRegression && $session !== null
+            ? $this->queryBus->ask(new GetProjectQuery($session->projectId))?->regressionConsequenceTaskId()
+            : null;
+
+        if ($regressionTaskId !== null) {
+            $selectedTaskId = $regressionTaskId;
+        } else {
+            $task = $this->queryBus->ask(new GetTaskQuery($event->taskId));
+            $consequenceTaskIds = $task?->toPrimitives()['consequence_task_ids'] ?? [];
+
+            if ($consequenceTaskIds === []) {
+                $this->logNoAction($event, 'no consequence_task_ids configured for this task');
+                return;
+            }
+
+            $selectedTaskId = $this->selectVariant($consequenceTaskIds, $event->gapType);
+        }
+
+        // Failing the same task again shouldn't stack a second copy of a fix the learner hasn't tackled yet.
+        if ($this->queryBus->ask(new IsTaskInjectedForSessionQuery($event->learnerSessionId, $selectedTaskId))
+            && $this->queryBus->ask(new GetLatestSubmissionIdQuery($event->learnerSessionId, $selectedTaskId)) === null) {
+            $this->logNoAction($event, "consequence task {$selectedTaskId} is already on the board and not yet attempted");
             return;
         }
 
-        $selectedTaskId = $this->selectVariant($consequenceTaskIds, $event->gapType);
         /** @var Task|null $selectedTask */
         $selectedTask = $this->queryBus->ask(new GetTaskQuery($selectedTaskId));
 
@@ -72,8 +95,6 @@ final class ConsequenceTaskInjector
             $this->logNoAction($event, "configured consequence task {$selectedTaskId} is missing or unpublished");
             return;
         }
-
-        $session = $this->queryBus->ask(new GetLearnerSessionQuery($event->learnerSessionId));
 
         $incidentTicketText = $this->incidentTickets->generate($selectedTask, $failingDimensions);
 

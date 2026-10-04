@@ -27,6 +27,8 @@ final class ProjectTemplateMapper
             isPublished:            (bool) $m->is_published,
             isActive:               (bool) $m->is_active,
             onboardingBriefing:     $m->onboarding_briefing,
+            track:                  $m->track ?? ProjectTemplate::TRACK_CLASSIC,
+            regressionConsequenceTaskId: $m->regression_consequence_task_id,
         );
     }
 }
