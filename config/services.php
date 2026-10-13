@@ -35,6 +35,17 @@ return [
         ],
     ],
 
+    // The Areyna GitHub App (design doc v2-01 §3, setup steps in project-docs-n-plans/Areyna_v2_06_GitHub_App_Setup.md).
+    'github' => [
+        'app_id'           => env('GITHUB_APP_ID'),
+        'app_slug'         => env('GITHUB_APP_SLUG', 'areyna'),
+        'client_id'        => env('GITHUB_APP_CLIENT_ID'),
+        'client_secret'    => env('GITHUB_APP_CLIENT_SECRET'),
+        'private_key_path' => env('GITHUB_APP_PRIVATE_KEY_PATH', 'storage/app/github-app.pem'),
+        'webhook_secret'   => env('GITHUB_WEBHOOK_SECRET'),
+        'templates_org'    => env('GITHUB_TEMPLATES_ORG', 'areyna-templates'),
+    ],
+
     'anthropic' => [
         'key' => env('ANTHROPIC_API_KEY'),
         // Implementation Plan §8.3 names claude-sonnet-4-20250514, written before newer

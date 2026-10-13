@@ -10,6 +10,7 @@ use Src\SimExecution\Domain\Exceptions\InsufficientExperienceException;
 use Src\SimExecution\Domain\Exceptions\LearnerNotFoundException;
 use Src\SimExecution\Domain\Exceptions\ProjectNotAvailableException;
 use Src\SimExecution\Domain\Exceptions\RoleNotAvailableForProjectException;
+use Src\SimExecution\Domain\Exceptions\StackVariantNotAvailableException;
 use Src\SimExecution\Presentation\Http\Request\EnrolInProjectRequest;
 
 class ProjectEnrolmentController
@@ -23,9 +24,12 @@ class ProjectEnrolmentController
                 userId: Auth::id(),
                 projectId: $project,
                 roleId: $request->input('role_id'),
+                stackVariantId: $request->input('stack_variant_id'),
             ));
         } catch (AlreadyEnrolledInProjectException $e) {
             return redirect()->route('learn.catalogue.show', $project)->with('info', ucfirst($e->getMessage()) . '.');
+        } catch (StackVariantNotAvailableException $e) {
+            return back()->withErrors(['stack_variant_id' => ucfirst($e->getMessage()) . '.']);
         } catch (InsufficientExperienceException|RoleNotAvailableForProjectException|ProjectNotAvailableException|LearnerNotFoundException $e) {
             return back()->withErrors(['role_id' => ucfirst($e->getMessage()) . '.']);
         }

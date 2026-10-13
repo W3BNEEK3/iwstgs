@@ -55,7 +55,7 @@ final class GetProjectExplainerHandler
             /** @var Task $task */
             foreach ($this->queryBus->ask(new ListTasksByScenarioQuery($scenario->id())) as $task) {
                 $p = $task->toPrimitives();
-                if ($p['task_type'] !== 'core' || ! $p['is_published']) {
+                if (! in_array($p['task_type'], ['core', 'milestone'], true) || ! $p['is_published']) {
                     continue;
                 }
                 $coreTasks++;
@@ -90,7 +90,8 @@ final class GetProjectExplainerHandler
             coreTaskCount:  $coreTasks,
             estimatedHours: (int) max(1, ceil($minutes / 60)),
             stack:          $project->techContext()['existing_stack'] ?? [],
-            roles:          $this->roles($project, $labels),
+            roles:          $project->isBuildTrack() ? [] : $this->roles($project, $labels),
+            isBuild:        $project->isBuildTrack(),
         );
     }
 
@@ -129,7 +130,8 @@ final class GetProjectExplainerHandler
             You are Tiroco, the friendly guide inside a software-engineering training
             platform. A learner is looking at a project and deciding whether to apply.
             Explain, in second person, what the project is about, what they will be
-            doing across its sprints, and what they will get better at.
+            doing across its sprints (or, for a build, its chapters), and what they
+            will get better at.
 
             Rules:
             - Use only the facts provided. Do not invent names, numbers or features.
@@ -146,7 +148,9 @@ final class GetProjectExplainerHandler
             'Difficulty: ' . $project->difficultyLevel(),
             'Tagline: ' . ($project->tagline() ?? ''),
             "Context: {$project->businessContext()}",
-            'Sprints:',
+            $project->isBuildTrack()
+                ? 'Kind: a real app the learner builds step by step in their own GitHub repository, checked by automatic tests and a reviewer. Chapters:'
+                : 'Sprints:',
         ];
         foreach ($scenarios as $i => $s) {
             $lines[] = '  ' . ($i + 1) . ". {$s['title']}: {$s['blurb']}";
@@ -162,7 +166,7 @@ final class GetProjectExplainerHandler
         $text = "{$name} is a {$project->difficultyLevel()} project. " . ($project->tagline() ?? '');
 
         if ($scenarios !== []) {
-            $text .= ' Across ' . count($scenarios) . ' sprints you will work through: '
+            $text .= ' Across ' . count($scenarios) . ($project->isBuildTrack() ? ' chapters you will build: ' : ' sprints you will work through: ')
                 . implode('; ', array_map(fn ($s) => preg_replace('/^Sprint \d+\s*[—-]\s*/u', '', $s['title']), $scenarios)) . '.';
         }
         if ($skills !== []) {

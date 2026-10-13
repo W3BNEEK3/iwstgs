@@ -55,6 +55,12 @@ final class GetEvaluationResultHandler
             followUpPromptText:   $followUpPromptText,
             dimensions:           $evaluation->dimensions,
             projectId:            $session->projectId ?? '',
+            isFromRepository:     $submission->submission->isFromRepository(),
+            ciStatus:             $submission->submission->ciStatus,
+            ciSummary:            $submission->submission->ciReport['summary'] ?? null,
+            commitSha:            $submission->submission->commitSha,
+            learnerSessionId:     $submission->submission->learnerSessionId,
+            taskId:               $submission->submission->taskId,
         );
     }
 }

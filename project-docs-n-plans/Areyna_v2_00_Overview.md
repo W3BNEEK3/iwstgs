@@ -12,6 +12,7 @@
 > | **03 — Work Experience Pilot: PantryLink** | Converting PantryLink into a role-based, team-based full build |
 > | **04 — Content Authoring Guide** | The repeatable recipe for adding any new project, stack variant or role |
 > | **05 — AI Guide** | Tiroco, the learner-aware guide: observations, nudges, tips, resource recommendations, feature announcements |
+> | **06 — GitHub App Setup** | Click-by-click steps to create and configure the Areyna GitHub App |
 
 ---
 
@@ -150,10 +151,10 @@ Harder **stack variants** of any project are gated by rank, independently of whi
 
 | Phase | Scope | Exit criteria |
 |---|---|---|
-| **v2-1 Foundation** (doc 01) | Tracks and stack variants in the schema; GitHub App connect + repo linking; milestone submissions (commit / PR); CI result ingestion; evaluation of diff + tests + explanation; scripted events; admin authoring for the new fields | A learner can connect GitHub, link a repo made from a template, submit a milestone, and see it graded from real CI results + AI review |
+| **v2-1 Foundation** (doc 01) — *built, see doc 01 §12* | Tracks and stack variants in the schema; GitHub App connect + repo linking; milestone submissions (commit / PR); CI result ingestion; evaluation of diff + tests + explanation; scripted events; admin authoring for the new fields | A learner can connect GitHub, link a repo made from a template, submit a milestone, and see it graded from real CI results + AI review |
 | **v2-2 Build pilot** (doc 02) | Taskly: product spec, 2 variants × (starter template, reference build tagged per milestone), shared black-box acceptance suite, milestones, rubrics, disruptions, consequences | A tester completes Taskly end to end in **both** variants and ends with a working, deployed app |
 | **v2-3 Work Experience pilot** (doc 03) | PantryLink conversion: monorepo template, reference build, API contract, roles (Backend / Frontend / Full-stack), teammate PR schedule, procedures, AI PR review | A tester completes PantryLink as Frontend and as Backend; the final repo runs as a complete app |
-| **G — AI Guide** (doc 05) | Learner activity log, trigger engine with frequency caps, AI-written nudges, tips library, curated resources, feature announcements, learner controls. Works with classic projects too, so it can run **in parallel with v2-1** | A tester gets relevant, well-timed nudges within the caps; no message gives away a task solution; an admin can publish an announcement end to end |
+| **G — AI Guide** (doc 05) — *built* | Learner activity log, trigger engine with frequency caps, AI-written nudges, tips library, curated resources, feature announcements, learner controls. Works with classic projects too, so it can run **in parallel with v2-1** | A tester gets relevant, well-timed nudges within the caps; no message gives away a task solution; an admin can publish an announcement end to end |
 | **v2-4 Scale** (doc 04) | More projects, variants and roles using the authoring recipe; convert remaining classic projects | Each new project passes the authoring QA checklist |
 
 ---

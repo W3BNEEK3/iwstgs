@@ -1,6 +1,8 @@
 <?php
 namespace Database\Seeders\Concerns;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Src\Competency\Infrastructure\Persistence\Eloquent\Model\RoleDefinitionModel;
 use Src\Simulation\Infrastructure\Persistence\Eloquent\Model\ArtifactVaultItemModel;
 use Src\Simulation\Infrastructure\Persistence\Eloquent\Model\BacklogItemTemplateModel;
@@ -300,6 +302,95 @@ trait AuthorsSimulationContent
         $core->update([
             'consequence_task_ids' => array_map(fn (TaskModel $t) => $t->id, $consequences),
             'suggestion_task_ids'  => array_map(fn (TaskModel $t) => $t->id, $suggestions),
+        ]);
+    }
+
+    // ---- v2 Build / Work Experience content (design doc v2-04) -----------------------
+
+    /**
+     * A stack the project can be built in. Keys: name, languages, difficulty, template_repo,
+     * reference_repo?, acceptance_ref?, workflow_sha256?, setup_notes?, min_rank_tier?, min_rank_level?, published?
+     */
+    protected function stackVariant(ProjectTemplateModel $project, string $key, array $a): string
+    {
+        $existing = DB::table('project_stack_variants')->where('project_id', $project->id)->where('key', $key)->value('id');
+        $id = $existing ?? (string) Str::uuid();
+
+        DB::table('project_stack_variants')->updateOrInsert(['id' => $id], [
+            'project_id'      => $project->id,
+            'key'             => $key,
+            'name'            => $a['name'],
+            'languages'       => json_encode($a['languages']),
+            'difficulty'      => $a['difficulty'] ?? 1,
+            'min_rank_tier'   => $a['min_rank_tier'] ?? null,
+            'min_rank_level'  => $a['min_rank_level'] ?? null,
+            'template_repo'   => $a['template_repo'],
+            'reference_repo'  => $a['reference_repo'] ?? null,
+            'acceptance_ref'  => $a['acceptance_ref'] ?? null,
+            'workflow_sha256' => $a['workflow_sha256'] ?? null,
+            'setup_notes'     => $a['setup_notes'] ?? null,
+            'is_published'    => $a['published'] ?? true,
+            'created_at'      => now(),
+            'updated_at'      => now(),
+        ]);
+
+        return $id;
+    }
+
+    /**
+     * One step of a build. Same keys as coreTask() except `deliver`: the code comes from the
+     * learner's repository, so the only deliverable on the form is their explanation.
+     */
+    protected function milestone(ScenarioTemplateModel $scenario, RubricSetModel $rubricSet, int $sequence, array $c): TaskModel
+    {
+        $task = $this->coreTask($scenario, $rubricSet, $sequence, $c + ['deliver' => 'written']);
+        $task->update(['task_type' => 'milestone']);
+        TaskExpectedDeliverableModel::where('task_id', $task->id)->delete();
+        TaskExpectedDeliverableModel::create([
+            'task_id' => $task->id, 'type' => 'written_explanation', 'label' => 'What you did and why',
+            'description' => 'What you changed, the choices you made and why, and how you checked it works.',
+            'is_required' => true, 'display_order' => 1,
+        ]);
+
+        return $task->refresh();
+    }
+
+    /** What a task means in one stack: the acceptance tests it introduces, plus stack-specific guidance. */
+    protected function variantSpec(TaskModel $task, string $variantId, array $tests, ?string $addendum = null, ?array $hints = null, ?string $referenceTag = null): void
+    {
+        $existing = DB::table('task_variant_specs')->where('task_id', $task->id)->where('stack_variant_id', $variantId)->value('id');
+
+        DB::table('task_variant_specs')->updateOrInsert(['id' => $existing ?? (string) Str::uuid()], [
+            'task_id'          => $task->id,
+            'stack_variant_id' => $variantId,
+            'brief_addendum'   => $addendum,
+            'acceptance_tests' => json_encode(array_values($tests)),
+            'hints'            => $hints === null ? null : json_encode($hints),
+            'reference_tag'    => $referenceTag,
+            'created_at'       => now(),
+            'updated_at'       => now(),
+        ]);
+    }
+
+    /**
+     * A scripted story beat: at the scenario's start, or after a task is passed.
+     * $type: stakeholder_message | requirement_change | incident.
+     */
+    protected function scenarioEvent(ScenarioTemplateModel $scenario, string $trigger, string $type, string $sender, string $text, ?TaskModel $afterTask = null, ?string $senderRole = null, int $order = 0): void
+    {
+        $existing = DB::table('scenario_events')->where('scenario_id', $scenario->id)->where('display_order', $order)
+            ->where('trigger', $trigger)->value('id');
+
+        DB::table('scenario_events')->updateOrInsert(['id' => $existing ?? (string) Str::uuid()], [
+            'scenario_id'     => $scenario->id,
+            'trigger'         => $trigger,
+            'trigger_task_id' => $afterTask?->id,
+            'event_type'      => $type,
+            'role_tags'       => null,
+            'payload'         => json_encode(['sender' => $sender, 'role' => $senderRole, 'text' => $text]),
+            'display_order'   => $order,
+            'created_at'      => now(),
+            'updated_at'      => now(),
         ]);
     }
 }

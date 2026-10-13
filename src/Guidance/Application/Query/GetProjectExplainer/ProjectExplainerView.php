@@ -18,5 +18,7 @@ final class ProjectExplainerView
         public readonly int $estimatedHours,
         public readonly array $stack,
         public readonly array $roles,
+        /** v2 Build project: chapters and milestones in the learner's own repository, no roles or sprints. */
+        public readonly bool $isBuild = false,
     ) {}
 }

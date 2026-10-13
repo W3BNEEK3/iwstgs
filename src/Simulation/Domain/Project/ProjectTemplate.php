@@ -23,7 +23,14 @@ final class ProjectTemplate extends AggregateRoot
         private bool     $isPublished = false,
         private bool     $isActive = true,
         private ?string  $onboardingBriefing = null,
+        private string   $track = self::TRACK_CLASSIC,
+        private ?string  $regressionConsequenceTaskId = null,
     ) {}
+
+    /** v2 tracks (design doc v2-00 §2): today's paste-in projects stay `classic` until converted. */
+    public const TRACK_CLASSIC = 'classic';
+    public const TRACK_BUILD = 'build';
+    public const TRACK_WORK_EXPERIENCE = 'work_experience';
 
     public static function create(
         ProjectTemplateId $id,
@@ -72,13 +79,15 @@ final class ProjectTemplate extends AggregateRoot
         bool    $isPublished,
         bool    $isActive,
         ?string $onboardingBriefing = null,
+        string  $track = self::TRACK_CLASSIC,
+        ?string $regressionConsequenceTaskId = null,
     ): self {
         return new self(
             $id, $title, $projectType, $businessContext, $specializationTags,
             $difficultyLevel, $tagline, $businessDomain, $stakeholders,
             $overarchingConstraints, $techContext, $organisationId,
             $codingGuidelines, $velocityEstimate, $isPublished, $isActive,
-            $onboardingBriefing,
+            $onboardingBriefing, $track, $regressionConsequenceTaskId,
         );
     }
 
@@ -101,6 +110,11 @@ final class ProjectTemplate extends AggregateRoot
     public function businessContext(): string { return $this->businessContext; }
     public function difficultyLevel(): string { return $this->difficultyLevel; }
     public function onboardingBriefing(): ?string { return $this->onboardingBriefing; }
+    public function track(): string { return $this->track; }
+    /** Built for real in the learner's own repository: milestones, CI, no sprint planning. */
+    public function isBuildTrack(): bool { return $this->track === self::TRACK_BUILD; }
+    /** The consequence injected when a milestone breaks something an earlier milestone delivered. */
+    public function regressionConsequenceTaskId(): ?string { return $this->regressionConsequenceTaskId; }
 
     /** @return string[] */
     public function specializationTags(): array { return $this->specializationTags; }
@@ -134,6 +148,8 @@ final class ProjectTemplate extends AggregateRoot
             'is_published'            => $this->isPublished,
             'is_active'               => $this->isActive,
             'onboarding_briefing'     => $this->onboardingBriefing,
+            'track'                   => $this->track,
+            'regression_consequence_task_id' => $this->regressionConsequenceTaskId,
         ];
     }
 }

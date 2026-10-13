@@ -23,7 +23,7 @@ class LearnerSessionModel extends Model
         'id', 'learner_id', 'project_id', 'role_enrolment_id', 'status',
         'current_scenario_id', 'current_task_id', 'current_sprint_id',
         'induction_completed_at', 'started_at', 'completed_at',
-        'targeted_dimension_id',
+        'targeted_dimension_id', 'stack_variant_id',
     ];
 
     protected $casts = [

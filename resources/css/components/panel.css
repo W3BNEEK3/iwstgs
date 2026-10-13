@@ -1,0 +1,7 @@
+/* A bordered content block. Used across admin pages, What's new and the Build board. */
+.panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  padding: var(--sp-lg);
+}

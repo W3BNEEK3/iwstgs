@@ -8,6 +8,7 @@ use Src\LearnerProfile\Application\Command\EscalateCacComplexity\EscalateCacComp
 use Src\LearnerProfile\Application\Command\GenerateFinalCompetencyGraph\GenerateFinalCompetencyGraphCommand;
 use Src\Shared\Application\Bus\CommandBus;
 use Src\Shared\Application\Bus\QueryBus;
+use Src\SimExecution\Application\Command\FireScenarioEvents\FireScenarioEventsCommand;
 use Src\SimExecution\Application\Command\SetTargetedDimension\SetTargetedDimensionCommand;
 use Src\SimExecution\Domain\Board\InjectedTaskCardRepository;
 use Src\SimExecution\Domain\Session\LearnerSessionRepository;
@@ -50,6 +51,13 @@ final class ScenarioTransitionService
 
         $liveTaskIds = $this->liveCoreTaskIds($session->currentScenarioId());
         if (! $this->allScenarioTasksAttempted($learnerSessionId, $liveTaskIds)) {
+            return;
+        }
+
+        // A build is cumulative: the next chapter starts from working code, so every
+        // milestone must have passed, not merely been attempted.
+        $milestoneIds = $this->liveCoreTaskIds($session->currentScenarioId(), milestonesOnly: true);
+        if ($milestoneIds !== [] && ! $this->allScenarioTasksPassed($learnerSessionId, $milestoneIds)) {
             return;
         }
 
@@ -101,10 +109,12 @@ final class ScenarioTransitionService
 
         $session->advanceToScenario($nextScenario->id());
         $this->sessions->save($session);
+
+        $this->commandBus->dispatch(new FireScenarioEventsCommand($learnerSessionId, 'scenario_start'));
     }
 
     /** @return string[] */
-    private function liveCoreTaskIds(string $scenarioId): array
+    private function liveCoreTaskIds(string $scenarioId, bool $milestonesOnly = false): array
     {
         /** @var Task[] $tasks */
         $tasks = $this->queryBus->ask(new ListTasksByScenarioQuery($scenarioId));
@@ -115,7 +125,8 @@ final class ScenarioTransitionService
             // tasks are conditional, injected onto some learners' boards but not
             // others', so requiring them here would incorrectly block scenario
             // completion for anyone who never triggered the injection.
-            if ($p['is_published'] && $p['is_active'] && $p['task_type'] === 'core') {
+            $planned = $milestonesOnly ? $p['task_type'] === 'milestone' : in_array($p['task_type'], ['core', 'milestone', 'review'], true);
+            if ($p['is_published'] && $p['is_active'] && $planned) {
                 $liveTaskIds[] = $task->id();
             }
         }

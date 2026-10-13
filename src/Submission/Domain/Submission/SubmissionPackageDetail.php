@@ -19,5 +19,21 @@ final class SubmissionPackageDetail
         public readonly string $cacAutonomyAtSub,
         public readonly string $cacContextAtSub,
         public readonly string $rankAtSubmission,
+        /** v2: paste (classic) | commit | pull_request */
+        public readonly string $source = 'paste',
+        public readonly ?string $commitSha = null,
+        public readonly ?string $baseSha = null,
+        /** pending | passed | failed | errored | not_run (null for pasted work) */
+        public readonly ?string $ciStatus = null,
+        public readonly ?string $ciRunUrl = null,
+        /** see AcceptanceResult::toArray() */
+        public readonly ?array $ciReport = null,
+        public readonly ?array $diffSummary = null,
+        public readonly ?string $submittedAt = null,
     ) {}
+
+    public function isFromRepository(): bool
+    {
+        return $this->source !== 'paste';
+    }
 }

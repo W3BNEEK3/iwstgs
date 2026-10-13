@@ -25,7 +25,7 @@ final class VisitGuideTriggers
     private const AWAY_DAYS = 5;
 
     /** Pages where nothing urgent is happening, so a general tip is welcome. */
-    private const CALM_PAGES = ['catalogue', 'profile', 'sprint-board'];
+    private const CALM_PAGES = ['catalogue', 'profile', 'sprint-board', 'build-board'];
 
     public function __construct(
         private readonly QueryBus $queryBus,

@@ -43,7 +43,7 @@ class GuideContentSeeder extends Seeder
             ['say-how-checked', 'Submitting', 'Say how you checked your work. Reviewers weigh that as much as the code itself.', null],
             ['hints-are-free', 'Hints', 'Hints cost you nothing. Give a task ten honest minutes first, then use one if you are stuck.', ['task-submit', 'sprint-board']],
             ['vault-first', 'Reference materials', 'The facts every task relies on live in the reference materials and the Vault. Skim them before you start, not after a miss.', ['sprint-board', 'task-submit']],
-            ['criteria-missed', 'Feedback', 'On a result, read "criteria missed" first. It is the quickest route to a pass on the next attempt.', ['evaluation-result', 'sprint-board']],
+            ['criteria-missed', 'Feedback', 'When a milestone doesn\'t pass, read the first failing test and the reviewer\'s notes before changing anything. They point at the quickest route to a pass.', ['evaluation-result', 'milestone']],
             ['consequences-normal', 'Consequences', 'A consequence card means the story reacted to your work, like a real team would. It is practice, not punishment.', ['sprint-board']],
             ['short-sessions', 'Pacing', 'Short, regular sessions beat one long weekend push. Little and often is how skills stick.', null],
             ['weekly-profile', 'Profile', 'Check your skills chart once a week. Pick the lowest skill and pay extra attention to it in your next task.', ['profile', 'catalogue']],

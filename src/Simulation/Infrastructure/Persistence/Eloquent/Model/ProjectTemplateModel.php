@@ -35,6 +35,8 @@ class ProjectTemplateModel extends Model
         'is_published',
         'is_active',
         'onboarding_briefing',
+        'track',
+        'regression_consequence_task_id',
     ];
 
     protected $casts = [

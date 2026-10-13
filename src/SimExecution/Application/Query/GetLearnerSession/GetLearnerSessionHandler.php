@@ -21,6 +21,7 @@ final class GetLearnerSessionHandler
             status:             $session->status()->value,
             currentScenarioId:  $session->currentScenarioId(),
             currentSprintId:    $session->currentSprintId(),
+            stackVariantId:     $session->stackVariantId(),
         );
     }
 }

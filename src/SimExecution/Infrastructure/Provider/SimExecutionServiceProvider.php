@@ -16,6 +16,10 @@ class SimExecutionServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(
+            \Src\SimExecution\Domain\Story\LearnerScenarioEventRepository::class,
+            \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentLearnerScenarioEventRepository::class,
+        );
+        $this->app->bind(
             \Src\SimExecution\Domain\Enrollment\LearnerRepository::class,
             \Src\SimExecution\Infrastructure\Persistence\Eloquent\Repository\EloquentLearnerRepository::class,
         );

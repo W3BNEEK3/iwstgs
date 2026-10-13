@@ -22,6 +22,7 @@ final class LearnerSessionMapper
             currentSprintId:      $m->current_sprint_id,
             inductionCompletedAt: $m->induction_completed_at?->format('Y-m-d H:i:s'),
             targetedDimensionId:  $m->targeted_dimension_id,
+            stackVariantId:       $m->stack_variant_id,
         );
     }
 

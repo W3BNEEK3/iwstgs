@@ -20,6 +20,10 @@ enum TaskType: string
     case Suggestion             = 'suggestion';
     case DiagnosticScenario     = 'diagnostic_scenario';
     case DiagnosticConsequence  = 'diagnostic_consequence';
+    /** v2: one step of a build in the learner's own repository, checked by acceptance tests + AI review. */
+    case Milestone              = 'milestone';
+    /** v2: review a teammate's pull request (Work Experience). */
+    case Review                 = 'review';
 
     /**
      * true if this is an injected task (not part of the original content plan).
@@ -28,9 +32,15 @@ enum TaskType: string
     public function isInjected(): bool
     {
         return match($this) {
-            self::Core, self::DiagnosticScenario => false,
+            self::Core, self::DiagnosticScenario, self::Milestone, self::Review => false,
             default                              => true,
         };
+    }
+
+    /** Tasks every learner on the scenario must complete (not injected, not diagnostic). */
+    public function isPlanned(): bool
+    {
+        return in_array($this, [self::Core, self::Milestone, self::Review], true);
     }
 
     /**

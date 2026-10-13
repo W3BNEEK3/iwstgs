@@ -20,5 +20,6 @@ return [
     Src\Reporting\Infrastructure\Provider\ReportingServiceProvider::class,
     Src\SimExecution\Infrastructure\Provider\SimExecutionServiceProvider::class,
     Src\Simulation\Infrastructure\Provider\SimulationServiceProvider::class,
+    Src\SourceControl\Infrastructure\Provider\SourceControlServiceProvider::class,
     Src\Submission\Infrastructure\Provider\SubmissionServiceProvider::class,
 ];

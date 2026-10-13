@@ -422,3 +422,25 @@ Classic projects keep working with all of these off.
 9. Admin screens for variants and scenario events.
 
 Each step ships behind its flag with feature tests using the fake host; a manual end-to-end run against a real GitHub test org closes the phase.
+
+---
+
+## 12. Build Status (v2-1)
+
+**Built** (branch `claude/cloud-credits-detection-2mhvbg`), steps 1–6 and 8 of §11:
+
+- Schema (§1): migration `2026_10_04_100000_create_v2_foundation_tables`. Also adds `project_templates.regression_consequence_task_id` (§5.3), `project_stack_variants.workflow_sha256` (§4.2), `learner_repositories.start_sha`, the `github_webhook_deliveries` table (§3.4), the v2 feature flags (all off) and the **Solo Developer** role that Build projects enrol into.
+- `src/SourceControl/`: `RepositoryHost` with the GitHub implementation (App JWT and cached installation tokens, no stored user tokens), an in-memory `FakeRepositoryHost` for tests, Connect GitHub (OAuth with state check), repository linking (owner and template checked), the webhook endpoint (signature, de-duplication, `installation*` and `workflow_run`), CI reading with the workflow-hash tamper check, and the diff builder that leaves out secrets, dependencies, lock files and build output.
+- Milestone submissions: pick a commit and explain it. The submission waits for the commit's test run (webhook, page reload or the `submissions:resume-pending` sweep) and is evaluated without tests after 15 minutes. It passes only when **every required test** (its own plus all earlier milestones') passes **and** the review is proficient or better. Regressions inject the project's regression consequence; a fix already on the board isn't stacked twice.
+- Build-track UI: the catalogue grouped by track, stack choice with rank gates, sprint planning skipped, the milestone path board with repository setup, fix cards and the story feed, the milestone page (brief and stack notes, commit picker, attempts with per-test results), and a Build-aware result page and project explainer. Guide steps: `build-board`, `repo-setup`, `milestone`, `ci-failed`.
+- Scripted events (§1.6): `scenario_start` and `after_task` stakeholder messages, requirement changes and incidents, delivered to the board's feed once per session.
+- Authoring helpers in `AuthorsSimulationContent`: `stackVariant()`, `milestone()`, `variantSpec()`, `scenarioEvent()`.
+- Tests: `tests/Feature/BuildTrackTest.php` covers the end-to-end flow, gating, linking, waiting and resuming, the pass rule, regressions, tampering, timeouts, webhook security and JWT signing.
+
+**Choices made while building:**
+
+- Webhooks are processed *after the response* rather than on a queue, so no queue worker is needed; the scheduled sweep catches anything missed.
+- Learners see the reviewer's notes and missed criteria on **Build** results only. Classic challenges keep their "symptoms, not diagnosis" approach.
+- `sprint_day` events, role-tagged events, teammate pull requests, review tasks and PR review comments (step 7) arrive with the Work Experience track (v2-3). The admin screens for variants and events (step 9) come with v2-2 authoring; seeders are the authoring path until then.
+
+**Owner action needed before real use:** create the GitHub App (doc 06).

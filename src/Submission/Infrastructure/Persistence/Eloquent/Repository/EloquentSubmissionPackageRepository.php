@@ -105,7 +105,54 @@ final class EloquentSubmissionPackageRepository implements SubmissionPackageRepo
             cacAutonomyAtSub:       $model->cac_autonomy_at_sub->value,
             cacContextAtSub:        $model->cac_context_at_sub->value,
             rankAtSubmission:       $model->rank_at_submission,
+            source:                 $model->source ?? 'paste',
+            commitSha:              $model->commit_sha,
+            baseSha:                $model->base_sha,
+            ciStatus:               $model->ci_status,
+            ciRunUrl:               $model->ci_run_url,
+            ciReport:               $model->ci_report,
+            diffSummary:            $model->diff_summary,
+            submittedAt:            $model->submitted_at?->toDateTimeString(),
         );
+    }
+
+    public function attachCommit(string $id, string $commitSha, string $baseSha, array $diffSummary): void
+    {
+        SubmissionPackageModel::whereKey($id)->update([
+            'source'       => 'commit',
+            'commit_sha'   => $commitSha,
+            'base_sha'     => $baseSha,
+            'diff_summary' => json_encode($diffSummary),
+            'ci_status'    => 'pending',
+        ]);
+    }
+
+    public function recordCi(string $id, string $status, ?string $runUrl, ?array $report): void
+    {
+        SubmissionPackageModel::whereKey($id)->update([
+            'ci_status'  => $status,
+            'ci_run_url' => $runUrl,
+            'ci_report'  => $report === null ? null : json_encode($report),
+        ]);
+    }
+
+    public function attemptIds(string $learnerSessionId, string $taskId): array
+    {
+        return SubmissionPackageModel::where('learner_session_id', $learnerSessionId)
+            ->where('task_id', $taskId)
+            ->orderByDesc('attempt_number')
+            ->pluck('id')
+            ->all();
+    }
+
+    public function pendingCiIds(?string $learnerSessionId = null, ?string $commitSha = null): array
+    {
+        return SubmissionPackageModel::where('ci_status', 'pending')
+            ->when($learnerSessionId !== null, fn ($q) => $q->where('learner_session_id', $learnerSessionId))
+            ->when($commitSha !== null, fn ($q) => $q->where('commit_sha', $commitSha))
+            ->orderBy('submitted_at')
+            ->pluck('id')
+            ->all();
     }
 
     public function findAllForLearner(string $learnerId): array

@@ -5,7 +5,7 @@
 @section('body')
 <div style="margin-bottom:var(--sp-2xl);">
     <h1 style="font-size:var(--text-2xl);margin-bottom:var(--sp-xs);">Welcome to {{ $onboarding->projectTitle }}</h1>
-    <p style="color:var(--text-muted);font-size:var(--text-sm);margin:0;">Read the brief below before your first sprint begins.</p>
+    <p style="color:var(--text-muted);font-size:var(--text-sm);margin:0;">Read the brief below before you start.</p>
 </div>
 
 <x-forms.form-section title="Business Context">
